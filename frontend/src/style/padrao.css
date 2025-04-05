@@ -164,6 +164,14 @@ p#nome-pagina {
     font-size: 2.074rem;
 }
 
+aside{
+    height: 100vh;
+    width: 30rem;
+    position: fixed;
+    left: 0;
+    background-color: #1c202b;
+}
+
 a.botao, 
 input[type="submit"] {
     text-align: center;

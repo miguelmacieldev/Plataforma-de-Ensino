@@ -1,12 +1,3 @@
-
-aside{
-    height: 100vh;
-    width: 30rem;
-    position: fixed;
-    left: 0;
-    background-color: #1c202b;
-}
-
 .professores{
     display: grid;
     grid-template-columns: repeat(3, minmax(325px, 1fr)); 
