@@ -1,0 +1,30 @@
+const express = require('express');
+
+const AtividadeEntregueControl = require('../controller/AtividadeEntregueControl');
+
+const AtividadeEntregueMiddleware = require('../middleware/AtividadeEntregueMiddleware');
+
+module.exports = class AtividadeEntregueRouter {
+
+    constructor() {
+        this._router = express.Router();
+
+        this._atividadeEntregueControl = new AtividadeEntregueControl();
+
+        this._atividadeEntregueMiddleware = new AtividadeEntregueMiddleware();
+    }
+
+    criarRotasAtividadeEntregue() {
+        this._router.get('/',  this._atividadeEntregueControl.atividadeEntregue_read_all_control);
+ 
+        this._router.get('/:idAtividadeEntregue' , this._atividadeEntregueControl.atividadeEntregue_read_by_id_control);
+
+        this._router.post('/', this._atividadeEntregueMiddleware.validar_matriculaAluno, this._atividadeEntregueMiddleware.validar_idAtividade, this._atividadeEntregueControl.atividadeEntregue_create_control);
+
+        this._router.delete('/:idAtividadeEntregue', this._atividadeEntregueControl.atividadeEntregue_delete_control);
+
+        this._router.put('/:idAtividadeEntregue', this._atividadeEntregueControl.atividadeEntregue_update_control);
+
+        return this._router;
+    }
+}

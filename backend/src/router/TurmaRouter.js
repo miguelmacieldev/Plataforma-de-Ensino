@@ -1,6 +1,6 @@
 const express = require('express');
 
-const TurmaControl = require('../controller/TurmaController');
+const TurmaControl = require('../controller/TurmaControl');
 
 const TurmaMiddleware = require('../middleware/TurmaMiddleware');
 
@@ -19,7 +19,7 @@ module.exports = class TurmaRouter {
  
         this._router.get('/:idTurma', this._turmaControl.turma_read_by_id_control);
  
-        this._router.post('/', this._turmaMiddleware.validar_StatusTurma, this._turmaMiddleware.existe_CursoTurma_cadastrado, this._turmaControl.turma_create_control);
+        this._router.post('/', this._turmaMiddleware.validar_descricaoTurma, this._turmaControl.turma_create_control);
 
         this._router.delete('/:idTurma', this._turmaControl.turma_delete_control);
 

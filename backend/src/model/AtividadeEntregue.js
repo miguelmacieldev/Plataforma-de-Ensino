@@ -1,0 +1,197 @@
+const Banco = require('../database/Banco');
+
+class AtividadeEntregue {
+    constructor() {
+        this._idAtividadeEntregue = null;
+        this._matriculaAluno = null;
+        this._idAtividade = null;
+        this._dataEntrega = null;
+        this._caminhoGravacao = '';
+    }
+
+    // Criar nova entrega
+    async create() {
+        const conexao = Banco.getConexao();
+        const SQL = `
+            INSERT INTO atividadeentregue
+            (matriculaAluno, idAtividade, dataEntrega, caminhoGravacao)
+            VALUES (?, ?, ?, ?);
+        `;
+
+        try {
+            if (!(await this.verificaAlunoExiste()) || !(await this.verificaAtividadeExiste())) {
+                console.error('ID de aluno ou atividade inválido.');
+                return false;
+            }
+
+            const [result] = await conexao.promise().execute(SQL, [
+                this._matriculaAluno,
+                this._idAtividade,
+                this._dataEntrega,
+                this._caminhoGravacao
+            ]);
+
+            this._idAtividadeEntregue = result.insertId;
+            return result.affectedRows > 0;
+        } catch (error) {
+            console.error('Erro ao criar atividade entregue:', error.message);
+            return false;
+        }
+    }
+
+    // Atualizar entrega
+    async update() {
+        const conexao = Banco.getConexao();
+        const SQL = `
+            UPDATE atividadeentregue SET
+                matriculaAluno = ?,
+                idAtividade = ?,
+                dataEntrega = ?,
+                caminhoGravacao = ?
+            WHERE idAtividadeEntregue = ?;
+        `;
+
+        try {
+            if (!(await this.verificaAlunoExiste()) || !(await this.verificaAtividadeExiste())) {
+                console.error('ID de aluno ou atividade inválido.');
+                return false;
+            }
+
+            const [result] = await conexao.promise().execute(SQL, [
+                this._matriculaAluno,
+                this._idAtividade,
+                this._dataEntrega,
+                this._caminhoGravacao,
+                this._idAtividadeEntregue
+            ]);
+
+            return result.affectedRows > 0;
+        } catch (error) {
+            console.error('Erro ao atualizar entrega:', error.message);
+            return false;
+        }
+    }
+
+    // Deletar entrega
+    async delete() {
+        const conexao = Banco.getConexao();
+        const SQL = 'DELETE FROM atividadeentregue WHERE idAtividadeEntregue = ?;';
+
+        try {
+            const [result] = await conexao.promise().execute(SQL, [this._idAtividadeEntregue]);
+            return result.affectedRows > 0;
+        } catch (error) {
+            console.error('Erro ao deletar entrega:', error.message);
+            return false;
+        }
+    }
+
+    // Listar todas as entregas
+    async readAll() {
+        const conexao = Banco.getConexao();
+        const SQL = `
+            SELECT ae.*, a.descricao AS descricaoAtividade, al.nome AS nomeAluno
+            FROM atividadeentregue ae
+            JOIN atividade a ON ae.idAtividade = a.idAtividade
+            JOIN aluno al ON ae.matriculaAluno = al.matricula
+            ORDER BY ae.dataEntrega DESC;
+        `;
+
+        try {
+            const [rows] = await conexao.promise().execute(SQL);
+            return rows;
+        } catch (error) {
+            console.error('Erro ao listar entregas:', error.message);
+            return [];
+        }
+    }
+
+    // Buscar entrega por ID
+    async readByID() {
+        const conexao = Banco.getConexao();
+        const SQL = `
+        SELECT ae.*, a.descricao AS descricaoAtividade, al.nome AS nomeAluno
+        FROM atividadeentregue ae
+        JOIN atividade a ON ae.idAtividade = a.idAtividade
+        JOIN aluno al ON ae.matriculaAluno = al.matricula
+        WHERE ae.idAtividadeEntregue = ?;
+    `;
+
+        try {
+            const [rows] = await conexao.promise().execute(SQL, [this._idAtividadeEntregue]);
+            return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            console.error('Erro ao buscar entrega por ID:', error.message);
+            return null;
+        }
+    }
+
+    // Verificar se aluno existe
+    async verificaAlunoExiste() {
+        const conexao = Banco.getConexao();
+        const SQL = 'SELECT COUNT(*) AS qtd FROM aluno WHERE matricula = ?;';
+        try {
+            const [rows] = await conexao.promise().execute(SQL, [this._matriculaAluno]);
+            return rows[0].qtd > 0;
+        } catch (error) {
+            console.error('Erro ao verificar aluno:', error.message);
+            return false;
+        }
+    }
+
+    // Verificar se atividade existe
+    async verificaAtividadeExiste() {
+        const conexao = Banco.getConexao();
+        const SQL = 'SELECT COUNT(*) AS qtd FROM atividade WHERE idAtividade = ?;';
+        try {
+            const [rows] = await conexao.promise().execute(SQL, [this._idAtividade]);
+            return rows[0].qtd > 0;
+        } catch (error) {
+            console.error('Erro ao verificar atividade:', error.message);
+            return false;
+        }
+    }
+
+    // Getters e Setters
+    get idAtividadeEntregue() { 
+        return this._idAtividadeEntregue;
+     }
+
+    set idAtividadeEntregue(valor) { 
+        this._idAtividadeEntregue = valor;
+     }
+
+    get matriculaAluno() { 
+        return this._matriculaAluno; 
+    }
+
+    set matriculaAluno(valor) { 
+        this._matriculaAluno = valor; 
+    }
+
+    get idAtividade() { 
+        return this._idAtividade; 
+    }
+
+    set idAtividade(valor) {
+         this._idAtividade = valor; 
+    }
+
+    get dataEntrega() { 
+        return this._dataEntrega; 
+    }
+
+    set dataEntrega(valor) { 
+        this._dataEntrega = valor; 
+    }
+
+    get caminhoGravacao() { 
+        return this._caminhoGravacao; 
+    }
+
+    set caminhoGravacao(valor) { 
+        this._caminhoGravacao = valor; 
+    }
+}
+
+module.exports = AtividadeEntregue;
