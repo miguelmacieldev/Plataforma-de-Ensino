@@ -1,3 +1,6 @@
+const fs = require('fs');
+
+const csv = require('csv-parser');
 // Importa o módulo express para criação de APIs.
 const express = require('express');
 // Importa o modelo Turma para realizar operações relacionadas à entidade Turma.
@@ -27,6 +30,71 @@ module.exports = class TurmaControl {
         response.status(200).send(objResposta);
     }
 
+    async turma_upload_csv_control(req, res) {
+        if (!req.file) {
+            return res.status(400).json({ status: false, msg: 'Nenhum arquivo enviado' });
+        }
+    
+        const turmasCriadas = [];
+        const turmasIgnoradas = [];
+        const promessas = [];
+    
+        fs.createReadStream(req.file.path)
+            .pipe(csv({ separator: ';' }))
+            .on('data', (linha) => {
+                const promessa = (async () => {
+                    // Limpa nomes de colunas e valores
+                    const linhaLimpa = {};
+                    for (const chave in linha) {
+                        linhaLimpa[chave.trim()] = linha[chave]?.trim();
+                    }
+    
+                    const turma = new Turma();
+                    turma.descricao = linhaLimpa.descricao || null;
+                    turma.curso = linhaLimpa.curso || null;
+    
+                    if (await turma.isTurma()) {
+                        turmasIgnoradas.push({
+                            descricao: turma.descricao,
+                            curso: turma.curso
+                        });
+                    } else {
+                        const criada = await turma.create();
+                        if (criada) {
+                            turmasCriadas.push({
+                                descricao: turma.descricao,
+                                curso: turma.curso
+                            });
+                        }
+                    }
+                })();
+    
+                promessas.push(promessa);
+            })
+            .on('end', async () => {
+                try {
+                    await Promise.all(promessas);
+                    fs.unlinkSync(req.file.path);
+                    res.status(200).json({
+                        status: true,
+                        msg: 'Processamento finalizado',
+                        criadas: turmasCriadas.length,
+                        ignoradas: turmasIgnoradas.length,
+                        turmasCriadas,
+                        turmasIgnoradas
+                    });
+                } catch (erro) {
+                    console.error('Erro ao processar linhas do CSV:', erro);
+                    res.status(500).json({ status: false, msg: 'Erro ao processar os dados do CSV' });
+                }
+            })
+            .on('error', (err) => {
+                console.error('Erro ao ler CSV:', err);
+                res.status(500).json({ status: false, msg: 'Erro ao processar o arquivo CSV' });
+            });
+    }
+    
+       
     // Método assíncrono para excluir uma turma existente.
     async turma_delete_control(request, response) {
         // Cria uma nova instância do modelo Turma.

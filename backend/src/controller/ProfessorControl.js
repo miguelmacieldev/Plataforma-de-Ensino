@@ -1,3 +1,6 @@
+const fs = require('fs');
+
+const csv = require('csv-parser');
 // Importa o módulo express para criação de APIs.
 const express = require('express');
 // Importa o modelo Professor para realizar operações relacionadas à entidade Professor.
@@ -23,6 +26,74 @@ module.exports = class ProfessorControl {
         response.status(200).send(objResposta);
     }
 
+    async professor_upload_csv_control(req, res) {
+        if (!req.file) {
+            return res.status(400).json({ status: false, msg: 'Nenhum arquivo enviado' });
+        }
+    
+        const professoresCriados = [];
+        const professoresIgnorados = [];
+        const promessas = [];
+    
+        fs.createReadStream(req.file.path)
+            .pipe(csv({ separator: ';' }))
+            .on('data', (linha) => {
+                const promessa = (async () => {
+                    // Limpa os nomes das colunas e os valores
+                    const linhaLimpa = {};
+                    for (const chave in linha) {
+                        linhaLimpa[chave.trim()] = linha[chave].trim();
+                    }
+    
+                    const professor = new Professor();
+                    professor.nome = linhaLimpa.nome || null;
+                    professor.telefone = linhaLimpa.telefone || null;
+                    professor.senha = linhaLimpa.senha || null;
+    
+                    // Verifica se já existe
+                    if (await professor.isProfessor()) {
+                        professoresIgnorados.push({
+                            nome: professor.nome,
+                            telefone: professor.telefone,
+                            senha: professor.senha
+                        });
+                    } else {
+                        const criada = await professor.create(); // corrigido: antes estava chamando turma.create()
+                        if (criada) {
+                            professoresCriados.push({
+                                nome: professor.nome,
+                                telefone: professor.telefone,
+                                senha: professor.senha
+                            });
+                        }
+                    }
+                })();
+    
+                promessas.push(promessa);
+            })
+            .on('end', async () => {
+                try {
+                    await Promise.all(promessas);
+                    fs.unlinkSync(req.file.path);
+                    res.status(200).json({
+                        status: true,
+                        msg: 'Processamento finalizado',
+                        criadas: professoresCriados.length,
+                        ignoradas: professoresIgnorados.length,
+                        professoresCriados,
+                        professoresIgnorados
+                    });
+                } catch (erro) {
+                    console.error('Erro ao processar linhas do CSV:', erro);
+                    res.status(500).json({ status: false, msg: 'Erro ao processar os dados do CSV' });
+                }
+            })
+            .on('error', (err) => {
+                console.error('Erro ao ler CSV:', err);
+                res.status(500).json({ status: false, msg: 'Erro ao processar o arquivo CSV' });
+            });
+    }
+    
     // Método assíncrono para excluir um professor.
     async professor_delete_control(request, response) {
         var professor = new Professor();

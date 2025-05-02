@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 
 const TurmaRouter = require('./router/TurmaRouter');
 const ProfessorRouter = require('./router/ProfessorRouter');
@@ -13,6 +14,7 @@ const app = express();
 const portaServico = 3000;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'pages')));
 
 const turmaRoteador = new TurmaRouter();
 const professorRoteador = new ProfessorRouter();
@@ -33,3 +35,4 @@ app.use('/atividades-entregues', atividadeEntregueRoteador.criarRotasAtividadeEn
 app.listen(portaServico, () => {    
     console.log(`API rodando no endereço: http://localhost:${portaServico}/`);
 });
+
