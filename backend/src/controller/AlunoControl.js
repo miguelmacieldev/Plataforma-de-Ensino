@@ -1,4 +1,9 @@
+const fs = require('fs');
+
+const csv = require('csv-parser');
+
 const express = require('express');
+
 const Aluno = require('../model/Aluno');
 
 module.exports = class AlunoControl {
@@ -21,6 +26,83 @@ module.exports = class AlunoControl {
         };
 
         response.status(200).send(objResposta);
+    }
+
+    async aluno_upload_csv_control(req, res) {
+        if (!req.file) {
+            return res.status(400).json({ status: false, msg: 'Nenhum arquivo enviado' });
+        }
+    
+        const alunosCriados = [];
+        const alunosIgnorados = [];
+        const promessas = [];
+    
+        fs.createReadStream(req.file.path)
+            .pipe(csv({ separator: ';' }))
+            .on('data', (linha) => {
+                const promessa = (async () => {
+                    // Limpa os nomes das colunas e os valores
+                    const linhaLimpa = {};
+                    for (const chave in linha) {
+                        linhaLimpa[chave.trim()] = linha[chave].trim();
+                    }
+    
+                    const aluno = new Aluno();
+                    aluno.matricula = linhaLimpa.matricula || null;
+                    aluno.nome = linhaLimpa.nome || null;
+                    aluno.telefone = linhaLimpa.telefone || null;
+                    aluno.email = linhaLimpa.email || null;
+                    aluno.idTurmaPrimaria = linhaLimpa.idTurmaPrimaria || null;
+                    aluno.idTurmaSecundaria = linhaLimpa.idTurmaSecundaria || null;
+
+                    // Verifica se já existe
+                    if (await aluno.isAluno()) {
+                        alunosIgnorados.push({
+                            matricula: aluno.matricula,
+                            nome: aluno.nome,
+                            telefone: aluno.telefone,
+                            email: aluno.email,
+                            idTurmaPrimaria : aluno.idTurmaPrimaria,
+                            idTurmaSecundaria : aluno.idTurmaSecundaria
+                        });
+                    } else {
+                        const criada = await aluno.create(); 
+                        if (criada) {
+                            alunosCriados.push({
+                                matricula: aluno.matricula,
+                                nome: aluno.nome,
+                                telefone: aluno.telefone,
+                                email: aluno.email,
+                                idTurmaPrimaria : aluno.idTurmaPrimaria,
+                                idTurmaSecundaria : aluno.idTurmaSecundaria
+                            });
+                        }
+                    }
+                })();
+    
+                promessas.push(promessa);
+            })
+            .on('end', async () => {
+                try {
+                    await Promise.all(promessas);
+                    fs.unlinkSync(req.file.path);
+                    res.status(200).json({
+                        status: true,
+                        msg: 'Processamento finalizado',
+                        criadas: alunosCriados.length,
+                        ignoradas: alunosIgnorados.length,
+                        alunosCriados : alunosCriados,
+                        alunosIgnorados : alunosIgnorados
+                    });
+                } catch (erro) {
+                    console.error('Erro ao processar linhas do CSV:', erro);
+                    res.status(500).json({ status: false, msg: 'Erro ao processar os dados do CSV' });
+                }
+            })
+            .on('error', (err) => {
+                console.error('Erro ao ler CSV:', err);
+                res.status(500).json({ status: false, msg: 'Erro ao processar o arquivo CSV' });
+            });
     }
 
     // Atualizar aluno

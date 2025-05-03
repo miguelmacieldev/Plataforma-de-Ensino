@@ -1,3 +1,7 @@
+const multer = require('multer');
+
+const path = require('path');
+
 const express = require('express');
 
 const AlunoControl = require('../controller/AlunoControl');
@@ -12,6 +16,8 @@ module.exports = class AlunoRouter {
         this._alunoControl = new AlunoControl();
 
         this._alunoMiddleware = new AlunoMiddleware();
+
+        this._upload = multer({ dest: 'uploads/' });
     }
 
     criarRotasAluno() {
@@ -24,6 +30,8 @@ module.exports = class AlunoRouter {
         this._router.delete('/:matricula', this._alunoControl.aluno_delete_control);
 
         this._router.put('/:matricula',  this._alunoControl.aluno_update_control);
+
+        this._router.post('/upload-csv', this._upload.single('arquivo'), this._alunoControl.aluno_upload_csv_control);
 
         return this._router;
     }

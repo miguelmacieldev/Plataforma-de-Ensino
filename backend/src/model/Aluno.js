@@ -96,19 +96,30 @@ class Aluno {
     // Verifica se as duas turmas informadas existem
     async verificaTurmasExistem() {
         const conexao = Banco.getConexao();
+    
+        // Converte para número e valida
+        const turmaPrimaria = parseInt(this._idTurmaPrimaria);
+        const turmaSecundaria = parseInt(this._idTurmaSecundaria);
+    
+        if (isNaN(turmaPrimaria) || isNaN(turmaSecundaria)) {
+            console.warn('IDs de turma inválidos:', this._idTurmaPrimaria, this._idTurmaSecundaria);
+            return false;
+        }
+    
         const SQL = 'SELECT idTurma FROM turma WHERE idTurma IN (?, ?);';
-
+    
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._idTurmaPrimaria, this._idTurmaSecundaria]);
+            const [rows] = await conexao.promise().execute(SQL, [turmaPrimaria, turmaSecundaria]);
             const turmasEncontradas = rows.map(row => row.idTurma);
-            return turmasEncontradas.includes(this._idTurmaPrimaria) &&
-                   turmasEncontradas.includes(this._idTurmaSecundaria);
+            return turmasEncontradas.includes(turmaPrimaria) &&
+                   turmasEncontradas.includes(turmaSecundaria);
         } catch (error) {
             console.error('Erro ao verificar turmas:', error.message);
             return false;
         }
     }
-
+    
+    
     // Leitura de todos os alunos
     async readAll() {
         const conexao = Banco.getConexao();

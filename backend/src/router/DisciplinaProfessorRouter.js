@@ -1,3 +1,7 @@
+const multer = require('multer');
+
+const path = require('path');
+
 const express = require('express');
 
 const DisciplinaProfessorControl = require('../controller/DisciplinaProfessorControl');
@@ -12,6 +16,8 @@ module.exports = class DisciplinaProfessorRouter {
         this._disciplinaProfessorControl = new DisciplinaProfessorControl();
 
         this._disciplinaProfessorMiddleware = new DisciplinaProfessorMiddleware();
+
+        this._upload = multer({ dest: 'uploads/' });
     }
 
     criarRotasDisciplinaProfessor() {
@@ -24,6 +30,8 @@ module.exports = class DisciplinaProfessorRouter {
         this._router.delete('/:idDisciplinaProfessor', this._disciplinaProfessorControl.disciplinaProfessor_delete_control);
 
         this._router.put('/:idDisciplinaProfessor',  this._disciplinaProfessorControl.disciplinaProfessor_update_control);
+
+        this._router.post('/upload-csv', this._upload.single('arquivo'), this._disciplinaProfessorControl.disciplinaProfessor_upload_csv_control);
 
         return this._router;
     }
