@@ -73,7 +73,7 @@ class Aluno {
         const SQL = 'DELETE FROM aluno WHERE matricula = ?;';
         try {
             const [result] = await conexao.promise().execute(SQL, [this._matricula]);
-            return result.affectedRows > 0;
+            return [result.affectedRows > 0];
         } catch (error) {
             console.error('Erro ao excluir o aluno:', error.message);
             return false;
@@ -124,18 +124,16 @@ class Aluno {
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                a.matricula,
-                a.nome,
-                a.telefone,
-                a.email,
-                tp.curso AS cursoPrimario,
-                ts.curso AS cursoSecundario
-            FROM aluno a
-            LEFT JOIN turma tp ON a.idTurmaPrimaria = tp.idTurma
-            LEFT JOIN turma ts ON a.idTurmaSecundaria = ts.idTurma
-            ORDER BY a.nome;
-        `;
+                        SELECT 
+                            a.matricula,
+                            a.nome,
+                            a.telefone,
+                            a.email,
+                            a.idTurmaPrimaria,
+                            a.idTurmaSecundaria
+                        FROM aluno a
+                        ORDER BY a.nome;
+                    `;
         try {
             const [rows] = await conexao.promise().execute(SQL);
             return rows;
@@ -150,18 +148,16 @@ class Aluno {
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                a.matricula,
-                a.nome,
-                a.telefone,
-                a.email,
-                tp.curso AS cursoPrimario,
-                ts.curso AS cursoSecundario
-            FROM aluno a
-            LEFT JOIN turma tp ON a.idTurmaPrimaria = tp.idTurma
-            LEFT JOIN turma ts ON a.idTurmaSecundaria = ts.idTurma
-            WHERE a.matricula = ?;
-        `;
+                       SELECT 
+                        a.matricula,
+                        a.nome,
+                        a.telefone,
+                        a.email,
+                        a.idTurmaPrimaria,
+                        a.idTurmaSecundaria
+                    FROM aluno a
+                    WHERE a.matricula = ?;
+                     `;
         try {
             const [rows] = await conexao.promise().execute(SQL, [this._matricula]);
             if (rows.length > 0) {

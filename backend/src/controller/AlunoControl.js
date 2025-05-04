@@ -130,18 +130,23 @@ module.exports = class AlunoControl {
     async aluno_delete_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.params.matricula;
-
+    
         const isDeleted = await aluno.delete();
-
+    
+        let alunos = [];
+        if (isDeleted) {
+            alunos = await aluno.readAll(); // supondo que você tenha um método para listar todos os alunos
+        }
+    
         const objResposta = {
             cod: 1,
             status: isDeleted,
-            msg: isDeleted ? 'Aluno excluído com sucesso' : 'Erro ao excluir o aluno'
+            msg: isDeleted ? 'Aluno excluído com sucesso' : 'Erro ao excluir o aluno',
+            alunos: alunos
         };
-
+    
         response.status(200).send(objResposta);
     }
-
     // Listar todos os alunos
     async aluno_read_all_control(request, response) {
         const aluno = new Aluno();

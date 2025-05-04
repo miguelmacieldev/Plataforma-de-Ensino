@@ -94,14 +94,14 @@ class Disciplina {
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                d.idDisciplina,
-                d.nome,
-                t.curso AS curso
-            FROM disciplina d
-            JOIN turma t ON d.idTurma = t.idTurma
-            ORDER BY d.nome;
-        `;
+                    SELECT 
+                        d.idDisciplina,
+                        d.nome,
+                        d.idTurma
+                    FROM disciplina d
+                    ORDER BY d.nome;
+
+                `;
         try {
             const [rows] = await conexao.promise().execute(SQL);
             return rows;
@@ -115,14 +115,14 @@ class Disciplina {
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                d.idDisciplina,
-                d.nome,
-                t.curso AS curso
-            FROM disciplina d
-            JOIN turma t ON d.idTurma = t.idTurma
-            WHERE d.idDisciplina = ?;
-        `;
+                    SELECT 
+                        d.idDisciplina,
+                        d.nome,
+                        d.idTurma
+                    FROM disciplina d
+                    WHERE d.idDisciplina = ?;
+
+                `;
         try {
             const [rows] = await conexao.promise().execute(SQL, [this._idDisciplina]);
             if (rows.length > 0) {

@@ -4,13 +4,304 @@
   <meta charset="UTF-8">
   <title>Upload de Turmas</title>
 </head>
-<body>
-  <h1>Upload de Arquivo CSV - Alunos</h1>
-  <form action="http://localhost:3000/alunos/upload-csv" method="POST" enctype="multipart/form-data">
-    <label for="arquivo">Selecione o arquivo CSV:</label>
-    <input type="file" name="arquivo" required />
-    <br><br>
-    <button type="subm.it">Enviar</button>
-  </form>
-</body>
+  <body>
+    <h1>CRUD - Alunos</h1>
+    <form id="uploadForm">
+      <label for="arquivo">Selecione o arquivo CSV:</label>
+      <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
+      <br><br>
+      <button type="button" id="btnUpload">Enviar</button>
+    </form>
+    <div>
+      <input type="text" id="txtMatricula">
+      <input type="text" id="txtNome">
+      <input type="text" id="txtTelefone">
+      <input type="text" id="txtEmail">
+      <input type="text" id="txtIdTurmaPrimaria">
+      <input type="text" id="txtIdTurmaSecundaria">
+    </div>
+    <div>
+      <button id="btnCadastrar">Cadastrar aluno</button>
+    </div>
+    <div id="divDados"></div>
+  </body>
+  <script>
+    const txtMatricula = document.getElementById("txtMatricula");
+    const txtNome = document.getElementById("txtNome");
+    const txtTelefone = document.getElementById("txtTelefone");
+    const txtEmail = document.getElementById("txtEmail");
+    const txtIdTurmaPrimaria = document.getElementById("txtIdTurmaPrimaria");
+    const txtIdTurmaSecundaria = document.getElementById("txtIdTurmaSecundaria");
+    const btnCadastrar = document.getElementById("btnCadastrar");
+    const divDados = document.getElementById("divDados");
+
+    getAluno();
+
+    btnCadastrar.onclick = function () {
+      postAluno();
+    };
+
+    document.getElementById("btnUpload").onclick = function () {
+  const fileInput = document.getElementById("arquivo");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Por favor, selecione um arquivo CSV.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("arquivo", file);
+
+  // Enviar o FormData para o servidor
+  const URI = "/alunos/upload-csv";
+  fetch(URI, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status === true) {
+        getAluno();
+      } else {
+        console.log('Erro' + data.msg);
+      }
+    })
+    .catch((error) => {
+      console.error("Erro ao enviar arquivo:", error);
+    });
+};
+
+
+
+
+    function construirTabela(textoJson) {
+      // Limpa a div antes de criar nova tabela
+      divDados.innerHTML = "";
+
+      const objJson = JSON.parse(textoJson);
+      const alunos = objJson.alunos;
+      const tabela = document.createElement("table");
+      divDados.appendChild(tabela);
+
+      // Cabeçalho
+      const cabecalho = document.createElement("tr");
+      const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Excluir", "Selecionar","Atualizar"];
+      for (let texto of colunas) {
+        const th = document.createElement("th");
+        th.appendChild(document.createTextNode(texto));
+        cabecalho.appendChild(th);
+      }
+      tabela.appendChild(cabecalho);
+
+      // Linhas de dados
+      for (let aluno of alunos) {
+        const linha = document.createElement("tr");
+        const btnExcluir = document.createElement("button");
+        const btnSelecionar = document.createElement("button");
+        const btnAtualizar = document.createElement("button");
+        btnExcluir.appendChild(document.createTextNode('Excluir'));
+        btnSelecionar.appendChild(document.createTextNode('Selecionar'));
+        btnAtualizar.appendChild(document.createTextNode('Atualizar'));
+        const tdMatricula = document.createElement("td");
+        const tdExcluir = document.createElement("td");
+        const tdSelecionar = document.createElement("td");
+        const tdAtualizar = document.createElement("td");
+        tdMatricula.appendChild(document.createTextNode(aluno.matricula));
+        tdExcluir.appendChild(btnExcluir);
+        tdSelecionar.appendChild(btnSelecionar);
+        tdAtualizar.appendChild(btnAtualizar);
+        linha.appendChild(tdMatricula);
+        
+        btnExcluir.onclick = function(){
+          const matricula_ = aluno.matricula;
+          deleteAluno(matricula_);
+        }
+        btnSelecionar.onclick = function(){
+          const matricula_ = aluno.matricula; 
+          txtMatricula.value = aluno.matricula;
+          txtNome.value = aluno.nome;
+          txtTelefone.value = aluno.telefone;
+          txtEmail.value = aluno.email;
+          txtIdTurmaPrimaria.value = aluno.idTurmaPrimaria;
+          txtIdTurmaSecundaria.value = aluno.idTurmaSecundaria;
+        }
+        
+        btnAtualizar.onclick = function(){
+          const matricula_ = aluno.matricula;
+          putAluno(matricula_);
+        }
+        
+        const tdNome = document.createElement("td");
+        tdNome.appendChild(document.createTextNode(aluno.nome));
+        linha.appendChild(tdNome);
+        
+        const tdTelefone = document.createElement("td");
+        tdTelefone.appendChild(document.createTextNode(aluno.telefone));
+        linha.appendChild(tdTelefone);
+
+        const tdEmail = document.createElement("td");
+        tdEmail.appendChild(document.createTextNode(aluno.email));
+        linha.appendChild(tdEmail);
+
+        const tdTurmaPrimaria = document.createElement("td");
+        tdTurmaPrimaria.appendChild(document.createTextNode(aluno.idTurmaPrimaria));
+        linha.appendChild(tdTurmaPrimaria);
+        
+        const tdTurmaSecundaria = document.createElement("td");
+        tdTurmaSecundaria.appendChild(document.createTextNode(aluno.idTurmaSecundaria));
+        linha.appendChild(tdTurmaSecundaria);
+
+        linha.appendChild(tdExcluir);
+        linha.appendChild(tdSelecionar);
+        linha.appendChild(tdAtualizar);
+        tabela.appendChild(linha);
+      }
+    }
+
+    function deleteAluno(matricula_){
+      const URI = '/alunos/' + matricula_;
+      fetch(URI, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          construirTabela(respostaConvertida);
+        })
+        .catch((error) => {
+          console.error("Erro ao deletar alunos:", error);
+        });
+    }
+
+    function getAluno() {
+      const URI = "/alunos";
+      fetch(URI, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          construirTabela(respostaConvertida);
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar alunos:", error);
+        });
+    }
+
+    function putAluno(matricula_) {
+      const matricula = txtMatricula.value;
+      const nome = txtNome.value;
+      const telefone = txtTelefone.value;
+      const email = txtEmail.value;
+      const idTurmaPrimaria = txtIdTurmaPrimaria.value;
+      const idTurmaSecundaria = txtIdTurmaSecundaria.value;
+      const URI = "/alunos/" + matricula_;
+
+      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objAluno = {
+        aluno: {
+          matricula: matricula,
+          nome: nome,
+          telefone: telefone,
+          email: email,
+          idTurmaPrimaria: idTurmaPrimaria,
+          idTurmaSecundaria: idTurmaSecundaria,
+        },
+      };
+
+      fetch(URI, {
+        method: "PUT",
+        body: JSON.stringify(objAluno),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getAluno();
+
+            txtMatricula.value = "";
+            txtNome.value = "";
+            txtTelefone.value = "";
+            txtEmail.value = "";
+            txtIdTurmaPrimaria.value = "";
+            txtIdTurmaSecundaria.value = "";
+          }
+
+          console.log(respostaConvertida);
+        })
+        .catch((error) => {
+          console.error("Erro ao atualizar aluno:", error);
+        });
+    }
+
+    function postAluno() {
+      const matricula = txtMatricula.value;
+      const nome = txtNome.value;
+      const telefone = txtTelefone.value;
+      const email = txtEmail.value;
+      const idTurmaPrimaria = txtIdTurmaPrimaria.value;
+      const idTurmaSecundaria = txtIdTurmaSecundaria.value;
+      const URI = "/alunos";
+
+      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objAluno = {
+        aluno: {
+          matricula: matricula,
+          nome: nome,
+          telefone: telefone,
+          email: email,
+          idTurmaPrimaria: idTurmaPrimaria,
+          idTurmaSecundaria: idTurmaSecundaria,
+        },
+      };
+
+      fetch(URI, {
+        method: "POST",
+        body: JSON.stringify(objAluno),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getAluno();
+
+            // Limpa os campos
+            txtMatricula.value = "";
+            txtNome.value = "";
+            txtTelefone.value = "";
+            txtEmail.value = "";
+            txtIdTurmaPrimaria.value = "";
+            txtIdTurmaSecundaria.value = "";
+          }
+
+          console.log(respostaConvertida);
+        })
+        .catch((error) => {
+          console.error("Erro ao cadastrar aluno:", error);
+        });
+    }
+  </script>
 </html>

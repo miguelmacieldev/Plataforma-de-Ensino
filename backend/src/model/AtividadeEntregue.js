@@ -90,12 +90,16 @@ class AtividadeEntregue {
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT ae.*, a.descricao AS descricaoAtividade, al.nome AS nomeAluno
-            FROM atividadeentregue ae
-            JOIN atividade a ON ae.idAtividade = a.idAtividade
-            JOIN aluno al ON ae.matriculaAluno = al.matricula
-            ORDER BY ae.dataEntrega DESC;
-        `;
+                    SELECT 
+                        ae.idAtividadeEntregue,
+                        ae.matriculaAluno,
+                        ae.idAtividade,
+                        ae.dataEntrega,
+                        ae.caminhoGravacao
+                    FROM atividadeentregue ae
+                    ORDER BY ae.dataEntrega DESC;
+
+                `;
 
         try {
             const [rows] = await conexao.promise().execute(SQL);
@@ -110,11 +114,14 @@ class AtividadeEntregue {
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
-        SELECT ae.*, a.descricao AS descricaoAtividade, al.nome AS nomeAluno
-        FROM atividadeentregue ae
-        JOIN atividade a ON ae.idAtividade = a.idAtividade
-        JOIN aluno al ON ae.matriculaAluno = al.matricula
-        WHERE ae.idAtividadeEntregue = ?;
+            SELECT 
+                ae.idAtividadeEntregue,
+                ae.matriculaAluno,
+                ae.idAtividade,
+                ae.dataEntrega,
+                ae.caminhoGravacao
+            FROM atividadeentregue ae
+            WHERE ae.idAtividadeEntregue = ?;
     `;
 
         try {

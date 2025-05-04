@@ -46,12 +46,14 @@ class DisciplinaProfessor {
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT dp.idDisciplinaProfessor, p.nome AS professor, d.nome AS disciplina
-            FROM disciplinaprofessor dp
-            JOIN professor p ON dp.idProfessor = p.idProfessor
-            JOIN disciplina d ON dp.idDisciplina = d.idDisciplina
-            WHERE dp.idDisciplinaProfessor = ?;
-        `;
+                        SELECT 
+                            dp.idDisciplinaProfessor,
+                            dp.idProfessor,
+                            dp.idDisciplina
+                        FROM disciplinaprofessor dp
+                        WHERE dp.idDisciplinaProfessor = ?;
+
+                    `;
         const [rows] = await conexao.promise().execute(SQL, [this._idDisciplinaProfessor]);
         return rows[0] || null;
     }
@@ -59,11 +61,13 @@ class DisciplinaProfessor {
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT dp.idDisciplinaProfessor, p.nome AS professor, d.nome AS disciplina
-            FROM disciplinaprofessor dp
-            JOIN professor p ON dp.idProfessor = p.idProfessor
-            JOIN disciplina d ON dp.idDisciplina = d.idDisciplina;
-        `;
+                        SELECT 
+                            dp.idDisciplinaProfessor,
+                            dp.idProfessor,
+                            dp.idDisciplina
+                        FROM disciplinaprofessor dp;
+
+                    `;
         const [rows] = await conexao.promise().execute(SQL);
         return rows;
     }

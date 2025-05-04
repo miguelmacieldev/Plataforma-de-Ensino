@@ -96,21 +96,18 @@ class Atividade {
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                a.idAtividade,
-                a.descricao,
-                a.devolucao,
-                a.caminhoGravacao,
-                a.dataPostagem,
-                a.dataEntrega,
-                p.nome AS nomeProfessor,
-                d.nome AS nomeDisciplina
-            FROM atividade a
-            JOIN disciplinaprofessor dp ON a.idDisciplinaProfessor = dp.idDisciplinaProfessor
-            JOIN professor p ON dp.idProfessor = p.idProfessor
-            JOIN disciplina d ON dp.idDisciplina = d.idDisciplina
-            ORDER BY a.dataPostagem DESC;
-        `;
+                    SELECT 
+                        a.idAtividade,
+                        a.descricao,
+                        a.devolucao,
+                        a.caminhoGravacao,
+                        a.dataPostagem,
+                        a.dataEntrega,
+                        a.idDisciplinaProfessor
+                    FROM atividade a
+                    ORDER BY a.dataPostagem DESC;
+
+                  `;
         try {
             const [rows] = await conexao.promise().execute(SQL);
             return rows;
@@ -124,21 +121,18 @@ class Atividade {
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
-            SELECT 
-                a.idAtividade,
-                a.descricao,
-                a.devolucao,
-                a.caminhoGravacao,
-                a.dataPostagem,
-                a.dataEntrega,
-                p.nome AS nomeProfessor,
-                d.nome AS nomeDisciplina
-            FROM atividade a
-            JOIN disciplinaprofessor dp ON a.idDisciplinaProfessor = dp.idDisciplinaProfessor
-            JOIN professor p ON dp.idProfessor = p.idProfessor
-            JOIN disciplina d ON dp.idDisciplina = d.idDisciplina
-            WHERE a.idAtividade = ?;
-        `;
+                        SELECT 
+                            a.idAtividade,
+                            a.descricao,
+                            a.devolucao,
+                            a.caminhoGravacao,
+                            a.dataPostagem,
+                            a.dataEntrega,
+                            a.idDisciplinaProfessor
+                        FROM atividade a
+                        WHERE a.idAtividade = ?;
+
+                    `;
         try {
             const [rows] = await conexao.promise().execute(SQL, [this._idAtividade]);
             if (rows.length > 0) {
