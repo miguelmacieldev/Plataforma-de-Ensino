@@ -42,41 +42,36 @@
     };
 
     document.getElementById("btnUpload").onclick = function () {
-  const fileInput = document.getElementById("arquivo");
-  const file = fileInput.files[0];
+    const fileInput = document.getElementById("arquivo");
+    const file = fileInput.files[0];
 
-  if (!file) {
-    alert("Por favor, selecione um arquivo CSV.");
-    return;
-  }
+    if (!file) {
+      alert("Por favor, selecione um arquivo CSV.");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("arquivo", file);
+    const formData = new FormData();
+    formData.append("arquivo", file);
 
-  // Enviar o FormData para o servidor
-  const URI = "/alunos/upload-csv";
-  fetch(URI, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status === true) {
-        getAluno();
-      } else {
-        console.log('Erro' + data.msg);
-      }
+    const URI = "/alunos/upload-csv";
+    fetch(URI, {
+      method: "POST",
+      body: formData,
     })
-    .catch((error) => {
-      console.error("Erro ao enviar arquivo:", error);
-    });
-};
-
-
-
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === true) {
+          getAluno();
+        } else {
+          alert(data.msg)
+        }
+      })
+      .catch((error) => {
+        alert(error)
+      });
+    };
 
     function construirTabela(textoJson) {
-      // Limpa a div antes de criar nova tabela
       divDados.innerHTML = "";
 
       const objJson = JSON.parse(textoJson);
@@ -84,7 +79,6 @@
       const tabela = document.createElement("table");
       divDados.appendChild(tabela);
 
-      // Cabeçalho
       const cabecalho = document.createElement("tr");
       const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Excluir", "Selecionar","Atualizar"];
       for (let texto of colunas) {
@@ -94,7 +88,6 @@
       }
       tabela.appendChild(cabecalho);
 
-      // Linhas de dados
       for (let aluno of alunos) {
         const linha = document.createElement("tr");
         const btnExcluir = document.createElement("button");
@@ -173,7 +166,7 @@
           construirTabela(respostaConvertida);
         })
         .catch((error) => {
-          console.error("Erro ao deletar alunos:", error);
+          alert(error);
         });
     }
 
@@ -191,7 +184,7 @@
           construirTabela(respostaConvertida);
         })
         .catch((error) => {
-          console.error("Erro ao buscar alunos:", error);
+          alert(error);
         });
     }
 
@@ -242,10 +235,10 @@
             txtIdTurmaSecundaria.value = "";
           }
 
-          console.log(respostaConvertida);
+          alert(obj.msg)
         })
         .catch((error) => {
-          console.error("Erro ao atualizar aluno:", error);
+          alert(error);
         });
     }
 
@@ -287,8 +280,6 @@
           const obj = JSON.parse(respostaConvertida);
           if (obj.status === true) {
             getAluno();
-
-            // Limpa os campos
             txtMatricula.value = "";
             txtNome.value = "";
             txtTelefone.value = "";
@@ -296,11 +287,11 @@
             txtIdTurmaPrimaria.value = "";
             txtIdTurmaSecundaria.value = "";
           }
-
-          console.log(respostaConvertida);
+          
+          alert(obj.msg);
         })
         .catch((error) => {
-          console.error("Erro ao cadastrar aluno:", error);
+          alert(error);
         });
     }
   </script>

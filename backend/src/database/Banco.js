@@ -1,14 +1,12 @@
 const mysql = require('mysql2');
 
-// Cria a conexão com o banco de dados
 const conexao = mysql.createConnection({
-    host: 'localhost',      // ou o IP do banco de dados
+    host: 'localhost',     
     user: 'root',
     password: '081203m@teus',
     database: 'plataforma_de_estudos'
 });
 
-// Tenta conectar
 conexao.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao banco de dados:', err);
@@ -17,7 +15,6 @@ conexao.connect((err) => {
     }
 });
 
-// Exporta uma função para obter essa conexão
 module.exports = {
     getConexao: () => conexao
 };

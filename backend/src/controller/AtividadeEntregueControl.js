@@ -1,7 +1,6 @@
 const AtividadeEntregue = require('../model/AtividadeEntregue');
 
 module.exports = class AtividadeEntregueControl {
-    // Criar nova atividade entregue
     async atividadeEntregue_create_control(request, response) {
         const model = new AtividadeEntregue();
         model.matriculaAluno = request.body.atividadeentregue.matriculaAluno;
@@ -22,7 +21,6 @@ module.exports = class AtividadeEntregueControl {
         response.status(200).send(objResposta);
     }
 
-    // Atualizar atividade entregue
     async atividadeEntregue_update_control(request, response) {
         const model = new AtividadeEntregue();
         model.idAtividadeEntregue = request.params.idAtividadeEntregue;
@@ -44,7 +42,6 @@ module.exports = class AtividadeEntregueControl {
         response.status(200).send(objResposta);
     }
 
-    // Excluir atividade entregue
     async atividadeEntregue_delete_control(request, response) {
         const model = new AtividadeEntregue();
         model.idAtividadeEntregue = request.params.idAtividadeEntregue;
@@ -62,7 +59,6 @@ module.exports = class AtividadeEntregueControl {
         response.status(200).send(objResposta);
     }
 
-    // Listar todas as atividades entregues
     async atividadeEntregue_read_all_control(request, response) {
         const model = new AtividadeEntregue();
         const resultado = await model.readAll();
@@ -77,7 +73,6 @@ module.exports = class AtividadeEntregueControl {
         response.status(200).send(objResposta);
     }
 
-    // Buscar atividade entregue por ID
     async atividadeEntregue_read_by_id_control(request, response) {
         const model = new AtividadeEntregue();
         model.idAtividadeEntregue = request.params.idAtividadeEntregue;

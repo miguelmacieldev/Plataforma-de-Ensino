@@ -12,9 +12,94 @@
       <br><br>
       <button type="button" id="btnUpload">Enviar</button>
     </form>
+    <div>
+      <input type="text" id="txtCurso">
+      <input type="text" id="txtDescricao">
+    </div>
+    <div>
+      <button id="btnCadastrar">Cadastrar turma</button>
+    </div>
+    <div id="divDados"></div>
   </body>
   <script>
+    const txtDescricao = document.getElementById("txtDescricao");
+    const txtCurso = document.getElementById("txtCurso");
+    const btnCadastrar = document.getElementById("btnCadastrar");
+    const divDados = document.getElementById("divDados");
+
+    getTurma();
+
+    btnCadastrar.onclick = function () {
+      postTurma();
+    };
+
+    function construirTabela(textoJson) {
+      // Limpa a div antes de criar nova tabela
+      divDados.innerHTML = "";
+
+      const objJson = JSON.parse(textoJson);
+      const turmas = objJson.turmas;
+      const tabela = document.createElement("table");
+      divDados.appendChild(tabela);
+
+      const cabecalho = document.createElement("tr");
+      const colunas = ["idTurma", "Curso", "Descrição", "Excluir", "Selecionar","Atualizar"];
+      for (let texto of colunas) {
+        const th = document.createElement("th");
+        th.appendChild(document.createTextNode(texto));
+        cabecalho.appendChild(th);
+      }
+      tabela.appendChild(cabecalho);
+
+      // Linhas de dados
+      for (let turma of turmas) {
+        const linha = document.createElement("tr");
+        const btnExcluir = document.createElement("button");
+        const btnSelecionar = document.createElement("button");
+        const btnAtualizar = document.createElement("button");
+        btnExcluir.appendChild(document.createTextNode('Excluir'));
+        btnSelecionar.appendChild(document.createTextNode('Selecionar'));
+        btnAtualizar.appendChild(document.createTextNode('Atualizar'));
+        const tdIdTurma = document.createElement("td");
+        tdIdTurma.appendChild(document.createTextNode(turma.idTurma));
+        linha.appendChild(tdIdTurma);
+        const tdCurso = document.createElement("td");
+        const tdExcluir = document.createElement("td");
+        const tdSelecionar = document.createElement("td");
+        const tdAtualizar = document.createElement("td");
+        tdCurso.appendChild(document.createTextNode(turma.curso));
+        tdExcluir.appendChild(btnExcluir);
+        tdSelecionar.appendChild(btnSelecionar);
+        tdAtualizar.appendChild(btnAtualizar);
+        linha.appendChild(tdCurso);
+        
+        btnExcluir.onclick = function(){
+          const idTurma = turma.idTurma;
+          deleteTurma(idTurma);
+        }
+        btnSelecionar.onclick = function(){
+          txtCurso.value = turma.curso;
+          txtDescricao.value = turma.descricao;
+
+        }
+        
+        btnAtualizar.onclick = function(){
+          const idTurma = turma.idTurma;
+          putTurma(idTurma);
+        }
+              
+        const tdDescricao = document.createElement("td");
+        tdDescricao.appendChild(document.createTextNode(turma.descricao));
+        linha.appendChild(tdDescricao);     
+        linha.appendChild(tdExcluir);
+        linha.appendChild(tdSelecionar);
+        linha.appendChild(tdAtualizar);
+        tabela.appendChild(linha);
+      }
+    }
+
     document.getElementById("btnUpload").onclick = function () {
+
     const fileInput = document.getElementById("arquivo");
     const file = fileInput.files[0];
 
@@ -28,7 +113,7 @@
 
 
     const URI = "/turmas/upload-csv";
-    console.log(URI)
+
     fetch(URI, {
       method: "POST",
       body: formData,
@@ -36,15 +121,140 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.status === true) {
-          //getDisciplina();
-          alert('o')
+          getTurma();
         } else {
-          console.log('Erro' + data.msg);
+          alert(data.msg)
         }
       })
       .catch((error) => {
-        console.error("Erro ao enviar arquivo:", error);
+        alert(error)
       });
     };
-    </script>
+  
+    function getTurma() {
+      const URI = "/turmas";
+      fetch(URI, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          construirTabela(respostaConvertida);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+ 
+    function putTurma(idTurma) {
+      const descricao = txtDescricao.value;
+      const curso = txtCurso.value;
+      const URI = "/turmas/" + idTurma;
+
+      if (!descricao || !curso) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objTurma = {
+        turma: {
+          descricao: descricao,
+          curso: curso
+        },
+      };
+
+      fetch(URI, {
+        method: "PUT",
+        body: JSON.stringify(objTurma),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getTurma();
+
+            txtDescricao.value = "";
+            txtCurso.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function postTurma() {
+      const descricao = txtDescricao.value;
+      const curso = txtCurso.value;
+      const URI = "/turmas";
+
+      if (!descricao || !curso ) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objTurma = {
+        turma: {
+          descricao: descricao,
+          curso: curso,
+        },
+      };
+
+      fetch(URI, {
+        method: "POST",
+        body: JSON.stringify(objTurma),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getTurma();
+
+        
+            txtCurso.value = "";
+            txtDescricao.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function deleteTurma(idTurma) {
+      const URI = '/turmas/' + idTurma;
+      fetch(URI, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+    .then((resposta) => resposta.text())
+    .then((respostaConvertida) => {
+      const obj = JSON.parse(respostaConvertida);
+      if (obj.status === true) {
+        alert(obj.msg);
+        getTurma();
+      } 
+      alert(obj.msg)
+    })
+    .catch((error) => {
+      alert(error)
+    });
+}
+</script>
 </html>

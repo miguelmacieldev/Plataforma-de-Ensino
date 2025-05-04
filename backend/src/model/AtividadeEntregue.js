@@ -9,7 +9,6 @@ class AtividadeEntregue {
         this._caminhoGravacao = '';
     }
 
-    // Criar nova entrega
     async create() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -39,7 +38,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Atualizar entrega
     async update() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -72,7 +70,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Deletar entrega
     async delete() {
         const conexao = Banco.getConexao();
         const SQL = 'DELETE FROM atividadeentregue WHERE idAtividadeEntregue = ?;';
@@ -86,7 +83,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Listar todas as entregas
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -110,7 +106,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Buscar entrega por ID
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -133,7 +128,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Verificar se aluno existe
     async verificaAlunoExiste() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM aluno WHERE matricula = ?;';
@@ -146,7 +140,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Verificar se atividade existe
     async verificaAtividadeExiste() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM atividade WHERE idAtividade = ?;';
@@ -159,7 +152,6 @@ class AtividadeEntregue {
         }
     }
 
-    // Getters e Setters
     get idAtividadeEntregue() { 
         return this._idAtividadeEntregue;
      }

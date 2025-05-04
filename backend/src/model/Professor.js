@@ -1,17 +1,14 @@
-// Importa o módulo Banco para realizar conexões com o banco de dados.
 const Banco = require('../database/Banco');
 
-// Define a classe Professor para representar a entidade Professor.
 class Professor {
-    // Construtor da classe Professor que inicializa as propriedades.
+
     constructor() {
-        this._idProfessor = null;   // ID do professor, inicialmente nulo.
-        this._nome = '';            // Nome do professor.
-        this._telefone = '';        // Telefone do professor.
-        this._senha = '';           // Senha do professor.
+        this._idProfessor = null;   
+        this._nome = '';           
+        this._telefone = '';
+        this._senha = '';          
     }
 
-    // Método assíncrono para criar um novo professor no banco de dados.
     async create() {
         const conexao = Banco.getConexao();
         const SQL = 'INSERT INTO professor (nome, telefone, senha) VALUES (?, ?, ?);';
@@ -28,7 +25,6 @@ class Professor {
         }
     }
 
-    // Método assíncrono para excluir um professor do banco de dados.
     async delete() {
         const conexao = Banco.getConexao();
         const SQL = 'DELETE FROM professor WHERE idProfessor = ?;';
@@ -41,7 +37,6 @@ class Professor {
         }
     }
 
-    // Método assíncrono para atualizar os dados de um professor.
     async update() {
         const conexao = Banco.getConexao();
         const SQL = 'UPDATE professor SET nome = ?, telefone = ?, senha = ? WHERE idProfessor = ?;';
@@ -54,7 +49,6 @@ class Professor {
         }
     }
 
-    // Método assíncrono para verificar se um professor com o mesmo nome e telefone já existe.
     async isProfessor() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM professor WHERE nome = ? AND telefone = ?;';
@@ -67,7 +61,6 @@ class Professor {
         }
     }
 
-    // Método assíncrono para ler todos os professores do banco de dados.
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT * FROM professor ORDER BY nome;';
@@ -80,7 +73,6 @@ class Professor {
         }
     }
 
-    // Método assíncrono para ler um professor pelo ID.
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT * FROM professor WHERE idProfessor = ?;';
@@ -98,7 +90,6 @@ class Professor {
         }
     }
 
-    // Getters e Setters
 
     get idProfessor() {
         return this._idProfessor;
@@ -133,5 +124,4 @@ class Professor {
     }
 }
 
-// Exporta a classe Professor para uso em outros módulos.
 module.exports = Professor;

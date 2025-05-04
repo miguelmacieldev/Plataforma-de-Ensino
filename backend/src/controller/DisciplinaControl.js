@@ -2,14 +2,11 @@ const fs = require('fs');
 
 const csv = require('csv-parser');
 
-// Importa o módulo express para criação de APIs.
 const express = require('express');
-// Importa o modelo Disciplina para realizar operações relacionadas à entidade Disciplina.
+
 const Disciplina = require('../model/Disciplina');
 
-// Exporta a classe DisciplinaControl, que controla as operações de CRUD para Disciplina.
 module.exports = class DisciplinaControl {
-    // Criar uma nova disciplina
     async disciplina_create_control(request, response) {
         var disciplina = new Disciplina();
         disciplina.nome = request.body.disciplina.nome;
@@ -40,7 +37,6 @@ module.exports = class DisciplinaControl {
             .pipe(csv({ separator: ';' }))
             .on('data', (linha) => {
                 const promessa = (async () => {
-                    // Limpa os nomes das colunas e os valores
                     const linhaLimpa = {};
                     for (const chave in linha) {
                         linhaLimpa[chave.trim()] = linha[chave].trim();
@@ -51,7 +47,6 @@ module.exports = class DisciplinaControl {
                     disciplina.idTurma = linhaLimpa.idTurma || null;
 
 
-                    // Verifica se já existe
                     if (await disciplina.isDisciplina()) {
                         disciplinasIgnorados.push({
                             nome: disciplina.nome,
@@ -93,7 +88,6 @@ module.exports = class DisciplinaControl {
             });
     }
 
-    // Deletar uma disciplina por ID
     async disciplina_delete_control(request, response) {
         var disciplina = new Disciplina();
         disciplina.idDisciplina = request.params.idDisciplina;
@@ -109,7 +103,6 @@ module.exports = class DisciplinaControl {
         response.status(200).send(objResposta);
     }
 
-    // Atualizar os dados de uma disciplina
     async disciplina_update_control(request, response) {
         var disciplina = new Disciplina();
         disciplina.idDisciplina = request.params.idDisciplina;
@@ -127,7 +120,6 @@ module.exports = class DisciplinaControl {
         response.status(200).send(objResposta);
     }
 
-    // Obter todas as disciplinas
     async disciplina_read_all_control(request, response) {
         var disciplina = new Disciplina();
         const resultado = await disciplina.readAll();
@@ -142,7 +134,6 @@ module.exports = class DisciplinaControl {
         response.status(200).send(objResposta);
     }
 
-    // Obter uma disciplina pelo ID
     async disciplina_read_by_id_control(request, response) {
         var disciplina = new Disciplina();
         disciplina.idDisciplina = request.params.idDisciplina;

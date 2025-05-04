@@ -1,14 +1,12 @@
 const fs = require('fs');
 
 const csv = require('csv-parser');
-// Importa o módulo express para criação de APIs.
+
 const express = require('express');
-// Importa o modelo Professor para realizar operações relacionadas à entidade Professor.
+
 const Professor = require('../model/Professor');
 
-// Exporta a classe ProfessorControl, que controla as operações de CRUD para Professor.
 module.exports = class ProfessorControl {
-    // Método assíncrono para criar um novo professor.
     async professor_create_control(request, response) {
         var professor = new Professor();
         professor.nome = request.body.professor.nome;
@@ -39,7 +37,6 @@ module.exports = class ProfessorControl {
             .pipe(csv({ separator: ';' }))
             .on('data', (linha) => {
                 const promessa = (async () => {
-                    // Limpa os nomes das colunas e os valores
                     const linhaLimpa = {};
                     for (const chave in linha) {
                         linhaLimpa[chave.trim()] = linha[chave].trim();
@@ -50,7 +47,6 @@ module.exports = class ProfessorControl {
                     professor.telefone = linhaLimpa.telefone || null;
                     professor.senha = linhaLimpa.senha || null;
     
-                    // Verifica se já existe
                     if (await professor.isProfessor()) {
                         professoresIgnorados.push({
                             nome: professor.nome,
@@ -58,7 +54,7 @@ module.exports = class ProfessorControl {
                             senha: professor.senha
                         });
                     } else {
-                        const criada = await professor.create(); // corrigido: antes estava chamando turma.create()
+                        const criada = await professor.create(); 
                         if (criada) {
                             professoresCriados.push({
                                 nome: professor.nome,
@@ -84,17 +80,14 @@ module.exports = class ProfessorControl {
                         professoresIgnorados
                     });
                 } catch (erro) {
-                    console.error('Erro ao processar linhas do CSV:', erro);
                     res.status(500).json({ status: false, msg: 'Erro ao processar os dados do CSV' });
                 }
             })
             .on('error', (err) => {
-                console.error('Erro ao ler CSV:', err);
                 res.status(500).json({ status: false, msg: 'Erro ao processar o arquivo CSV' });
             });
     }
     
-    // Método assíncrono para excluir um professor.
     async professor_delete_control(request, response) {
         var professor = new Professor();
         professor.idProfessor = request.params.idProfessor;
@@ -110,7 +103,6 @@ module.exports = class ProfessorControl {
         response.status(200).send(objResposta);
     }
 
-    // Método assíncrono para atualizar os dados de um professor.
     async professor_update_control(request, response) {
         var professor = new Professor();
         professor.idProfessor = request.params.idProfessor;
@@ -129,7 +121,6 @@ module.exports = class ProfessorControl {
         response.status(200).send(objResposta);
     }
 
-    // Método assíncrono para obter todos os professores.
     async professor_read_all_control(request, response) {
         var professor = new Professor();
         const resultado = await professor.readAll();
@@ -144,7 +135,6 @@ module.exports = class ProfessorControl {
         response.status(200).send(objResposta);
     }
 
-    // Método assíncrono para obter um professor pelo ID.
     async professor_read_by_id_control(request, response) {
         var professor = new Professor();
         professor.idProfessor = request.params.idProfessor;

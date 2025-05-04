@@ -33,7 +33,6 @@ module.exports = class DisciplinaProfessorControl {
             .pipe(csv({ separator: ';' }))
             .on('data', (linha) => {
                 const promessa = (async () => {
-                    // Limpa os nomes das colunas e os valores
                     const linhaLimpa = {};
                     for (const chave in linha) {
                         linhaLimpa[chave.trim()] = linha[chave].trim();
@@ -43,8 +42,6 @@ module.exports = class DisciplinaProfessorControl {
                     disciplinaProfessor.idDisciplina = linhaLimpa.idDisciplina || null;
                     disciplinaProfessor.idProfessor = linhaLimpa.idProfessor || null;
 
-
-                    // Verifica se já existe
                     if (await disciplinaProfessor.vinculoExiste()) {
                         disciplinasProfessoresIgnorados.push({
                             idDisciplina: disciplinaProfessor.idDisciplina,

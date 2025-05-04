@@ -47,8 +47,7 @@ class Aluno {
         const SQL = 'UPDATE aluno SET nome = ?, telefone = ?, email = ?, idTurmaPrimaria = ?, idTurmaSecundaria = ? WHERE matricula = ?;';
 
         try {
-            if (!(await this.verificaTurmasExistem())) {
-                console.error('Turma primária ou secundária inválida.');
+            if (!(await this.verificaTurmasExistem()) || await this.isAluno()) {
                 return false;
             }
 

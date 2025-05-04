@@ -2,7 +2,6 @@ const express = require('express');
 const Atividade = require('../model/Atividade');
 
 module.exports = class AtividadeControl {
-    // Criar nova atividade
     async atividade_create_control(request, response) {
         const atividade = new Atividade();
         atividade.descricao = request.body.atividade.descricao;
@@ -23,7 +22,6 @@ module.exports = class AtividadeControl {
         response.status(200).send(objResposta);
     }
 
-    // Atualizar atividade
     async atividade_update_control(request, response) {
         const atividade = new Atividade();
         atividade.idAtividade = request.params.idAtividade;
@@ -46,7 +44,6 @@ module.exports = class AtividadeControl {
         response.status(200).send(objResposta);
     }
 
-    // Excluir atividade
     async atividade_delete_control(request, response) {
         const atividade = new Atividade();
         atividade.idAtividade = request.params.idAtividade;
@@ -62,7 +59,6 @@ module.exports = class AtividadeControl {
         response.status(200).send(objResposta);
     }
 
-    // Listar todas as atividades
     async atividade_read_all_control(request, response) {
         const atividade = new Atividade();
         const resultado = await atividade.readAll();
@@ -77,7 +73,6 @@ module.exports = class AtividadeControl {
         response.status(200).send(objResposta);
     }
 
-    // Buscar atividade por ID
     async atividade_read_by_id_control(request, response) {
         const atividade = new Atividade();
         atividade.idAtividade = request.params.idAtividade;

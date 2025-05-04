@@ -7,7 +7,6 @@ const express = require('express');
 const Aluno = require('../model/Aluno');
 
 module.exports = class AlunoControl {
-    // Criar novo aluno
     async aluno_create_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.body.aluno.matricula;
@@ -41,7 +40,6 @@ module.exports = class AlunoControl {
             .pipe(csv({ separator: ';' }))
             .on('data', (linha) => {
                 const promessa = (async () => {
-                    // Limpa os nomes das colunas e os valores
                     const linhaLimpa = {};
                     for (const chave in linha) {
                         linhaLimpa[chave.trim()] = linha[chave].trim();
@@ -55,7 +53,6 @@ module.exports = class AlunoControl {
                     aluno.idTurmaPrimaria = linhaLimpa.idTurmaPrimaria || null;
                     aluno.idTurmaSecundaria = linhaLimpa.idTurmaSecundaria || null;
 
-                    // Verifica se já existe
                     if (await aluno.isAluno()) {
                         alunosIgnorados.push({
                             matricula: aluno.matricula,
@@ -105,7 +102,6 @@ module.exports = class AlunoControl {
             });
     }
 
-    // Atualizar aluno
     async aluno_update_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.params.matricula;
@@ -126,7 +122,6 @@ module.exports = class AlunoControl {
         response.status(200).send(objResposta);
     }
 
-    // Excluir aluno
     async aluno_delete_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.params.matricula;
@@ -135,7 +130,7 @@ module.exports = class AlunoControl {
     
         let alunos = [];
         if (isDeleted) {
-            alunos = await aluno.readAll(); // supondo que você tenha um método para listar todos os alunos
+            alunos = await aluno.readAll(); 
         }
     
         const objResposta = {
@@ -147,7 +142,7 @@ module.exports = class AlunoControl {
     
         response.status(200).send(objResposta);
     }
-    // Listar todos os alunos
+
     async aluno_read_all_control(request, response) {
         const aluno = new Aluno();
         const resultado = await aluno.readAll();
@@ -162,7 +157,6 @@ module.exports = class AlunoControl {
         response.status(200).send(objResposta);
     }
 
-    // Obter aluno por matrícula
     async aluno_read_by_id_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.params.matricula;

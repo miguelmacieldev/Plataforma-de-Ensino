@@ -11,7 +11,6 @@ class Atividade {
         this._idDisciplinaProfessor = null;
     }
 
-    // Criação de nova atividade
     async create() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -41,8 +40,6 @@ class Atividade {
         }
     }
     
-
-    // Atualização de atividade
     async update() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -76,10 +73,8 @@ class Atividade {
             console.error('Erro ao atualizar atividade:', error.message);
             return false;
         }
-    }
-    
+    }    
 
-    // Excluir atividade
     async delete() {
         const conexao = Banco.getConexao();
         const SQL = 'DELETE FROM atividade WHERE idAtividade = ?;';
@@ -92,7 +87,6 @@ class Atividade {
         }
     }
 
-    // Leitura de todas as atividades com nome do professor e disciplina
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -117,7 +111,6 @@ class Atividade {
         }
     }
 
-    // Leitura de uma atividade pelo ID com nome do professor e disciplina
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -147,7 +140,6 @@ class Atividade {
         }
     }
 
-    // Verifica se o ID de disciplinaProfessor existe
     async verificaDisciplinaProfessorExiste() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM disciplinaprofessor WHERE idDisciplinaProfessor = ?;';
@@ -161,7 +153,6 @@ class Atividade {
     }
 
 
-    // Getters e Setters
     get idAtividade() {
         return this._idAtividade;
     }

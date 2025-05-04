@@ -10,10 +10,9 @@ class DisciplinaProfessor {
     async create() {
         const conexao = Banco.getConexao();
         
-        // Verifica se o par idProfessor e idDisciplina já existe
         const vinculoExistente = await this.vinculoExiste();
         if (vinculoExistente) {
-            return false; // Retorna falso se o par já existir
+            return false; 
         }
     
         const professorValido = await this.professorExiste();
@@ -108,7 +107,6 @@ class DisciplinaProfessor {
         return rows[0].qtd > 0;
     }
 
-    // Getters e Setters
     get idDisciplinaProfessor() {
         return this._idDisciplinaProfessor;
     }

@@ -35,6 +35,9 @@ class Turma {
             const [result] = await conexao.promise().execute(SQL, [this._idTurma]);
             return result.affectedRows > 0;
         } catch (error) {
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return false
+            };
             console.error('Erro ao excluir a turma:', error);
             return false;
         }
@@ -45,6 +48,9 @@ class Turma {
         const conexao = Banco.getConexao();
         const SQL = 'UPDATE turma SET descricao = ?, curso = ? WHERE idTurma = ?;';
         try {
+            if (await this.isTurma()) {
+                return false;
+            }
             const [result] = await conexao.promise().execute(SQL, [this._descricao, this._curso, this._idTurma]);
             return result.affectedRows > 0;
         } catch (error) {

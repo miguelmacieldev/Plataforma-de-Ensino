@@ -1,16 +1,13 @@
-// Importa o módulo Banco para realizar conexões com o banco de dados.
 const Banco = require('../database/Banco');
 
-// Define a classe Disciplina para representar a entidade Disciplina.
 class Disciplina {
-    // Construtor da classe Disciplina que inicializa as propriedades.
+
     constructor() {
-        this._idDisciplina = null; // ID da disciplina, auto incremento
-        this._idTurma = null;      // ID da turma relacionada
-        this._nome = '';           // Nome da disciplina
+        this._idDisciplina = null; 
+        this._idTurma = null;      
+        this._nome = '';           
     }
 
-    // Método assíncrono para criar uma nova disciplina no banco de dados.
     async create() {
         const conexao = Banco.getConexao();
         const SQL = 'INSERT INTO disciplina (idTurma, nome) VALUES (?, ?);';
@@ -33,7 +30,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para excluir uma disciplina do banco de dados.
     async delete() {
         const conexao = Banco.getConexao();
         const SQL = 'DELETE FROM disciplina WHERE idDisciplina = ?;';
@@ -46,7 +42,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para atualizar os dados de uma disciplina.
     async update() {
         const conexao = Banco.getConexao();
         const SQL = 'UPDATE disciplina SET idTurma = ?, nome = ? WHERE idDisciplina = ?;';
@@ -64,7 +59,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para verificar se já existe uma disciplina com o mesmo nome e turma.
     async isDisciplina() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM disciplina WHERE nome = ?;';
@@ -77,7 +71,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para verificar se o idTurma existe na tabela turma.
     async isTurmaValida() {
         const conexao = Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM turma WHERE idTurma = ?;';
@@ -90,7 +83,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para ler todas as disciplinas do banco de dados.
     async readAll() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -111,7 +103,6 @@ class Disciplina {
         }
     }
 
-    // Método assíncrono para ler uma disciplina pelo ID.
     async readByID() {
         const conexao = Banco.getConexao();
         const SQL = `
@@ -137,7 +128,6 @@ class Disciplina {
         }
     }
     
-    // Getters e Setters
 
     get idDisciplina() {
         return this._idDisciplina;
@@ -164,5 +154,4 @@ class Disciplina {
     }
 }
 
-// Exporta a classe Disciplina para uso em outros módulos.
 module.exports = Disciplina;
