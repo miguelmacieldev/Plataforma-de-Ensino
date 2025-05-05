@@ -17,12 +17,10 @@ class Aluno {
 
         try {
             if (await this.isAluno()) {
-                console.error('Aluno já existe.');
                 return false;
             }
 
             if (!(await this.verificaTurmasExistem())) {
-                console.error('Turma primária ou secundária inválida.');
                 return false;
             }
 
@@ -61,7 +59,6 @@ class Aluno {
             ]);
             return result.affectedRows > 0;
         } catch (error) {
-            console.error('Erro ao atualizar o aluno:', error.message);
             return false;
         }
     }
@@ -73,8 +70,10 @@ class Aluno {
         try {
             const [result] = await conexao.promise().execute(SQL, [this._matricula]);
             return [result.affectedRows > 0];
-        } catch (error) {
-            console.error('Erro ao excluir o aluno:', error.message);
+        } catch (error) {  
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return false
+            };
             return false;
         }
     }

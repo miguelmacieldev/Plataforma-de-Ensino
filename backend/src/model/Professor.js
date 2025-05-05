@@ -20,7 +20,6 @@ class Professor {
             this._idProfessor = result.insertId;
             return result.affectedRows > 0;
         } catch (error) {
-            console.error('Erro ao criar o professor:', error.message);
             return false;
         }
     }
@@ -32,7 +31,9 @@ class Professor {
             const [result] = await conexao.promise().execute(SQL, [this._idProfessor]);
             return result.affectedRows > 0;
         } catch (error) {
-            console.error('Erro ao excluir o professor:', error.message);
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return false
+            };
             return false;
         }
     }

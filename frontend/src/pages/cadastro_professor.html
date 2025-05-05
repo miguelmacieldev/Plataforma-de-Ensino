@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Upload de Turmas</title>
+  <title>Upload de Professor</title>
 </head>
   <body>
     <h1>CRUD - Professores</h1>
@@ -12,39 +12,260 @@
       <br><br>
       <button type="button" id="btnUpload">Enviar</button>
     </form>
+    <div>
+      <input type="text" id="txtNome">
+      <input type="text" id="txtTelefone">
+      <input type="text" id="txtSenha">
+    </div>
+    <div>
+      <button id="btnCadastrar">Cadastrar Professor</button>
+    </div>
+    <div id="divDados"></div>
   </body>
   <script>
-     document.getElementById("btnUpload").onclick = function () {
-  const fileInput = document.getElementById("arquivo");
-  const file = fileInput.files[0];
+    const txtNome = document.getElementById("txtNome");
+    const txtTelefone = document.getElementById("txtTelefone");
+    const txtSenha = document.getElementById("txtSenha");
+    const btnCadastrar = document.getElementById("btnCadastrar");
+    const divDados = document.getElementById("divDados");
 
-  if (!file) {
-    alert("Por favor, selecione um arquivo CSV.");
-    return;
-  }
+    document.getElementById("btnUpload").onclick = function () {
+      const fileInput = document.getElementById("arquivo");
+      const file = fileInput.files[0];
 
-  const formData = new FormData();
-  formData.append("arquivo", file);
-
-
-  const URI = "/professores/upload-csv";
-  console.log(URI)
-  fetch(URI, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status === true) {
-        //getDisciplina();
-        alert('o')
-      } else {
-        console.log('Erro' + data.msg);
+      if (!file) {
+        alert("Por favor, selecione um arquivo CSV.");
+        return;
       }
+
+      const formData = new FormData();
+      formData.append("arquivo", file);
+
+
+      const URI = "/professores/upload-csv";
+      console.log(URI)
+      fetch(URI, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === true) {
+            //getDisciplina();
+            alert('o')
+          } else {
+            console.log('Erro' + data.msg);
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao enviar arquivo:", error);
+        });
+    };
+
+    getProfessor();
+
+    btnCadastrar.onclick = function () {
+      postProfessor();
+    };
+
+    function construirTabela(textoJson) {
+      divDados.innerHTML = "";
+
+      const objJson = JSON.parse(textoJson);
+      const professores = objJson.professores;
+      const tabela = document.createElement("table");
+      divDados.appendChild(tabela);
+
+      const cabecalho = document.createElement("tr");
+      const colunas = ["idProfessor", "Nome", "Senha", "Telefone", "Excluir", "Selecionar","Atualizar"];
+      for (let texto of colunas) {
+        const th = document.createElement("th");
+        th.appendChild(document.createTextNode(texto));
+        cabecalho.appendChild(th);
+      }
+      tabela.appendChild(cabecalho);
+
+      for (let professor of professores) {
+        const linha = document.createElement("tr");
+        const btnExcluir = document.createElement("button");
+        const btnSelecionar = document.createElement("button");
+        const btnAtualizar = document.createElement("button");
+        btnExcluir.appendChild(document.createTextNode('Excluir'));
+        btnSelecionar.appendChild(document.createTextNode('Selecionar'));
+        btnAtualizar.appendChild(document.createTextNode('Atualizar'));
+        const tdIdProfessor = document.createElement("td");
+        tdIdProfessor.appendChild(document.createTextNode(professor.idProfessor));
+        linha.appendChild(tdIdProfessor);
+        const tdNome = document.createElement("td");
+        const tdExcluir = document.createElement("td");
+        const tdSelecionar = document.createElement("td");
+        const tdAtualizar = document.createElement("td");
+        tdNome.appendChild(document.createTextNode(professor.nome));
+        tdExcluir.appendChild(btnExcluir);
+        tdSelecionar.appendChild(btnSelecionar);
+        tdAtualizar.appendChild(btnAtualizar);
+        linha.appendChild(tdNome);
+        
+        btnExcluir.onclick = function(){
+          const idProfessor = professor.idProfessor;
+          deleteProfessor(idProfessor);
+        }
+        btnSelecionar.onclick = function(){
+          txtNome.value = professor.nome;
+          txtTelefone.value = professor.telefone;
+          txtSenha.value = professor.senha;
+
+        }
+        
+        btnAtualizar.onclick = function(){
+          const idProfessor = professor.idProfessor;
+          putProfessor(idProfessor);
+        }
+              
+        const tdTelefone = document.createElement("td");
+        tdTelefone.appendChild(document.createTextNode(professor.telefone));
+        const tdSenha = document.createElement("td");
+        tdSenha.appendChild(document.createTextNode(professor.senha));
+        linha.appendChild(tdSenha);     
+        linha.appendChild(tdTelefone);     
+        linha.appendChild(tdExcluir);
+        linha.appendChild(tdSelecionar);
+        linha.appendChild(tdAtualizar);
+        tabela.appendChild(linha);
+      }
+    }
+ 
+    function putProfessor(idProfessor) {
+      const nome = txtNome.value;
+      const telefone = txtTelefone.value;
+      const senha = txtSenha.value;
+      const URI = "/professores/" + idProfessor;
+
+      if (!telefone || !nome || !senha ) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objProfessor = {
+        professor: {
+          nome: nome,
+          telefone: telefone,
+          senha: senha
+        },
+      };
+
+      fetch(URI, {
+        method: "PUT",
+        body: JSON.stringify(objProfessor),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getProfessor();
+
+            txtNome.value = "";
+            txtTelefone.value = "";
+            txtSenha.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function postProfessor() {
+      console.log('oi')
+      const nome = txtNome.value;
+      const telefone = txtTelefone.value;
+      const senha = txtSenha.value;
+      const URI = "/professores";
+
+      if (!nome || !senha || !telefone ) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objProfessor = {
+        professor: {
+          nome: nome,
+          telefone: telefone,
+          senha: senha
+        },
+      };
+
+      fetch(URI, {
+        method: "POST",
+        body: JSON.stringify(objProfessor),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getProfessor();
+
+            txtNome.value = "";
+            txtTelefone.value = "";
+            txtSenha.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function deleteProfessor(idProfessor) {
+      const URI = '/professores/' + idProfessor;
+      fetch(URI, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+    .then((resposta) => resposta.text())
+    .then((respostaConvertida) => {
+      const obj = JSON.parse(respostaConvertida);
+      if (obj.status === true) {
+        alert(obj.msg);
+        getProfessor();
+      } 
+      alert(obj.msg);
     })
     .catch((error) => {
-      console.error("Erro ao enviar arquivo:", error);
+      alert(error)
     });
-};
+  }
+
+  function getProfessor() {
+      const URI = "/professores";
+      fetch(URI, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          construirTabela(respostaConvertida);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
   </script>
 </html>

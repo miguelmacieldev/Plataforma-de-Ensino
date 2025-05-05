@@ -94,10 +94,17 @@ module.exports = class ProfessorControl {
 
         const isDeleted = await professor.delete();
 
+        let professores = []
+
+        if(isDeleted){
+            professores = professor.readAll()
+        }
+
         const objResposta = {
             cod: 1,
             status: isDeleted,
-            msg: isDeleted ? 'Professor excluído com sucesso' : 'Erro ao excluir o professor'
+            msg: isDeleted ? 'Professor excluído com sucesso' : 'Erro ao excluir o professor',
+            professores : professores
         };
 
         response.status(200).send(objResposta);
