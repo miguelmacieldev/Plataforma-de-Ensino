@@ -51,8 +51,7 @@
         .then((response) => response.json())
         .then((data) => {
           if (data.status === true) {
-            //getDisciplina();
-            alert('o')
+            getProfessor();
           } else {
             console.log('Erro' + data.msg);
           }

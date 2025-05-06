@@ -94,10 +94,17 @@ module.exports = class DisciplinaControl {
 
         const isDeleted = await disciplina.delete();
 
+        let disciplinas = [];
+
+        if(isDeleted){
+            disciplinas = await disciplina.readAll();
+        }
+
         const objResposta = {
             cod: 1,
             status: isDeleted,
-            msg: isDeleted ? 'Disciplina excluída com sucesso' : 'Erro ao excluir a disciplina'
+            msg: isDeleted ? 'Disciplina excluída com sucesso' : 'Erro ao excluir a disciplina', 
+            disciplinas : disciplinas
         };
 
         response.status(200).send(objResposta);
@@ -114,7 +121,7 @@ module.exports = class DisciplinaControl {
         const objResposta = {
             cod: 1,
             status: isUpdated,
-            msg: isUpdated ? 'Disciplina atualizada com sucesso' : 'Erro ao atualizar a disciplina (turma não encontrada ou dados inválidos)'
+            msg: isUpdated ? 'Disciplina atualizada com sucesso' : 'Erro ao atualizar a disciplina (turma não encontrada, dados inválidos ou disciplina já cadastrada)'
         };
 
         response.status(200).send(objResposta);

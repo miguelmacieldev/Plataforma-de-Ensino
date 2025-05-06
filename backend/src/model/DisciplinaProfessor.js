@@ -80,6 +80,11 @@ class DisciplinaProfessor {
             return false;
         }
 
+        const existeDuplicado = await this.vinculoDuplicado();
+        if (existeDuplicado) {
+            return false;
+        }
+
         const SQL = `
             UPDATE disciplinaprofessor 
             SET idProfessor = ?, idDisciplina = ? 
@@ -91,6 +96,21 @@ class DisciplinaProfessor {
             this._idDisciplinaProfessor
         ]);
         return result.affectedRows > 0;
+    }
+
+    async vinculoDuplicado() {
+        const conexao = Banco.getConexao();
+        const SQL = `
+            SELECT * FROM disciplinaprofessor 
+            WHERE idProfessor = ? AND idDisciplina = ? AND idDisciplinaProfessor != ?;
+        `;
+        const [result] = await conexao.promise().execute(SQL, [
+            this._idProfessor,
+            this._idDisciplina,
+            this._idDisciplinaProfessor
+        ]);
+    
+        return result.length > 0;
     }
 
     async professorExiste() {

@@ -37,7 +37,10 @@ class Disciplina {
             const [result] = await conexao.promise().execute(SQL, [this._idDisciplina]);
             return result.affectedRows > 0;
         } catch (error) {
-            console.error('Erro ao excluir a disciplina:', error.message);
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return false
+            };
+
             return false;
         }
     }
@@ -51,6 +54,9 @@ class Disciplina {
                 return false;
             }
 
+            if (await this.isDisciplina()){
+                return false;
+            }
             const [result] = await conexao.promise().execute(SQL, [this._idTurma, this._nome, this._idDisciplina]);
             return result.affectedRows > 0;
         } catch (error) {

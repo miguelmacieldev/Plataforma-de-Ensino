@@ -5,10 +5,10 @@ module.exports = class DisciplinaMiddleware {
    
         const nomeDisciplina = request.body.disciplina.nome;
 
-        if (String(nomeDisciplina).length < 3) {
+        if (String(nomeDisciplina).length < 2) {
             const objResposta = {
                 status: false,
-                msg: "O nome deve ter pelo menos 3 caracteres"
+                msg: "O nome deve ter pelo menos 2 caracteres"
             }
 
             response.status(200).send(objResposta);

@@ -23,7 +23,7 @@ module.exports = class AtividadeRouter {
 
         this._router.delete('/:idAtividade', this._atividadeControl.atividade_delete_control);
 
-        this._router.put('/:idAtividade',  this._atividadeControl.atividade_update_control);
+        this._router.put('/:idAtividade',   this._atividadeMiddleware.validar_idDisciplinaProfessor,this._atividadeControl.atividade_update_control);
 
         return this._router;
     }

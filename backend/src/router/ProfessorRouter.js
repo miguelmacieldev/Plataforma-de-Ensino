@@ -29,7 +29,7 @@ module.exports = class ProfessorRouter {
 
         this._router.delete('/:idProfessor', this._professorControl.professor_delete_control);
 
-        this._router.put('/:idProfessor',  this._professorControl.professor_update_control);
+        this._router.put('/:idProfessor',  this._professorMiddleware.validar_nomeProfessor,this._professorControl.professor_update_control);
 
         this._router.post('/upload-csv', this._upload.single('arquivo'), this._professorControl.professor_upload_csv_control);
 

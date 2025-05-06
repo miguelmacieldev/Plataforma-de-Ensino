@@ -2,19 +2,24 @@ const DisciplinaProfessor = require('../model/DisciplinaProfessor');
 
 module.exports = class DisciplinaProfessorMiddleware {
     validar_idDisciplinaProfessor(request, response, next) {
-   
-        const idDisciplina = request.body.disciplinaprofessor.idDisciplina;
-        const idProfessor = request.body.disciplinaprofessor.idProfessor;
+        const { disciplinaprofessor } = request.body;
+
+        if (!disciplinaprofessor || !disciplinaprofessor.idDisciplina || !disciplinaprofessor.idProfessor) {
+            return response.status(400).send({
+                status: false,
+                msg: "O corpo da requisição deve conter disciplinaprofessor com idDisciplina e idProfessor"
+            });
+        }
+
+        const { idDisciplina, idProfessor } = disciplinaprofessor;
 
         if (isNaN(Number(idDisciplina)) || isNaN(Number(idProfessor))) {
-            const objResposta = {
+            return response.status(400).send({
                 status: false,
                 msg: "Os ids devem ser números"
-            }
-
-            response.status(200).send(objResposta);
-        } else {
-            next(); 
+            });
         }
+
+        next();
     }     
 }

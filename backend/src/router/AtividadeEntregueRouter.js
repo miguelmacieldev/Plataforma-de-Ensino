@@ -23,7 +23,7 @@ module.exports = class AtividadeEntregueRouter {
 
         this._router.delete('/:idAtividadeEntregue', this._atividadeEntregueControl.atividadeEntregue_delete_control);
 
-        this._router.put('/:idAtividadeEntregue', this._atividadeEntregueControl.atividadeEntregue_update_control);
+        this._router.put('/:idAtividadeEntregue', this._atividadeEntregueMiddleware.validar_matriculaAluno, this._atividadeEntregueMiddleware.validar_idAtividade,this._atividadeEntregueControl.atividadeEntregue_update_control);
 
         return this._router;
     }

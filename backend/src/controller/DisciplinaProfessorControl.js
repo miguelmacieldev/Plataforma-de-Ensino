@@ -11,12 +11,12 @@ module.exports = class DisciplinaProfessorControl {
         dp.idProfessor = req.body.disciplinaprofessor.idProfessor;
         dp.idDisciplina = req.body.disciplinaprofessor.idDisciplina;
 
-        const sucesso = await dp.create();
+        const isCreated = await dp.create();
 
         res.status(200).send({
             cod: 1,
-            status: sucesso,
-            msg: sucesso ? 'Vínculo criado com sucesso.' : 'Professor ou Disciplina inválidos, ou vínculo já existe.',
+            status: isCreated,
+            msg: isCreated? 'Vínculo criado com sucesso.' : 'Professor ou Disciplina inválidos, ou vínculo já existe.',
         });
     }
 
@@ -86,14 +86,21 @@ module.exports = class DisciplinaProfessorControl {
 
     async disciplinaProfessor_delete_control(req, res) {
         const dp = new DisciplinaProfessor();
-        dp.idDisciplinaProfessor = req.params.idDisciplina;
+        dp.idDisciplinaProfessor = req.params.idDisciplinaProfessor;
 
-        const sucesso = await dp.delete();
+        const isDeleted = await dp.delete();
+
+        let disciplinasProfessores = [];
+
+        if(isDeleted){
+            disciplinasProfessores = await dp.readAll();
+        }
 
         res.status(200).send({
             cod: 1,
-            status: sucesso,
-            msg: sucesso ? 'Vínculo excluído com sucesso.' : 'Vínculo não encontrado.',
+            status: isDeleted,
+            msg: isDeleted ? 'Vínculo excluído com sucesso.' : 'Vínculo não encontrado.',
+            disciplinasProfessores : disciplinasProfessores
         });
     }
 
@@ -103,12 +110,12 @@ module.exports = class DisciplinaProfessorControl {
         dp.idProfessor = req.body.disciplinaprofessor.idProfessor;
         dp.idDisciplina = req.body.disciplinaprofessor.idDisciplina;
 
-        const sucesso = await dp.update();
+        const isUpdated = await dp.update();
 
         res.status(200).send({
             cod: 1,
-            status: sucesso,
-            msg: sucesso ? 'Vínculo atualizado com sucesso.' : 'Professor ou Disciplina inválidos, ou vínculo não encontrado.',
+            status: isUpdated,
+            msg: isUpdated? 'Vínculo atualizado com sucesso.' : 'Professor ou Disciplina inválidos, vínculo não encontrado ou vínculo duplicado'
         });
     }
 
@@ -116,14 +123,14 @@ module.exports = class DisciplinaProfessorControl {
         const dp = new DisciplinaProfessor();
         dp.idDisciplinaProfessor = req.params.idDisciplinaProfessor;
 
-        const vinculo = await dp.readByID();
+        const resultado = await dp.readByID();
 
-        if (vinculo) {
+        if (resultado) {
             res.status(200).send({
                 cod: 1,
                 status: true,
                 msg: 'Vínculo encontrado.',
-                vinculo: vinculo,
+                disciplinaProfessor: resultado,
             });
         } else {
             res.status(404).send({
@@ -136,13 +143,13 @@ module.exports = class DisciplinaProfessorControl {
 
     async disciplinaProfessor_read_all_control(req, res) {
         const dp = new DisciplinaProfessor();
-        const lista = await dp.readAll();
+        const disciplinasProfessores = await dp.readAll();
 
         res.status(200).send({
             cod: 1,
             status: true,
             msg: 'Lista de vínculos carregada.',
-            lista: lista,
+            disciplinasProfessores: disciplinasProfessores
         });
     }
 };

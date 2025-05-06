@@ -29,7 +29,7 @@ module.exports = class DisciplinaProfessorRouter {
 
         this._router.delete('/:idDisciplinaProfessor', this._disciplinaProfessorControl.disciplinaProfessor_delete_control);
 
-        this._router.put('/:idDisciplinaProfessor',  this._disciplinaProfessorControl.disciplinaProfessor_update_control);
+        this._router.put('/:idDisciplinaProfessor', this._disciplinaProfessorMiddleware.validar_idDisciplinaProfessor,this._disciplinaProfessorControl.disciplinaProfessor_update_control);
 
         this._router.post('/upload-csv', this._upload.single('arquivo'), this._disciplinaProfessorControl.disciplinaProfessor_upload_csv_control);
 

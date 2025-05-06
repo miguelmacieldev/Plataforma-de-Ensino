@@ -12,39 +12,246 @@
       <br><br>
       <button type="button" id="btnUpload">Enviar</button>
     </form>
+    <div>
+      <input type="text" id="txtIdProfessor">
+      <input type="text" id="txtIdDisciplina">
+    </div>
+    <div>
+      <button id="btnCadastrar">Cadastrar DisciplinasXProfessores</button>
+    </div>
+    <div id="divDados"></div>
   </body>
   <script>
+    const txtIdDisciplina = document.getElementById("txtIdDisciplina");
+    const txtIdProfessor = document.getElementById("txtIdProfessor");
+    const btnCadastrar = document.getElementById("btnCadastrar");
+    const divDados = document.getElementById("divDados");
+
     document.getElementById("btnUpload").onclick = function () {
-  const fileInput = document.getElementById("arquivo");
-  const file = fileInput.files[0];
+    const fileInput = document.getElementById("arquivo");
+    const file = fileInput.files[0];
 
-  if (!file) {
-    alert("Por favor, selecione um arquivo CSV.");
-    return;
-  }
+    if (!file) {
+      alert("Por favor, selecione um arquivo CSV.");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("arquivo", file);
+    const formData = new FormData();
+    formData.append("arquivo", file);
 
 
-  const URI = "/disciplinas-professores/upload-csv";
-  console.log(URI)
-  fetch(URI, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status === true) {
-        //getDisciplina();
-        alert('o')
-      } else {
-        console.log('Erro' + data.msg);
+    const URI = "/disciplinas-professores/upload-csv";
+    console.log(URI)
+    fetch(URI, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === true) {
+          getDisciplinaProfessor();
+          alert('o')
+        } else {
+          console.log('Erro' + data.msg);
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar arquivo:", error);
+      });
+  };
+
+  getDisciplinaProfessor();
+
+  btnCadastrar.onclick = function () {
+    postDisciplinaProfessor();
+  };
+
+  function construirTabela(textoJson) {
+      divDados.innerHTML = "";
+
+      const objJson = JSON.parse(textoJson);
+      const disciplinasProfessores = objJson.disciplinasProfessores;
+      const tabela = document.createElement("table");
+      divDados.appendChild(tabela);
+
+      const cabecalho = document.createElement("tr");
+      const colunas = ["idDisciplinaProfessor", "idProfessor", "idDisciplina", "Excluir", "Selecionar","Atualizar"];
+      for (let texto of colunas) {
+        const th = document.createElement("th");
+        th.appendChild(document.createTextNode(texto));
+        cabecalho.appendChild(th);
       }
+      tabela.appendChild(cabecalho);
+
+      for (let disciplinaProfessor of disciplinasProfessores) {
+        const linha = document.createElement("tr");
+        const btnExcluir = document.createElement("button");
+        const btnSelecionar = document.createElement("button");
+        const btnAtualizar = document.createElement("button");
+        btnExcluir.appendChild(document.createTextNode('Excluir'));
+        btnSelecionar.appendChild(document.createTextNode('Selecionar'));
+        btnAtualizar.appendChild(document.createTextNode('Atualizar'));
+        const tdIdDisciplinaProfessor = document.createElement("td");
+        tdIdDisciplinaProfessor.appendChild(document.createTextNode(disciplinaProfessor.idDisciplinaProfessor));
+        linha.appendChild(tdIdDisciplinaProfessor);
+        const tdIdProfessor = document.createElement("td");
+        const tdExcluir = document.createElement("td");
+        const tdSelecionar = document.createElement("td");
+        const tdAtualizar = document.createElement("td");
+        tdIdProfessor.appendChild(document.createTextNode(disciplinaProfessor.idProfessor));
+        tdExcluir.appendChild(btnExcluir);
+        tdSelecionar.appendChild(btnSelecionar);
+        tdAtualizar.appendChild(btnAtualizar);
+        linha.appendChild(tdIdProfessor);
+        
+        btnExcluir.onclick = function(){
+          const idDisciplinaProfessor = disciplinaProfessor.idDisciplinaProfessor;
+          deleteDisciplinaProfessor(idDisciplinaProfessor);
+        }
+        btnSelecionar.onclick = function(){
+          txtIdDisciplina.value = disciplinaProfessor.idDisciplina;
+          txtIdProfessor.value = disciplinaProfessor.idProfessor;
+        }
+        
+        btnAtualizar.onclick = function(){
+          const idDisciplinaProfessor = disciplinaProfessor.idDisciplinaProfessor;
+          putDisciplinaProfessor(idDisciplinaProfessor);
+        }
+              
+        const tdIdDisciplina = document.createElement("td");
+        tdIdDisciplina.appendChild(document.createTextNode(disciplinaProfessor.idDisciplina));
+        linha.appendChild(tdIdDisciplina);     
+        linha.appendChild(tdExcluir);
+        linha.appendChild(tdSelecionar);
+        linha.appendChild(tdAtualizar);
+        tabela.appendChild(linha);
+      }
+    }
+
+    function getDisciplinaProfessor() {
+      const URI = "/disciplinas-professores";
+      fetch(URI, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          construirTabela(respostaConvertida);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function postDisciplinaProfessor() {
+      const idProfessor = txtIdProfessor.value;
+      const idDisciplina = txtIdDisciplina.value;
+
+      const URI = "/disciplinas-professores";
+
+      if (!idProfessor || !idDisciplina) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objDisciplinaProfessor = {
+        disciplinaprofessor: {
+          idDisciplina: idDisciplina,
+          idProfessor: idProfessor
+        }
+      };
+
+      fetch(URI, {
+        method: "POST",
+        body: JSON.stringify(objDisciplinaProfessor),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getDisciplinaProfessor();
+
+            txtIdDisciplina.value = "";
+            txtIdProfessor.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+ 
+    function putDisciplinaProfessor(idDisciplinaProfessor) {
+      const idDisciplina = txtIdDisciplina.value;
+      const idProfessor = txtIdProfessor.value;
+      const URI = "/disciplinas-professores/" + idDisciplinaProfessor;
+
+      if (!idProfessor || !idDisciplina) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const objDisciplinaProfessor = {
+        disciplinaprofessor: {
+          idDisciplina: idDisciplina,
+          idProfessor: idProfessor
+        }
+      };
+
+      fetch(URI, {
+        method: "PUT",
+        body: JSON.stringify(objDisciplinaProfessor),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((resposta) => resposta.text())
+        .then((respostaConvertida) => {
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getDisciplinaProfessor();
+
+            txtIdDisciplina.value = "";
+            txtIdProfessor.value = "";
+          }
+
+          alert(obj.msg);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+
+    function deleteDisciplinaProfessor(idDisciplinaProfessor) {
+      const URI = '/disciplinas-professores/' + idDisciplinaProfessor;
+      fetch(URI, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+    .then((resposta) => resposta.text())
+    .then((respostaConvertida) => {
+      const obj = JSON.parse(respostaConvertida);
+      if (obj.status === true) {
+        alert(obj.msg);
+        getDisciplinaProfessor();
+      } 
+      alert(obj.msg);
     })
     .catch((error) => {
-      console.error("Erro ao enviar arquivo:", error);
+      alert(error)
     });
-};
-  </script>
+  }
+ </script>
 </html>
