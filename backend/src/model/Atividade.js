@@ -12,7 +12,7 @@ class Atividade {
     }
 
     async create() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             INSERT INTO atividade 
             (descricao, devolucao, caminhoGravacao, dataPostagem, dataEntrega, idDisciplinaProfessor)
@@ -24,7 +24,7 @@ class Atividade {
                 return false;
             }
     
-            const [result] = await conexao.promise().execute(SQL, [
+            const [result] = await conexao.execute(SQL, [
                 this._descricao,
                 this._devolucao,
                 this._caminhoGravacao,
@@ -41,7 +41,7 @@ class Atividade {
     }
     
     async update() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             UPDATE atividade SET 
                 descricao = ?, 
@@ -58,7 +58,7 @@ class Atividade {
                 return false;
             }
             
-            const [result] = await conexao.promise().execute(SQL, [
+            const [result] = await conexao.execute(SQL, [
                 this._descricao,
                 this._devolucao,
                 this._caminhoGravacao,
@@ -76,10 +76,10 @@ class Atividade {
     }    
 
     async delete() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'DELETE FROM atividade WHERE idAtividade = ?;';
         try {
-            const [result] = await conexao.promise().execute(SQL, [this._idAtividade]);
+            const [result] = await conexao.execute(SQL, [this._idAtividade]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Erro ao excluir atividade:', error.message);
@@ -88,7 +88,7 @@ class Atividade {
     }
 
     async readAll() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                     SELECT 
                         a.idAtividade,
@@ -103,7 +103,7 @@ class Atividade {
 
                   `;
         try {
-            const [rows] = await conexao.promise().execute(SQL);
+            const [rows] = await conexao.execute(SQL);
             return rows;
         } catch (error) {
             console.error('Erro ao ler atividades:', error.message);
@@ -112,7 +112,7 @@ class Atividade {
     }
 
     async readByID() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                         SELECT 
                             a.idAtividade,
@@ -127,11 +127,10 @@ class Atividade {
 
                     `;
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._idAtividade]);
+            const [rows] = await conexao.execute(SQL, [this._idAtividade]);
             if (rows.length > 0) {
                 return rows[0];
             } else {
-                console.log('Nenhuma atividade encontrada com o ID:', this._idAtividade);
                 return null;
             }
         } catch (error) {
@@ -141,10 +140,10 @@ class Atividade {
     }
 
     async verificaDisciplinaProfessorExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM disciplinaprofessor WHERE idDisciplinaProfessor = ?;';
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._idDisciplinaProfessor]);
+            const [rows] = await conexao.execute(SQL, [this._idDisciplinaProfessor]);
             return rows.length > 0 && rows[0].qtd > 0;
         } catch (error) {
             console.error('Erro ao verificar disciplinaProfessor:', error.message);

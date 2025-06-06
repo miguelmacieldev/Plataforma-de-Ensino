@@ -103,7 +103,10 @@ p, li, a {
 }
 
 main {
+    display: flex;
+    justify-content: center;
     height: calc(100vh - 90px);
+    padding-top: 5rem;
 }
 
 .descricao {
@@ -112,19 +115,19 @@ main {
 
 .fundo {
     background-color: #202832;
-    width: 100rem;
+    width: 75rem;
     height: 80%;
     position: relative;
     padding: 2.75rem;
     display: flex;
     gap: 10rem;
     border-radius: 0.5rem;
+    justify-content: center;
 }
 
 .input-conteiner {
     position: relative;
 }
-
 
 .input-conteiner input{
     transition: all 0.3s ease-in-out;
@@ -194,6 +197,14 @@ input[type="submit"].inverso {
     background-color: var(--cor-primaria);
     box-shadow: 0px 0px 20px 5px #f13a3d99;
     border: 0.1rem solid var(--cor-primaria);
+}
+
+.div-disciplina{
+    width: 75rem;
+    height: 25rem;
+    background-color: var(--cor-secundaria);
+    border-radius: 0.5rem;
+
 }
 
 a.botao.inverso:hover, 

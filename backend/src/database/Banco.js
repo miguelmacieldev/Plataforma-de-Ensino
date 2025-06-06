@@ -1,20 +1,17 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const conexao = mysql.createConnection({
-    host: 'localhost',     
-    user: 'root',
-    password: '081203m@teus',
-    database: 'plataforma_de_estudos'
-});
-
-conexao.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err);
-    } else {
-        console.log('Conectado ao banco de dados com sucesso!');
-    }
-});
+let conexao = null;
 
 module.exports = {
-    getConexao: () => conexao
+    getConexao: async () => {
+        if (!conexao) {
+            conexao = await mysql.createConnection({
+                host: 'localhost',
+                user: 'root',
+                password: '081203m@teus',
+                database: 'plataforma_de_estudos'
+            });
+        }
+        return conexao;
+    }
 };

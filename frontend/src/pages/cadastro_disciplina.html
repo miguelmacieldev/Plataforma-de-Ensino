@@ -26,6 +26,7 @@
     const txtNome = document.getElementById("txtNome");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
+    const token = localStorage.getItem("token");
    
     getDisciplina();
 
@@ -46,7 +47,7 @@
       formData.append("arquivo", file);
 
       const URI = "/disciplinas/upload-csv";
-      console.log(URI)
+    
       fetch(URI, {
         method: "POST",
         body: formData,
@@ -134,7 +135,8 @@
       fetch(URI, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -168,8 +170,9 @@
         method: "POST",
         body: JSON.stringify(objDisciplina),
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
+          "Content-Type": "application/json"
         },
       })
         .then((resposta) => resposta.text())
@@ -209,8 +212,9 @@
         method: "PUT",
         body: JSON.stringify(objDisciplina),
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
+          "Content-Type": "application/json"
         },
       })
         .then((resposta) => resposta.text())
@@ -236,8 +240,9 @@
       fetch(URI, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
+          "Content-Type": "application/json"
         },
       })
         .then((resposta) => resposta.text())
@@ -245,10 +250,10 @@
           const obj = JSON.parse(respostaConvertida);
           if (obj.status === true) {
             alert(obj.msg);
-
             getDisciplina();
-      } 
-      alert(obj.msg);
+          } 
+          getDisciplina();
+          alert(obj.msg);
         })
         .catch((error) => {
           alert(error);

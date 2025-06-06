@@ -14,8 +14,9 @@
     </form>
     <div>
       <input type="text" id="txtNome">
-      <input type="text" id="txtTelefone">
       <input type="text" id="txtSenha">
+      <input type="text" id="txtTelefone">
+      <input type="text" id="txtEmail">
     </div>
     <div>
       <button id="btnCadastrar">Cadastrar Professor</button>
@@ -26,8 +27,10 @@
     const txtNome = document.getElementById("txtNome");
     const txtTelefone = document.getElementById("txtTelefone");
     const txtSenha = document.getElementById("txtSenha");
+    const txtEmail= document.getElementById("txtEmail");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
+    const token = localStorage.getItem('token');
 
     document.getElementById("btnUpload").onclick = function () {
       const fileInput = document.getElementById("arquivo");
@@ -43,7 +46,6 @@
 
 
       const URI = "/professores/upload-csv";
-      console.log(URI)
       fetch(URI, {
         method: "POST",
         body: formData,
@@ -76,7 +78,7 @@
       divDados.appendChild(tabela);
 
       const cabecalho = document.createElement("tr");
-      const colunas = ["idProfessor", "Nome", "Senha", "Telefone", "Excluir", "Selecionar","Atualizar"];
+      const colunas = ["idProfessor", "Nome", "Senha", "Telefone", "Email","Excluir", "Selecionar","Atualizar"];
       for (let texto of colunas) {
         const th = document.createElement("th");
         th.appendChild(document.createTextNode(texto));
@@ -113,6 +115,7 @@
           txtNome.value = professor.nome;
           txtTelefone.value = professor.telefone;
           txtSenha.value = professor.senha;
+          txtEmail.value = professor.email;
 
         }
         
@@ -123,10 +126,16 @@
               
         const tdTelefone = document.createElement("td");
         tdTelefone.appendChild(document.createTextNode(professor.telefone));
+        
         const tdSenha = document.createElement("td");
         tdSenha.appendChild(document.createTextNode(professor.senha));
+        
+        const tdEmail = document.createElement("td");
+        tdEmail.appendChild(document.createTextNode(professor.email));
+
         linha.appendChild(tdSenha);     
         linha.appendChild(tdTelefone);     
+        linha.appendChild(tdEmail);     
         linha.appendChild(tdExcluir);
         linha.appendChild(tdSelecionar);
         linha.appendChild(tdAtualizar);
@@ -138,9 +147,10 @@
       const nome = txtNome.value;
       const telefone = txtTelefone.value;
       const senha = txtSenha.value;
+      const email = txtEmail.value;
       const URI = "/professores/" + idProfessor;
 
-      if (!telefone || !nome || !senha ) {
+      if (!telefone || !nome || !senha || !email) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -149,7 +159,8 @@
         professor: {
           nome: nome,
           telefone: telefone,
-          senha: senha
+          senha: senha,
+          email: email
         },
       };
 
@@ -157,8 +168,9 @@
         method: "PUT",
         body: JSON.stringify(objProfessor),
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
       })
         .then((resposta) => resposta.text())
@@ -170,6 +182,7 @@
             txtNome.value = "";
             txtTelefone.value = "";
             txtSenha.value = "";
+            txtEmail.value = "";
           }
 
           alert(obj.msg);
@@ -180,13 +193,13 @@
     }
 
     function postProfessor() {
-      console.log('oi')
       const nome = txtNome.value;
       const telefone = txtTelefone.value;
       const senha = txtSenha.value;
+      const email = txtEmail.value;
       const URI = "/professores";
 
-      if (!nome || !senha || !telefone ) {
+      if (!nome || !senha || !telefone || !email) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -195,7 +208,8 @@
         professor: {
           nome: nome,
           telefone: telefone,
-          senha: senha
+          senha: senha,
+          email: email
         },
       };
 
@@ -203,7 +217,8 @@
         method: "POST",
         body: JSON.stringify(objProfessor),
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -216,6 +231,7 @@
             txtNome.value = "";
             txtTelefone.value = "";
             txtSenha.value = "";
+            txtEmail.value = "";
           }
 
           alert(obj.msg);
@@ -230,7 +246,8 @@
       fetch(URI, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -241,6 +258,7 @@
         alert(obj.msg);
         getProfessor();
       } 
+      getProfessor();
       alert(obj.msg);
     })
     .catch((error) => {
@@ -253,7 +271,8 @@
       fetch(URI, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -265,6 +284,5 @@
           alert(error);
         });
     }
-
   </script>
 </html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor com Quill</title>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style/padrao.css">
+  <link rel="stylesheet" href="../style/pagina_conteudos.css">
+</head>
+<body>
+    <aside>
+        <p>muda tudo aqui dentro</p>
+    </aside>
+    <main>
+        <div>
+            <div class="disciplina-sala">
+            </div>
+
+            <div class="editor-texto">
+                <div>
+                    <div id="toolbar">
+                        <select class="ql-header">
+                        <option selected></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        </select>
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-link"></button>
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                        <button class="ql-clean"></button>
+                    </div>
+                    <div id="editor-wrapper">
+                        <div id="editor-container"></div>
+                    </div>
+                </div>
+                <a href="" class="botao">postar</a>
+            </div>
+            <div id="atividades-container">
+                <div id="lista-atividades"></div>
+            </div>
+        </div>
+    </main>
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <div>
+                <input type="radio" name="tipo-postagem" value="atividade" id="radio-atividade">
+                <p>Atividades</p>
+            </div>
+            <div>
+                <input type="radio" name="tipo-postagem" value="comentario" id="radio-comentario">
+                <p>Comentario</p>
+            </div>
+            <a href="" class="botao concluir">Concluir</a>             
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <!-- MANTER SEU HTML COMO ESTÁ -->
+<!-- Vamos alterar apenas o script -->
+    <script>
+    const token = localStorage.getItem('token');
+    const idUsuario = localStorage.getItem('idUsuario');
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
+
+    const botao = document.querySelector('.botao');
+    const botaoConcluir = document.querySelector('.concluir');
+
+    if (tipoUsuario === 'aluno') {
+        const editor_texto = document.getElementsByClassName('editor-texto')[0];
+        editor_texto.classList.add('display-none');
+    }
+
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: '#toolbar'
+        }
+    });
+
+    getTurma();
+    getDisciplina();
+    getAtividades();
+
+    botao.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('popup').classList.remove('hidden');
+    });
+
+    botaoConcluir.addEventListener('click', async function (e) {
+        e.preventDefault();
+        const tipoSelecionado = document.querySelector('input[name="tipo-postagem"]:checked');
+        if (!tipoSelecionado) {
+            alert("Selecione se é uma atividade ou comentário.");
+            return;
+        }
+
+        if (tipoUsuario !== "professor") {
+            alert("Apenas professores podem postar.");
+            return;
+        }
+
+        const tipo = tipoSelecionado.value;
+        const idDisciplinaProfessor = await getIdDisciplinaProfessor(idUsuario);
+
+        if (!idDisciplinaProfessor) {
+            alert("Erro ao recuperar a disciplina.");
+            return;
+        }
+
+        postAtividade(tipo, idDisciplinaProfessor);
+    });
+
+    async function getAtividades() {
+        try {
+            const resposta = await fetch("/atividades", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                }
+            });
+            const dados = await resposta.json();
+
+            if (dados.status === true && Array.isArray(dados.atividades)) {
+                renderizarAtividades(dados.atividades);
+            }
+        } catch (erro) {
+            console.error("Erro ao carregar atividades:", erro);
+        }
+    }
+
+    async function getIdDisciplinaProfessor(idProfessor) {
+        
+        try {
+            const resposta = await fetch('disciplinas-professores/professores/' + idProfessor, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                }
+            });
+            const obj = await resposta.json();
+            if (obj.status === true && obj.disciplinaProfessor) {
+                return obj.disciplinaProfessor.idDisciplinaProfessor;
+            } else {
+                console.error("Erro ao buscar disciplina");
+                return null;
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            return null;
+        }
+    }
+
+    async function getDisciplinaProfessor(idDisciplinaProfessor) {
+    try {
+        const resposta = await fetch('disciplinas-professores/' + idDisciplinaProfessor, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+            }
+        });
+        const obj = await resposta.json();
+        if (obj.status === true && obj.disciplinaProfessor) {
+            // Corrigido: retornar o valor obtido
+            return obj.disciplinaProfessor.idDisciplina
+        } else {
+            console.error("Erro ao buscar vínculo");
+            return null;
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        return null;
+    }
+}
+
+
+    async function renderizarAtividades(atividades) {
+        const container = document.getElementById("lista-atividades");
+        container.innerHTML = "";
+
+        atividades.forEach(async (atividade) => {
+            const idProf = tipoUsuario === "professor" ? await getIdDisciplinaProfessor(idUsuario) : null;
+            const idDisciplina = await getDisciplinaProfessor(atividade.idDisciplinaProfessor);
+
+            if ((tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisciplina) || (tipoUsuario === "professor" && idProf === atividade.idDisciplinaProfessor)) {
+                const div = document.createElement("div");
+                const tipoClasse = atividade.devolucao === 0 ? "comentario" : "atividade";
+                div.classList.add(tipoClasse);
+
+                div.innerHTML = atividade.devolucao === 0 ?
+                    `<div>
+                        <p>Professor</p>
+                        <p>${atividade.dataPostagem}</p>
+                        <div><p>${atividade.descricao}</p></div>
+                    </div>` :
+                    `<div>
+                        <a href="#">
+                            <p>Professor</p>
+                            <p>${atividade.dataPostagem} - ${atividade.dataEntrega}</p>
+                            <div><p>${atividade.descricao}</p></div>
+                        </a>
+                    </div>`;
+
+                container.appendChild(div);
+            }
+        });
+    }
+
+    async function getTurma() {
+        try {
+            const resposta = await fetch('turmas/' + localStorage.getItem('idTurmaSelecionada'), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                }
+            });
+            const obj = await resposta.json();
+            if (obj.status === true && obj.turma) {
+                nomearDivTurmaDisciplina(obj.turma.curso, 'turma');
+            } else {
+                console.error("Erro ao buscar turma");
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+        }
+    }
+
+    async function getDisciplina() {
+        try {
+            const resposta = await fetch('disciplinas/' + localStorage.getItem('idDisciplinaSelecionada'), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                }
+            });
+            const obj = await resposta.json();
+            if (obj.status === true && obj.disciplina) {
+                nomearDivTurmaDisciplina(obj.disciplina.nome, 'disciplina');
+            } else {
+                console.error("Erro ao buscar disciplina");
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+        }
+    }
+
+    function nomearDivTurmaDisciplina(conteudo, tipo) {
+        const div = document.querySelector('.disciplina-sala');
+        if (!div) return;
+
+        if (tipo === "turma") {
+            div.dataset.turma = conteudo;
+        } else if (tipo === "disciplina") {
+            div.dataset.disciplina = conteudo;
+        }
+
+        const turma = div.dataset.turma || "";
+        const disciplina = div.dataset.disciplina || "";
+
+        div.textContent = `${turma} - ${disciplina}`.trim();
+    }
+
+    function postAtividade(tipoPostagem, idDisciplinaProfessor) {
+        const descricaoEditor = quill.root.innerHTML.trim();
+        const dataAtual = new Date();
+        const dataPostagem = dataAtual.toISOString().split('T')[0];
+        let dataEntrega = null;
+        let devolucao = 0;
+
+        if (tipoPostagem === "atividade") {
+            devolucao = 1;
+            const entrega = new Date();
+            entrega.setDate(dataAtual.getDate() + 1);
+            dataEntrega = entrega.toISOString().split('T')[0];
+        }
+
+        const objAtividade = {
+            atividade: {
+                descricao: descricaoEditor,
+                devolucao,
+                caminhoGravacao: "",
+                dataPostagem,
+                dataEntrega,
+                idDisciplinaProfessor
+            }
+        };
+
+        fetch("/atividades", {
+            method: "POST",
+            body: JSON.stringify(objAtividade),
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+        })
+        .then(res => res.json())
+        .then(obj => {
+            if (obj.status === true) {
+                alert(obj.msg || "Postagem realizada com sucesso.");
+                quill.setContents([]); // limpa editor
+                getAtividades();
+            } else {
+                alert(obj.msg || "Erro ao postar.");
+            }
+        })
+        .catch(error => {
+            alert("Erro na requisição: " + error);
+        });
+
+        document.getElementById('popup').classList.add('hidden');
+    }
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+main{
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    height: auto;
+}
+
+main > div{
+    padding-bottom: 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+
+.disciplina-sala{
+    width: 65rem;
+    height: 20rem;
+    background-color: var(--cor-secundaria);
+    font-size: 5.5rem;
+    padding: 2rem;
+   
+}
+
+a.botao{
+    border-radius: 0;
+    align-self: flex-end;
+    box-shadow: none;
+    &.concluir {
+        width: 100%;
+    }
+}
+
+.editor-texto{
+    background-color: white;
+    width: 65rem;
+    height: 35rem;
+    display: flex;
+    padding: 7.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    gap: 2rem;
+}
+
+#editor-container {
+    position: relative;
+    height: 15rem;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+#editor-container::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    height: 0.2rem;
+    width: 0;
+    background-color: var(--cor-secundaria);
+    transition: width 0.4s ease, left 0.4s ease;
+    z-index: 2;
+}
+
+#editor-container:focus-within::after {
+    width: 100%;
+    left: 0;
+}
+
+#toolbar {
+    border-radius: 0.8rem 0.8rem 0 0;
+    height: 5rem;
+    background-color: white;
+    width: 50rem;
+
+}
+
+.ql-editor > p{
+    color: black;
+}
+
+#editor-wrapper {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  width: 50rem;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+
+.popup-content {
+    height: 40rem;
+    width: 30rem;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+    & > div{
+        display: flex;
+        gap: 5rem;
+        justify-content: center;
+
+        & > p{
+            color: black;
+        }
+    }
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+#lista-atividades{
+    display: flex;
+    flex-flow: column;
+    gap: 3.5rem;
+}
+
+.display-none{
+    display: none;
+}
+
+.atividade {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    width: 65rem;
+    height: 10rem;
+    padding: 7rem 3rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    & p {
+        color: black;
+        z-index: 2; 
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%;
+        background-color: #b7b7b7;
+        z-index: 1;
+        transition: width 0.25s ease-in-out;
+    }
+
+    &:hover::before {
+        width: 100%;
+    }
+
+
+}
+
+.comentario{
+    background-color: white;
+    width: 65rem;
+    padding: 7rem 3rem;
+    & p{
+        color: black;
+    }
+}

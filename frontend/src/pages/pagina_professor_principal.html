@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../style/padrao.css" />
+        <link rel="stylesheet" href="../style/pagina_principal.css" />
+        <script src="../script/jwt-decode.min.js"></script>
+        <title>Document</title>
+    </head>
+    <body>
+        <aside>
+            <p>muda tudo aqui dentro</p>
+        </aside>
+        <main>
+            <div class="disciplinas" id="disciplinas"></div>
+        </main>
+        <script>
+            const divDisciplinas = document.getElementById("disciplinas");
+            const token = localStorage.getItem("token");
+            const decoded = jwt_decode(token);
+
+            buscarDisciplinasPorTurmas(decoded.id)
+
+            async function buscarDisciplinasPorTurmas(idProfessor) {
+                try {
+                const resposta = await fetch(`/professores/${idProfessor}/disciplinas-turmas/`, {
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json"
+                    }
+                });
+
+                const dados = await resposta.json();
+
+                if (dados.resultados && dados.resultados.length > 0) {
+                    dados.resultados.forEach((resultado) => {
+                const div = document.createElement("div");
+                div.classList.add("disciplina");
+
+                const link = document.createElement("a");
+                link.innerHTML = `<p>${resultado.nomeDisciplina} - ${resultado.nomeTurma}</p>`;
+                link.href = "#"; // Impede navegação automática
+                div.addEventListener("click", () => {
+                    localStorage.setItem("idDisciplinaSelecionada", resultado.idDisciplina);
+                    localStorage.setItem("idTurmaSelecionada", resultado.idTurma);
+                    window.location.href = `pagina_conteudo_disciplina.html`;
+                });
+
+                div.appendChild(link);
+                div.innerHTML += `<p class="opcoes">...</p>`;
+                divDisciplinas.appendChild(div);
+            });
+                }
+
+                } catch (err) {
+                    console.error("Erro ao buscar disciplinas:", err);
+                }
+            }
+        </script>
+    </body>
+</html>

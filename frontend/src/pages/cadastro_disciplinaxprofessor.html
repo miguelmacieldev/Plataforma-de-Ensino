@@ -26,6 +26,7 @@
     const txtIdProfessor = document.getElementById("txtIdProfessor");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
+    const token = localStorage.getItem("token");
 
     document.getElementById("btnUpload").onclick = function () {
     const fileInput = document.getElementById("arquivo");
@@ -41,7 +42,7 @@
 
 
     const URI = "/disciplinas-professores/upload-csv";
-    console.log(URI)
+    
     fetch(URI, {
       method: "POST",
       body: formData,
@@ -133,8 +134,9 @@
       fetch(URI, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
       })
         .then((resposta) => resposta.text())
@@ -168,8 +170,9 @@
         method: "POST",
         body: JSON.stringify(objDisciplinaProfessor),
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
       })
         .then((resposta) => resposta.text())
@@ -210,7 +213,8 @@
         method: "PUT",
         body: JSON.stringify(objDisciplinaProfessor),
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -236,7 +240,8 @@
       fetch(URI, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -247,6 +252,7 @@
         alert(obj.msg);
         getDisciplinaProfessor();
       } 
+      getDisciplinaProfessor();
       alert(obj.msg);
     })
     .catch((error) => {

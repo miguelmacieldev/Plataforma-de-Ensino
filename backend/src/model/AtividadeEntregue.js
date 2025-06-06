@@ -10,7 +10,7 @@ class AtividadeEntregue {
     }
 
     async create() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             INSERT INTO atividadeentregue
             (matriculaAluno, idAtividade, dataEntrega, caminhoGravacao)
@@ -23,7 +23,7 @@ class AtividadeEntregue {
                 return false;
             }
 
-            const [result] = await conexao.promise().execute(SQL, [
+            const [result] = await conexao.execute(SQL, [
                 this._matriculaAluno,
                 this._idAtividade,
                 this._dataEntrega,
@@ -39,7 +39,7 @@ class AtividadeEntregue {
     }
 
     async update() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             UPDATE atividadeentregue SET
                 matriculaAluno = ?,
@@ -55,7 +55,7 @@ class AtividadeEntregue {
                 return false;
             }
 
-            const [result] = await conexao.promise().execute(SQL, [
+            const [result] = await conexao.execute(SQL, [
                 this._matriculaAluno,
                 this._idAtividade,
                 this._dataEntrega,
@@ -71,11 +71,11 @@ class AtividadeEntregue {
     }
 
     async delete() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'DELETE FROM atividadeentregue WHERE idAtividadeEntregue = ?;';
 
         try {
-            const [result] = await conexao.promise().execute(SQL, [this._idAtividadeEntregue]);
+            const [result] = await conexao.execute(SQL, [this._idAtividadeEntregue]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Erro ao deletar entrega:', error.message);
@@ -84,7 +84,7 @@ class AtividadeEntregue {
     }
 
     async readAll() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                     SELECT 
                         ae.idAtividadeEntregue,
@@ -98,7 +98,7 @@ class AtividadeEntregue {
                 `;
 
         try {
-            const [rows] = await conexao.promise().execute(SQL);
+            const [rows] = await conexao.execute(SQL);
             return rows;
         } catch (error) {
             console.error('Erro ao listar entregas:', error.message);
@@ -107,7 +107,7 @@ class AtividadeEntregue {
     }
 
     async readByID() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             SELECT 
                 ae.idAtividadeEntregue,
@@ -120,7 +120,7 @@ class AtividadeEntregue {
     `;
 
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._idAtividadeEntregue]);
+            const [rows] = await conexao.execute(SQL, [this._idAtividadeEntregue]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             console.error('Erro ao buscar entrega por ID:', error.message);
@@ -129,10 +129,10 @@ class AtividadeEntregue {
     }
 
     async verificaAlunoExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM aluno WHERE matricula = ?;';
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._matriculaAluno]);
+            const [rows] = await conexao.execute(SQL, [this._matriculaAluno]);
             return rows[0].qtd > 0;
         } catch (error) {
             console.error('Erro ao verificar aluno:', error.message);
@@ -141,10 +141,10 @@ class AtividadeEntregue {
     }
 
     async verificaAtividadeExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM atividade WHERE idAtividade = ?;';
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._idAtividade]);
+            const [rows] = await conexao.execute(SQL, [this._idAtividade]);
             return rows[0].qtd > 0;
         } catch (error) {
             console.error('Erro ao verificar atividade:', error.message);

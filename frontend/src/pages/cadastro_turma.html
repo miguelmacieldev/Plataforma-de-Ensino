@@ -26,6 +26,7 @@
     const txtCurso = document.getElementById("txtCurso");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
+    const token = localStorage.getItem('token');
 
     getTurma();
 
@@ -136,7 +137,8 @@
       fetch(URI, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -170,7 +172,8 @@
         method: "PUT",
         body: JSON.stringify(objTurma),
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -212,7 +215,8 @@
         method: "POST",
         body: JSON.stringify(objTurma),
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -222,7 +226,6 @@
           if (obj.status === true) {
             getTurma();
 
-        
             txtCurso.value = "";
             txtDescricao.value = "";
           }
@@ -239,7 +242,8 @@
       fetch(URI, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -250,6 +254,7 @@
         alert(obj.msg);
         getTurma();
       } 
+      getTurma();
       alert(obj.msg);
     })
     .catch((error) => {

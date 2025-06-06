@@ -13,6 +13,7 @@ module.exports = class AlunoControl {
         aluno.nome = request.body.aluno.nome;
         aluno.telefone = request.body.aluno.telefone;
         aluno.email = request.body.aluno.email;
+        aluno.senha = request.body.aluno.senha;
         aluno.idTurmaPrimaria = request.body.aluno.idTurmaPrimaria;
         aluno.idTurmaSecundaria = request.body.aluno.idTurmaSecundaria;
 
@@ -49,6 +50,7 @@ module.exports = class AlunoControl {
                     aluno.matricula = linhaLimpa.matricula || null;
                     aluno.nome = linhaLimpa.nome || null;
                     aluno.telefone = linhaLimpa.telefone || null;
+                    aluno.senha = linhaLimpa.senha || null;
                     aluno.email = linhaLimpa.email || null;
                     aluno.idTurmaPrimaria = linhaLimpa.idTurmaPrimaria || null;
                     aluno.idTurmaSecundaria = linhaLimpa.idTurmaSecundaria || null;
@@ -60,7 +62,8 @@ module.exports = class AlunoControl {
                             telefone: aluno.telefone,
                             email: aluno.email,
                             idTurmaPrimaria : aluno.idTurmaPrimaria,
-                            idTurmaSecundaria : aluno.idTurmaSecundaria
+                            idTurmaSecundaria : aluno.idTurmaSecundaria,
+                            senha : aluno.senha
                         });
                     } else {
                         const criada = await aluno.create(); 
@@ -70,6 +73,7 @@ module.exports = class AlunoControl {
                                 nome: aluno.nome,
                                 telefone: aluno.telefone,
                                 email: aluno.email,
+                                senha: aluno.senha,
                                 idTurmaPrimaria : aluno.idTurmaPrimaria,
                                 idTurmaSecundaria : aluno.idTurmaSecundaria
                             });
@@ -108,6 +112,7 @@ module.exports = class AlunoControl {
         aluno.nome = request.body.aluno.nome;
         aluno.telefone = request.body.aluno.telefone;
         aluno.email = request.body.aluno.email;
+        aluno.senha = request.body.aluno.senha;
         aluno.idTurmaPrimaria = request.body.aluno.idTurmaPrimaria;
         aluno.idTurmaSecundaria = request.body.aluno.idTurmaSecundaria;
 

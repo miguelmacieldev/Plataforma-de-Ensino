@@ -17,6 +17,19 @@ module.exports = class AlunoMiddleware {
         }
     }     
     
+    validar_senhaAluno(req, res, next) {
+        const senha = req.body.aluno.senha;
+        
+        if (!senha || typeof senha !== 'string' || senha.length < 3) {
+            return res.status(400).json({
+                status: false,
+                msg: 'Senha inválida (mínimo 3 caracteres)'
+            });
+        }
+        
+        next();
+    }
+
     validar_matriculaAluno(request, response, next) {
    
         const matriculaAluno = request.body.aluno.matricula;
@@ -26,7 +39,7 @@ module.exports = class AlunoMiddleware {
             
             const objResposta = {
                 status: false,
-                msg: "O nome deve ter pelo menos 8 caracteres e ser um número"
+                msg: "A matricula deve ter pelo menos 8 caracteres e ser um número"
             }
 
             response.status(200).send(objResposta);
@@ -36,19 +49,22 @@ module.exports = class AlunoMiddleware {
     }     
  
     validar_idTurmasAluno(request, response, next) {
-   
-        const idTurmaPrimariaAluno = request.body.aluno.idTurmaPrimaria;
-        const idTurmaSecundariaAluno = request.body.aluno.idTurmaSecundaria;
+        const { idTurmaPrimaria, idTurmaSecundaria } = request.body.aluno;
 
-        if (isNaN(Number(idTurmaPrimariaAluno)) || isNaN(Number(idTurmaSecundariaAluno))) {
-            const objResposta = {
-                status: false,
-                msg: "Os ids das turmas do aluno devem ser números"
+            const idPrimaria = Number(idTurmaPrimaria);
+            const idSecundaria = Number(idTurmaSecundaria);
+
+            if (
+                isNaN(idPrimaria) || 
+                isNaN(idSecundaria) || 
+                idPrimaria === idSecundaria
+            ) {
+                return response.status(400).json({
+                    status: false,
+                    msg: "Os IDs das turmas devem ser números diferentes e válidos.",
+                });
             }
 
-            response.status(200).send(objResposta);
-        } else {
-            next(); 
-        }
+        next();
     }     
 }

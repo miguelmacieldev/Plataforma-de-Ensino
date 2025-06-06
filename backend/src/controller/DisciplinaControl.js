@@ -141,6 +141,23 @@ module.exports = class DisciplinaControl {
         response.status(200).send(objResposta);
     }
 
+    async disciplina_read_disciplina_turma(req, res) {
+        const idTurma = req.params.idTurma;
+        var disciplina = new Disciplina();
+        const resultado = await disciplina.buscarPorTurma(idTurma);
+      
+        const objResposta = {
+            cod: 1,
+            status: true,
+            msg: 'Disciplinas encontradas com sucesso',
+            disciplinas: resultado
+        };
+
+        res.status(200).json(objResposta);
+    }
+
+
+
     async disciplina_read_by_id_control(request, response) {
         var disciplina = new Disciplina();
         disciplina.idDisciplina = request.params.idDisciplina;

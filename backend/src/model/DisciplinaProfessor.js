@@ -8,7 +8,7 @@ class DisciplinaProfessor {
     }
 
     async create() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         
         const vinculoExistente = await this.vinculoExiste();
         if (vinculoExistente) {
@@ -23,27 +23,48 @@ class DisciplinaProfessor {
         }
     
         const SQL = 'INSERT INTO disciplinaprofessor (idProfessor, idDisciplina) VALUES (?, ?);';
-        const [result] = await conexao.promise().execute(SQL, [this._idProfessor, this._idDisciplina]);
+        const [result] = await conexao.execute(SQL, [this._idProfessor, this._idDisciplina]);
         this._idDisciplinaProfessor = result.insertId;
         return result.affectedRows > 0;
     }
 
     async vinculoExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM disciplinaprofessor WHERE idProfessor = ? AND idDisciplina = ?;';
-        const [rows] = await conexao.promise().execute(SQL, [this._idProfessor, this._idDisciplina]);
+        const [rows] = await conexao.execute(SQL, [this._idProfessor, this._idDisciplina]);
         return rows[0].qtd > 0;
     }
 
     async delete() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'DELETE FROM disciplinaprofessor WHERE idDisciplinaProfessor = ?;';
-        const [result] = await conexao.promise().execute(SQL, [this._idDisciplinaProfessor]);
-        return result.affectedRows > 0;
+
+        try {
+            const [result] = await conexao.execute(SQL, [this._idDisciplinaProfessor]);
+            return [result.affectedRows > 0];
+        } catch (error) {  
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return false
+            };
+            return false;
+        }
     }
 
+    async procurarIdDisciplinaProfessor(idProfessor){
+        const conexao = await Banco.getConexao();
+        const SQL = `
+                    SELECT * 
+                    FROM disciplinaprofessor 
+                    WHERE idProfessor = ?;
+            `;
+        
+        const [rows] = await conexao.execute(SQL, [idProfessor]);
+        return rows[0] || null;    
+    }
+
+
     async readByID() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                         SELECT 
                             dp.idDisciplinaProfessor,
@@ -53,12 +74,12 @@ class DisciplinaProfessor {
                         WHERE dp.idDisciplinaProfessor = ?;
 
                     `;
-        const [rows] = await conexao.promise().execute(SQL, [this._idDisciplinaProfessor]);
+        const [rows] = await conexao.execute(SQL, [this._idDisciplinaProfessor]);
         return rows[0] || null;
     }
 
     async readAll() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                         SELECT 
                             dp.idDisciplinaProfessor,
@@ -67,12 +88,12 @@ class DisciplinaProfessor {
                         FROM disciplinaprofessor dp;
 
                     `;
-        const [rows] = await conexao.promise().execute(SQL);
+        const [rows] = await conexao.execute(SQL);
         return rows;
     }
 
     async update() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const professorValido = await this.professorExiste();
         const disciplinaValida = await this.disciplinaExiste();
 
@@ -90,7 +111,7 @@ class DisciplinaProfessor {
             SET idProfessor = ?, idDisciplina = ? 
             WHERE idDisciplinaProfessor = ?;
         `;
-        const [result] = await conexao.promise().execute(SQL, [
+        const [result] = await conexao.execute(SQL, [
             this._idProfessor,
             this._idDisciplina,
             this._idDisciplinaProfessor
@@ -99,12 +120,12 @@ class DisciplinaProfessor {
     }
 
     async vinculoDuplicado() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
             SELECT * FROM disciplinaprofessor 
             WHERE idProfessor = ? AND idDisciplina = ? AND idDisciplinaProfessor != ?;
         `;
-        const [result] = await conexao.promise().execute(SQL, [
+        const [result] = await conexao.execute(SQL, [
             this._idProfessor,
             this._idDisciplina,
             this._idDisciplinaProfessor
@@ -114,16 +135,16 @@ class DisciplinaProfessor {
     }
 
     async professorExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM professor WHERE idProfessor = ?;';
-        const [rows] = await conexao.promise().execute(SQL, [this._idProfessor]);
+        const [rows] = await conexao.execute(SQL, [this._idProfessor]);
         return rows[0].qtd > 0;
     }
 
     async disciplinaExiste() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM disciplina WHERE idDisciplina = ?;';
-        const [rows] = await conexao.promise().execute(SQL, [this._idDisciplina]);
+        const [rows] = await conexao.execute(SQL, [this._idDisciplina]);
         return rows[0].qtd > 0;
     }
 

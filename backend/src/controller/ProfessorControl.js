@@ -12,6 +12,7 @@ module.exports = class ProfessorControl {
         professor.nome = request.body.professor.nome;
         professor.telefone = request.body.professor.telefone;
         professor.senha = request.body.professor.senha;
+        professor.email = request.body.professor.email;
 
         const isCreated = await professor.create();
 
@@ -46,12 +47,14 @@ module.exports = class ProfessorControl {
                     professor.nome = linhaLimpa.nome || null;
                     professor.telefone = linhaLimpa.telefone || null;
                     professor.senha = linhaLimpa.senha || null;
+                    professor.email = linhaLimpa.email || null;
     
                     if (await professor.isProfessor()) {
                         professoresIgnorados.push({
                             nome: professor.nome,
                             telefone: professor.telefone,
-                            senha: professor.senha
+                            senha: professor.senha, 
+                            email: professor.email
                         });
                     } else {
                         const criada = await professor.create(); 
@@ -59,7 +62,8 @@ module.exports = class ProfessorControl {
                             professoresCriados.push({
                                 nome: professor.nome,
                                 telefone: professor.telefone,
-                                senha: professor.senha
+                                senha: professor.senha,
+                                email: professor.email
                             });
                         }
                     }
@@ -97,7 +101,7 @@ module.exports = class ProfessorControl {
         let professores = []
 
         if(isDeleted){
-            professores = professor.readAll()
+            professores = await professor.readAll()
         }
 
         const objResposta = {
@@ -110,12 +114,29 @@ module.exports = class ProfessorControl {
         response.status(200).send(objResposta);
     }
 
+    async professor_read_disciplina_turma(request, response){
+        var professor = new Professor();
+        professor.idProfessor = request.params.idProfessor;
+        const resultados = await professor.buscarPorTurmaDisciplina();
+
+        
+        const objResposta = {
+            cod: 1,
+            status: true,
+            msg: 'Executado com sucesso',
+            resultados : resultados
+        };
+
+        response.status(200).send(objResposta);        
+    }
+
     async professor_update_control(request, response) {
         var professor = new Professor();
         professor.idProfessor = request.params.idProfessor;
         professor.nome = request.body.professor.nome;
         professor.telefone = request.body.professor.telefone;
         professor.senha = request.body.professor.senha;
+        professor.email = request.body.professor.email;
 
         const isUpdated = await professor.update();
 

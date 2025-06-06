@@ -83,6 +83,27 @@ module.exports = class DisciplinaProfessorControl {
             });
     }
 
+    async disciplinaProfessor_read_by_id_professor_control(req, res){
+        const dp = new DisciplinaProfessor();
+        let idProfessor = req.params.idProfessor
+
+        const resultado = await dp.procurarIdDisciplinaProfessor(idProfessor);
+
+        if (resultado) {
+            res.status(200).send({
+                cod: 1,
+                status: true,
+                msg: 'Vínculo encontrado',
+                disciplinaProfessor: resultado
+            });
+        } else {
+            res.status(404).send({
+                cod: 0,
+                status: false,
+                msg: 'Vínculo não encontrado'
+            });
+        }    
+    }
 
     async disciplinaProfessor_delete_control(req, res) {
         const dp = new DisciplinaProfessor();

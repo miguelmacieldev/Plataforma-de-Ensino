@@ -1,6 +1,7 @@
+
 const express = require('express');
 const path = require('path');
-
+const LoginRouter = require('./router/LoginRouter');
 const TurmaRouter = require('./router/TurmaRouter');
 const ProfessorRouter = require('./router/ProfessorRouter');
 const AlunoRouter = require('./router/AlunoRouter');
@@ -15,6 +16,10 @@ const portaServico = 3000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'pages')));
+app.use('/style', express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'style')));
+app.use('/script', express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'script')));
+app.use('/imgs', express.static(path.join(__dirname, '..', '..', 'frontend', 'imgs')));
+
 
 const turmaRoteador = new TurmaRouter();
 const professorRoteador = new ProfessorRouter();
@@ -23,8 +28,14 @@ const disciplinaRoteador = new DisciplinaRouter();
 const disciplinaProfessorRoteador = new DisciplinaProfessorRouter();
 const atividadeRoteador = new AtividadeRouter();
 const atividadeEntregueRoteador = new AtividadeEntregueRouter();
+const loginRoteador = new LoginRouter();
 
-app.use('/turmas', turmaRoteador.criarRotasTurma());
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'frontend', 'src', 'pages', 'pagina_inicial.html'));
+});
+
+app.use('/login', loginRoteador.criarRotasLogin());
+app.use('/turmas',turmaRoteador.criarRotasTurma());
 app.use('/professores', professorRoteador.criarRotasProfessor());
 app.use('/alunos', alunoRoteador.criarRotasAluno());
 app.use('/disciplinas', disciplinaRoteador.criarRotasDisciplina());
@@ -35,4 +46,3 @@ app.use('/atividades-entregues', atividadeEntregueRoteador.criarRotasAtividadeEn
 app.listen(portaServico, () => {    
     console.log(`API rodando no endereço: http://localhost:${portaServico}/`);
 });
-

@@ -19,6 +19,7 @@
       <input type="text" id="txtEmail">
       <input type="text" id="txtIdTurmaPrimaria">
       <input type="text" id="txtIdTurmaSecundaria">
+      <input type="text" id="txtSenha">
     </div>
     <div>
       <button id="btnCadastrar">Cadastrar aluno</button>
@@ -32,8 +33,10 @@
     const txtEmail = document.getElementById("txtEmail");
     const txtIdTurmaPrimaria = document.getElementById("txtIdTurmaPrimaria");
     const txtIdTurmaSecundaria = document.getElementById("txtIdTurmaSecundaria");
+    const txtSenha = document.getElementById("txtSenha");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
+    const token = localStorage.getItem("token");
 
     getAluno();
 
@@ -80,7 +83,7 @@
       divDados.appendChild(tabela);
 
       const cabecalho = document.createElement("tr");
-      const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Excluir", "Selecionar","Atualizar"];
+      const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Senha", "Excluir", "Selecionar","Atualizar"];
       for (let texto of colunas) {
         const th = document.createElement("th");
         th.appendChild(document.createTextNode(texto));
@@ -118,6 +121,7 @@
           txtEmail.value = aluno.email;
           txtIdTurmaPrimaria.value = aluno.idTurmaPrimaria;
           txtIdTurmaSecundaria.value = aluno.idTurmaSecundaria;
+          txtSenha.value = aluno.senha;
         }
         
         btnAtualizar.onclick = function(){
@@ -144,6 +148,10 @@
         const tdTurmaSecundaria = document.createElement("td");
         tdTurmaSecundaria.appendChild(document.createTextNode(aluno.idTurmaSecundaria));
         linha.appendChild(tdTurmaSecundaria);
+        
+        const tdSenha = document.createElement("td");
+        tdSenha.appendChild(document.createTextNode(aluno.senha));
+        linha.appendChild(tdSenha);
 
         linha.appendChild(tdExcluir);
         linha.appendChild(tdSelecionar);
@@ -157,16 +165,23 @@
       fetch(URI, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
         .then((resposta) => resposta.text())
         .then((respostaConvertida) => {
-          construirTabela(respostaConvertida);
+          const obj = JSON.parse(respostaConvertida);
+          if (obj.status === true) {
+            getAluno();
+            alert(obj.msg);
+          } 
+          getAluno();
+          alert(obj.msg);
         })
         .catch((error) => {
-          alert(error);
+          alert(error)
         });
     }
 
@@ -175,8 +190,9 @@
       fetch(URI, {
         method: "GET",
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
       })
         .then((resposta) => resposta.text())
@@ -195,9 +211,10 @@
       const email = txtEmail.value;
       const idTurmaPrimaria = txtIdTurmaPrimaria.value;
       const idTurmaSecundaria = txtIdTurmaSecundaria.value;
+      const senha = txtSenha.value;
       const URI = "/alunos/" + matricula_;
 
-      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria) {
+      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria || !senha) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -208,6 +225,7 @@
           nome: nome,
           telefone: telefone,
           email: email,
+          senha: senha,
           idTurmaPrimaria: idTurmaPrimaria,
           idTurmaSecundaria: idTurmaSecundaria,
         },
@@ -217,8 +235,9 @@
         method: "PUT",
         body: JSON.stringify(objAluno),
         headers: {
-          Accept: "application/json",
+          "Accept": "application/json",
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
       })
         .then((resposta) => resposta.text())
@@ -231,6 +250,7 @@
             txtNome.value = "";
             txtTelefone.value = "";
             txtEmail.value = "";
+            txtSenha.value = "";
             txtIdTurmaPrimaria.value = "";
             txtIdTurmaSecundaria.value = "";
           }
@@ -247,11 +267,12 @@
       const nome = txtNome.value;
       const telefone = txtTelefone.value;
       const email = txtEmail.value;
+      const senha = txtSenha.value;
       const idTurmaPrimaria = txtIdTurmaPrimaria.value;
       const idTurmaSecundaria = txtIdTurmaSecundaria.value;
       const URI = "/alunos";
 
-      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria) {
+      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria || !senha) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -262,6 +283,7 @@
           nome: nome,
           telefone: telefone,
           email: email,
+          senha: senha,
           idTurmaPrimaria: idTurmaPrimaria,
           idTurmaSecundaria: idTurmaSecundaria,
         },
@@ -271,7 +293,8 @@
         method: "POST",
         body: JSON.stringify(objAluno),
         headers: {
-          Accept: "application/json",
+          "Authorization": "Bearer " + token,
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
       })
@@ -283,6 +306,7 @@
             txtMatricula.value = "";
             txtNome.value = "";
             txtTelefone.value = "";
+            txtSenha.value = "";
             txtEmail.value = "";
             txtIdTurmaPrimaria.value = "";
             txtIdTurmaSecundaria.value = "";

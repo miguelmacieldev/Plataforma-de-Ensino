@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../style/padrao.css">
         <link rel="stylesheet" href="../style/entrar.css">
+        <script src="../script/jwt-decode.min.js"></script>
         <title>Document</title>
     </head>
     <body>
@@ -12,7 +13,7 @@
             <nav>
                 <p id="nome-pagina">infotec.</p>
                 <ul>
-                    <li><a href="./pagina_incial.html">início</a></li>
+                    <li><a href="./">início</a></li>
                 </ul>
                 <a href="./entrar.html" class="botao">entrar</a>
             </nav>
@@ -23,7 +24,7 @@
                     <h2>Seja Bem-Vindo Novamente!</h2>
                     <div class="input-conteiner">
                         <input type="text" id="nome" required>
-                        <label for="nome">Nome</label>
+                        <label for="email">Email</label>
                     </div>
                     <div class="input-conteiner">
                         <input type="text" id="senha" required>
@@ -31,14 +32,53 @@
                     </div>
                     <input type="submit" class="inverso">
                 </form>
-                <div class="qrcode">
-                    <img src="https://1.bp.blogspot.com/-dHN4KiD3dsU/XRxU5JRV7DI/AAAAAAAAAz4/u1ynpCMIuKwZMA642dHEoXFVKuHQbJvwgCEwYBhgL/s1600/qr-code.png" alt="">
-                    <div>
-                        <h3>Faça login pelo qrcode</h3>
-                        <p class="descricao">Ligue a câmera do seu celular e coloque sobre o qrcode para fazer o login</p>
-                    </div>
-                </div>
             </div>
         </main>
     </body>
+    <script>
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.querySelector('#nome').value;
+        const senha = document.querySelector('#senha').value;
+
+        try {
+            const resposta = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const dados = await resposta.json();
+
+            if (!resposta.ok) {
+                alert(dados.mensagem || 'Erro no login');
+                return;
+            }
+            
+            localStorage.setItem('token', dados.token);
+            let decoded = jwt_decode(dados.token);
+            localStorage.setItem('tipoUsuario', decoded.role);
+            localStorage.setItem('idUsuario', decoded.id);
+
+            if (dados.role === 'admin') {
+                window.location.href = './painel.html';
+            } else if (dados.role === 'aluno') {
+                window.location.href = './pagina_aluno_principal.html';
+            } else if (dados.role === 'professor') {
+                window.location.href = './pagina_professor_principal.html';
+            } else {
+                alert('Tipo de usuário desconhecido');
+            }
+
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro ao tentar logar');
+        }
+    });
+    </script>
 </html>

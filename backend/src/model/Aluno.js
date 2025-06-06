@@ -1,9 +1,11 @@
 const Banco = require('../database/Banco');
+const {compararSenha, gerarHashSenha} = require('../utils/criptografia')
 
 class Aluno {
     constructor() {
         this._matricula = '';
         this._nome = '';
+        this._senha = '';
         this._telefone = '';
         this._email = '';
         this._idTurmaPrimaria = null;
@@ -12,8 +14,8 @@ class Aluno {
 
     // Criação de um novo aluno
     async create() {
-        const conexao = Banco.getConexao();
-        const SQL = 'INSERT INTO aluno (matricula, nome, telefone, email, idTurmaPrimaria, idTurmaSecundaria) VALUES (?, ?, ?, ?, ?, ?);';
+        const conexao = await Banco.getConexao();
+        const SQL = 'INSERT INTO aluno (matricula, nome, telefone, email, idTurmaPrimaria, idTurmaSecundaria, senha) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
         try {
             if (await this.isAluno()) {
@@ -24,13 +26,16 @@ class Aluno {
                 return false;
             }
 
-            const [result] = await conexao.promise().execute(SQL, [
+            const senhaHash = await gerarHashSenha(this._senha);
+
+            const [result] = await conexao.execute(SQL, [
                 this._matricula,
                 this._nome,
                 this._telefone,
                 this._email,
                 this._idTurmaPrimaria,
-                this._idTurmaSecundaria
+                this._idTurmaSecundaria,
+                senhaHash
             ]);
             return result.affectedRows > 0;
         } catch (error) {
@@ -39,22 +44,24 @@ class Aluno {
         }
     }
 
-    // Atualização de aluno existente
     async update() {
-        const conexao = Banco.getConexao();
-        const SQL = 'UPDATE aluno SET nome = ?, telefone = ?, email = ?, idTurmaPrimaria = ?, idTurmaSecundaria = ? WHERE matricula = ?;';
+        const conexao = await Banco.getConexao();
+        const SQL = 'UPDATE aluno SET nome = ?, telefone = ?, email = ?, idTurmaPrimaria = ?, idTurmaSecundaria = ?, senha = ? WHERE matricula = ?;';
 
         try {
-            if (!(await this.verificaTurmasExistem()) || await this.isAluno()) {
+            if (!(await this.verificaTurmasExistem()) || !(await this.isAluno())) {
                 return false;
             }
 
-            const [result] = await conexao.promise().execute(SQL, [
+            const senhaHash = await gerarHashSenha(this._senha);
+
+            const [result] = await conexao.execute(SQL, [
                 this._nome,
                 this._telefone,
                 this._email,
                 this._idTurmaPrimaria,
                 this._idTurmaSecundaria,
+                senhaHash,
                 this._matricula
             ]);
             return result.affectedRows > 0;
@@ -65,10 +72,10 @@ class Aluno {
 
     // Excluir aluno
     async delete() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'DELETE FROM aluno WHERE matricula = ?;';
         try {
-            const [result] = await conexao.promise().execute(SQL, [this._matricula]);
+            const [result] = await conexao.execute(SQL, [this._matricula]);
             return [result.affectedRows > 0];
         } catch (error) {  
             if (error.code === 'ER_ROW_IS_REFERENCED_2') {
@@ -80,10 +87,10 @@ class Aluno {
 
     // Verifica se o aluno já existe pela matrícula
     async isAluno() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM aluno WHERE matricula = ?;';
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._matricula]);
+            const [rows] = await conexao.execute(SQL, [this._matricula]);
             return rows.length > 0 && rows[0].qtd > 0;
         } catch (error) {
             console.error('Erro ao verificar aluno:', error.message);
@@ -93,7 +100,7 @@ class Aluno {
 
     // Verifica se as duas turmas informadas existem
     async verificaTurmasExistem() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
     
         // Converte para número e valida
         const turmaPrimaria = parseInt(this._idTurmaPrimaria);
@@ -107,12 +114,11 @@ class Aluno {
         const SQL = 'SELECT idTurma FROM turma WHERE idTurma IN (?, ?);';
     
         try {
-            const [rows] = await conexao.promise().execute(SQL, [turmaPrimaria, turmaSecundaria]);
+            const [rows] = await conexao.execute(SQL, [turmaPrimaria, turmaSecundaria]);
             const turmasEncontradas = rows.map(row => row.idTurma);
             return turmasEncontradas.includes(turmaPrimaria) &&
                    turmasEncontradas.includes(turmaSecundaria);
         } catch (error) {
-            console.error('Erro ao verificar turmas:', error.message);
             return false;
         }
     }
@@ -120,7 +126,7 @@ class Aluno {
     
     // Leitura de todos os alunos
     async readAll() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                         SELECT 
                             a.matricula,
@@ -128,12 +134,13 @@ class Aluno {
                             a.telefone,
                             a.email,
                             a.idTurmaPrimaria,
-                            a.idTurmaSecundaria
+                            a.idTurmaSecundaria,
+                            a.senha
                         FROM aluno a
                         ORDER BY a.nome;
                     `;
         try {
-            const [rows] = await conexao.promise().execute(SQL);
+            const [rows] = await conexao.execute(SQL);
             return rows;
         } catch (error) {
             console.error('Erro ao ler alunos:', error.message);
@@ -144,7 +151,7 @@ class Aluno {
 
     // Leitura de aluno por matrícula
     async readByID() {
-        const conexao = Banco.getConexao();
+        const conexao = await Banco.getConexao();
         const SQL = `
                        SELECT 
                         a.matricula,
@@ -152,22 +159,49 @@ class Aluno {
                         a.telefone,
                         a.email,
                         a.idTurmaPrimaria,
-                        a.idTurmaSecundaria
+                        a.idTurmaSecundaria,
+                        a.senha
                     FROM aluno a
                     WHERE a.matricula = ?;
                      `;
         try {
-            const [rows] = await conexao.promise().execute(SQL, [this._matricula]);
+            const [rows] = await conexao.execute(SQL, [this._matricula]);
             if (rows.length > 0) {
                 return rows[0];
             } else {
-                console.log('Nenhum aluno encontrado com a matrícula:', this._matricula);
                 return null;
             }
         } catch (error) {
             console.error('Erro ao ler aluno por matrícula:', error.message);
             return null;
         }
+    }
+
+    async verificarUsuarioSenha() {
+        const conexao = await Banco.getConexao();
+        const sql = 'SELECT * FROM aluno WHERE email = ?';
+        const [rows] = await conexao.execute(sql, [this.email]);
+
+        if (rows.length === 0){
+            return false;
+        }
+
+        const aluno = rows[0];
+
+        const senhaCorreta = await compararSenha(this.senha, aluno.senha);
+        if (!senhaCorreta){
+            return false;
+        }
+
+        this.matricula = aluno.matricula;
+        this.email = aluno.email
+        this.nome = aluno.nome;
+        this.telefone = aluno.telefone;
+        this.idTurmaPrimaria = aluno.idTurmaPrimaria;
+        this.idTurmaSecundaria = aluno.idTurmaSecundaria;
+
+        
+        return true;
     }
 
     // Getters e Setters
@@ -217,6 +251,14 @@ class Aluno {
 
     set idTurmaSecundaria(valor) {
         this._idTurmaSecundaria = valor;
+    }
+    
+    get senha() {
+        return this._senha;
+    }
+
+    set senha(valor) {
+        this._senha = valor;
     }
 }
 

@@ -1,10 +1,8 @@
-.professores{
+.disciplinas{
     display: grid;
     grid-template-columns: repeat(3, minmax(325px, 1fr)); 
     grid-auto-rows: 275px;
     gap: 25px;
-    padding: 20px;
-    padding-top: 5rem;
     margin-right: -20rem;
 }
 
@@ -15,7 +13,7 @@
     background-color: white;
 }
 
-.professor {
+.disciplina {
     background-color: transparent;
     color: white;
     border: 0.1rem solid white;
@@ -39,15 +37,10 @@
     }
 }
 
-.professor:hover{
+.disciplina:hover{
     transform: scale(1.09);
     text-decoration: underline;
     box-shadow: 0 0 25px 1px rgba(0, 0, 0, 0.5);
 }
 
 
-main{
-    display: flex;
-    justify-content: center;
-    height:100vh
-}
