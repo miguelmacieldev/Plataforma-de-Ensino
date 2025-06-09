@@ -7,14 +7,15 @@ class AtividadeEntregue {
         this._idAtividade = null;
         this._dataEntrega = null;
         this._caminhoGravacao = '';
+        this._nota = null;
     }
 
     async create() {
         const conexao = await Banco.getConexao();
         const SQL = `
             INSERT INTO atividadeentregue
-            (matriculaAluno, idAtividade, dataEntrega, caminhoGravacao)
-            VALUES (?, ?, ?, ?);
+            (matriculaAluno, idAtividade, dataEntrega, caminhoGravacao, nota)
+            VALUES (?, ?, ?, ?, ?);
         `;
 
         try {
@@ -27,7 +28,8 @@ class AtividadeEntregue {
                 this._matriculaAluno,
                 this._idAtividade,
                 this._dataEntrega,
-                this._caminhoGravacao
+                this._caminhoGravacao,
+                this._nota
             ]);
 
             this._idAtividadeEntregue = result.insertId;
@@ -45,7 +47,8 @@ class AtividadeEntregue {
                 matriculaAluno = ?,
                 idAtividade = ?,
                 dataEntrega = ?,
-                caminhoGravacao = ?
+                caminhoGravacao = ?,
+                nota = ?
             WHERE idAtividadeEntregue = ?;
         `;
 
@@ -60,6 +63,7 @@ class AtividadeEntregue {
                 this._idAtividade,
                 this._dataEntrega,
                 this._caminhoGravacao,
+                this._nota,
                 this._idAtividadeEntregue
             ]);
 
@@ -114,7 +118,8 @@ class AtividadeEntregue {
                 ae.matriculaAluno,
                 ae.idAtividade,
                 ae.dataEntrega,
-                ae.caminhoGravacao
+                ae.caminhoGravacao,
+                ae.nota
             FROM atividadeentregue ae
             WHERE ae.idAtividadeEntregue = ?;
     `;

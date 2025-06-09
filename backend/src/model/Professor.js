@@ -119,7 +119,6 @@ class Professor {
             return false;
         }
     }
-
     
     async verificarUsuarioSenha() {        
         const conexao = await Banco.getConexao();

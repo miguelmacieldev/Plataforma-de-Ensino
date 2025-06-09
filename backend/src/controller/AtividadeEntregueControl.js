@@ -7,6 +7,7 @@ module.exports = class AtividadeEntregueControl {
         model.idAtividade = request.body.atividadeentregue.idAtividade;
         model.dataEntrega = request.body.atividadeentregue.dataEntrega;
         model.caminhoGravacao = request.body.atividadeentregue.caminhoGravacao;
+        model.nota = request.body.atividadeentregue.nota;
 
         const isCreated = await model.create();
 
@@ -28,6 +29,7 @@ module.exports = class AtividadeEntregueControl {
         model.idAtividade = request.body.atividadeentregue.idAtividade;
         model.dataEntrega = request.body.atividadeentregue.dataEntrega;
         model.caminhoGravacao = request.body.atividadeentregue.caminhoGravacao;
+        model.nota = request.body.atividadeentregue.nota;
 
         const isUpdated = await model.update();
 

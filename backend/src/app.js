@@ -1,6 +1,7 @@
 
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const LoginRouter = require('./router/LoginRouter');
 const TurmaRouter = require('./router/TurmaRouter');
 const ProfessorRouter = require('./router/ProfessorRouter');
@@ -14,11 +15,20 @@ const app = express();
 
 const portaServico = 3000;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'pages')));
 app.use('/style', express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'style')));
 app.use('/script', express.static(path.join(__dirname, '..', '..', 'frontend', 'src', 'script')));
 app.use('/imgs', express.static(path.join(__dirname, '..', '..', 'frontend', 'imgs')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 
 
 const turmaRoteador = new TurmaRouter();
