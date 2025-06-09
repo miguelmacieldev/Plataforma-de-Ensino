@@ -29,12 +29,15 @@
                         <button class="ql-italic"></button>
                         <button class="ql-underline"></button>
                         <button class="ql-link"></button>
-                        <button class="ql-list" value="ordered"></button>
-                        <button class="ql-list" value="bullet"></button>
-                        <button class="ql-clean"></button>
                     </div>
                     <div id="editor-wrapper">
                         <div id="editor-container"></div>
+                    </div>
+                     <div id="arquivo-container" class="">
+                        <input type="file" id="arquivo-upload" name="arquivo" accept=".pdf" class="hidden">
+                        <label for="arquivo-upload" class="botao-secundario">Adicionar PDF</label>
+                        <span id="nome-arquivo">Nenhum arquivo selecionado</span>
+                        <button id="remover-arquivo" class="botao-remover">×</button>
                     </div>
                 </div>
                 <a href="" class="botao">postar</a>
@@ -54,12 +57,45 @@
                 <input type="radio" name="tipo-postagem" value="comentario" id="radio-comentario">
                 <p>Comentario</p>
             </div>
-            <a href="" class="botao concluir">Concluir</a>             
+            <a href="#" class="botao concluir">Concluir</a>             
         </div>
     </div>
+   
+    <div id="popup-excluir" class="popup-excluir hidden">
+        <button id="botao-excluir" class="botao">Excluir</button>
+        <button id="botao-editar" class="botao">Editar</button>
+    </div>
+    
+    <!-- Popup editar (corrigido) -->
+    <div id="popup-editar" class="popup-editar hidden">
+        <div class="editor-texto">
+            <div>
+                <div id="toolbar-editar">
+                    <select class="ql-header">
+                    <option selected></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    </select>
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-link"></button>
+                </div>
+                <div id="editor-wrapper-editar">
+                    <div id="editor-container-editar"></div>
+                </div>
+                <div id="arquivo-container-editar">
+                    <input type="file" id="arquivo-upload-editar" name="arquivo" accept=".pdf" class="hidden">
+                    <label for="arquivo-upload-editar" class="botao-secundario">Adicionar PDF</label>
+                    <span id="nome-arquivo-editar">Nenhum arquivo selecionado</span>
+                    <button id="remover-arquivo-editar" class="botao-remover">×</button>
+                </div>
+            </div>
+            <a href="#" class="botao" id="botao-salvar-edicao">Editar</a>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <!-- MANTER SEU HTML COMO ESTÁ -->
-<!-- Vamos alterar apenas o script -->
     <script>
     const token = localStorage.getItem('token');
     const idUsuario = localStorage.getItem('idUsuario');
@@ -67,6 +103,20 @@
 
     const botao = document.querySelector('.botao');
     const botaoConcluir = document.querySelector('.concluir');
+
+    const arquivoContainer = document.getElementById('arquivo-container');
+    const arquivoUpload = document.getElementById('arquivo-upload');
+    const nomeArquivo = document.getElementById('nome-arquivo');
+    const removerArquivo = document.getElementById('remover-arquivo');
+    let arquivoSelecionado = null;
+
+    let atividadeOriginal = null;
+    let idAtividadeEditando = null;
+
+    let devolucaoEditar = '';
+    let dataEntregaEditar = '';
+    let dataPostagemEditar = '';
+    let caminhoGravacaoEditar = '';
 
     if (tipoUsuario === 'aluno') {
         const editor_texto = document.getElementsByClassName('editor-texto')[0];
@@ -80,9 +130,223 @@
         }
     });
 
+    const quillEditar = new Quill('#editor-container-editar', {
+        theme: 'snow',
+        modules: {
+            toolbar: '#toolbar-editar'
+        }
+    });
+
+
     getTurma();
     getDisciplina();
     getAtividades();
+
+
+document.getElementById('botao-editar').addEventListener('click', async () => {
+    const idAtividade = document.getElementById('botao-excluir').dataset.idAtividade;
+    
+    if (!idAtividade) return;
+    
+    try {
+        const resposta = await fetch(`/atividades/${idAtividade}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+            }
+        });
+        
+        const obj = await resposta.json();
+        
+        if (obj.status === true && obj.atividade) {
+            // Armazena a atividade original completa
+            atividadeOriginal = obj.atividade;
+            idAtividadeEditando = idAtividade;
+            
+            // Preenche o editor
+            quillEditar.root.innerHTML = atividadeOriginal.descricao;
+            
+            // Mostra o nome do arquivo atual, se existir
+            if (atividadeOriginal.caminhoGravacao) {
+                const nomeArquivo = atividadeOriginal.caminhoGravacao.split('/').pop();
+                document.getElementById('nome-arquivo-editar').textContent = nomeArquivo;
+            } else {
+                document.getElementById('nome-arquivo-editar').textContent = 'Nenhum arquivo selecionado';
+            }
+            
+            // Mostra o popup de edição
+            document.getElementById('popup-excluir').classList.add('hidden');
+            document.getElementById('popup-editar').classList.remove('hidden');
+        } else {
+            alert(obj.msg || "Erro ao carregar atividade para edição");
+        }
+    } catch (error) {
+        console.error("Erro ao carregar atividade para edição:", error);
+        alert("Erro ao carregar atividade para edição");
+    }
+});
+
+// Gerenciar seleção de arquivo no editor de edição
+document.getElementById('arquivo-upload-editar').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (file.type !== 'application/pdf') {
+            alert('Por favor, selecione um arquivo PDF.');
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            alert('O arquivo é muito grande. Tamanho máximo: 5MB');
+            return;
+        }
+        
+        document.getElementById('nome-arquivo-editar').textContent = file.name;
+    }
+});
+
+// Remover arquivo selecionado no editor de edição
+document.getElementById('remover-arquivo-editar').addEventListener('click', function() {
+    document.getElementById('arquivo-upload-editar').value = '';
+    document.getElementById('nome-arquivo-editar').textContent = 'Nenhum arquivo selecionado';
+});
+
+// Evento para salvar as edições
+document.getElementById('botao-salvar-edicao').addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    if (!idAtividadeEditando || !atividadeOriginal) return;
+    
+    const descricaoEditor = quillEditar.root.innerHTML.trim();
+    const arquivoUploadEditar = document.getElementById('arquivo-upload-editar');
+    const file = arquivoUploadEditar.files[0];
+    
+    const atividadeData = {
+        atividade: {
+            descricao: descricaoEditor,
+            devolucao: atividadeOriginal.devolucao, 
+            dataPostagem: atividadeOriginal.dataPostagem,
+            dataEntrega: atividadeOriginal.dataEntrega,
+            idDisciplinaProfessor: atividadeOriginal.idDisciplinaProfessor
+        }
+    };
+    
+    const formData = new FormData();
+    formData.append('atividade', JSON.stringify(atividadeData.atividade));
+    
+    if (file) {
+        formData.append('arquivo', file);
+    } else if (atividadeOriginal.caminhoGravacao) {
+        formData.append('manterArquivo', 'true');
+    }
+    
+    try {
+        const resposta = await fetch(`/atividades/${idAtividadeEditando}`, {
+            method: "PUT",
+            body: formData,
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const obj = await resposta.json();
+
+        if (obj.status === true) {
+            alert(obj.msg || "Atividade editada com sucesso.");
+            document.getElementById('popup-editar').classList.add('hidden');
+            getAtividades();
+        } else {
+            alert(obj.msg || "Erro ao editar atividade.");
+        }
+    } catch (error) {
+        alert("Erro na requisição: " + error);
+    }
+    
+    idAtividadeEditando = null;
+    atividadeOriginal = null;
+});
+
+// Gerenciar seleção de arquivo
+arquivoUpload.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (file.type !== 'application/pdf') {
+            alert('Por favor, selecione um arquivo PDF.');
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            alert('O arquivo é muito grande. Tamanho máximo: 5MB');
+            return;
+        }
+        
+        arquivoSelecionado = file;
+        nomeArquivo.textContent = file.name;
+    }
+});
+
+// Remover arquivo selecionado
+removerArquivo.addEventListener('click', function() {
+    arquivoUpload.value = '';
+    arquivoSelecionado = null;
+    nomeArquivo.textContent = 'Nenhum arquivo selecionado';
+});
+
+
+async function postAtividade(tipoPostagem, idDisciplinaProfessor) {
+    const descricaoEditor = quill.root.innerHTML.trim();
+    const dataAtual = new Date();
+    const dataPostagem = dataAtual.toISOString().split('T')[0];
+    let dataEntrega = null;
+    let devolucao = 0;
+
+    if (tipoPostagem === 'atividade') {
+        devolucao = 1;
+        const entrega = new Date();
+        entrega.setDate(dataAtual.getDate() + 1);
+        dataEntrega = entrega.toISOString().split('T')[0];
+    }
+
+    const formData = new FormData();
+    formData.append('atividade[descricao]', descricaoEditor);
+    formData.append('atividade[devolucao]', devolucao);
+    formData.append('atividade[dataPostagem]', dataPostagem);
+    formData.append('atividade[dataEntrega]', dataEntrega);
+    formData.append('atividade[idDisciplinaProfessor]', idDisciplinaProfessor);
+
+    if (arquivoSelecionado) {
+        formData.append('arquivo', arquivoSelecionado);
+    }
+
+    try {
+        const resposta = await fetch("/atividades", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const obj = await resposta.json();
+
+        if (obj.status === true) {
+            alert(obj.msg || "Postagem realizada com sucesso.");
+            quill.setContents([]);
+            arquivoUpload.value = '';
+            arquivoSelecionado = null;
+            nomeArquivo.textContent = 'Nenhum arquivo selecionado';
+            removerArquivo.classList.add('hidden');
+            getAtividades();
+        } else {
+            alert(obj.msg || "Erro ao postar.");
+        }
+    } catch (error) {
+        alert("Erro na requisição: " + error);
+    }
+
+    document.getElementById('popup').classList.add('hidden');
+}
+
 
     botao.addEventListener('click', function (e) {
         e.preventDefault();
@@ -179,37 +443,144 @@
 }
 
 
-    async function renderizarAtividades(atividades) {
-        const container = document.getElementById("lista-atividades");
-        container.innerHTML = "";
+async function renderizarAtividades(atividades) {
+    const container = document.getElementById("lista-atividades");
+    container.innerHTML = "";
 
-        atividades.forEach(async (atividade) => {
+    // Usar for...of para garantir ordem e espera das promises
+    for (const atividade of atividades) {
+        try {
             const idProf = tipoUsuario === "professor" ? await getIdDisciplinaProfessor(idUsuario) : null;
             const idDisciplina = await getDisciplinaProfessor(atividade.idDisciplinaProfessor);
 
-            if ((tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisciplina) || (tipoUsuario === "professor" && idProf === atividade.idDisciplinaProfessor)) {
+            if ((tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisciplina) || 
+                (tipoUsuario === "professor" && idProf === atividade.idDisciplinaProfessor)) {
+                
                 const div = document.createElement("div");
                 const tipoClasse = atividade.devolucao === 0 ? "comentario" : "atividade";
                 div.classList.add(tipoClasse);
 
-                div.innerHTML = atividade.devolucao === 0 ?
-                    `<div>
-                        <p>Professor</p>
-                        <p>${atividade.dataPostagem}</p>
-                        <div><p>${atividade.descricao}</p></div>
-                    </div>` :
-                    `<div>
-                        <a href="#">
+                // Criar elementos DOM diretamente
+                const contentDiv = document.createElement("div");
+                
+                if (atividade.devolucao === 0) {
+                    // Comentário
+                    contentDiv.innerHTML = `
+                        <div>
+                            <p>Professor</p>
+                            <p>${atividade.dataPostagem}</p>
+                            <div><p>${atividade.descricao}</p></div>
+                        </div>
+                        ${tipoUsuario === "professor" ? `<div><p class='opcao-excluir' data-id-atividade="${atividade.idAtividade}">...</p></div>` : ''}
+                    `;
+                } else {
+                    // Atividade
+                    const link = document.createElement("a");
+                    link.id = `atividade-${atividade.idAtividade}`;
+                    link.innerHTML = `
+                        <div>
                             <p>Professor</p>
                             <p>${atividade.dataPostagem} - ${atividade.dataEntrega}</p>
                             <div><p>${atividade.descricao}</p></div>
-                        </a>
-                    </div>`;
+                        </div>
+                    `;
+                    
+                    // Adicionar event listener diretamente ao elemento criado
+                    link.addEventListener('click', () => {
+                        localStorage.setItem('atividadeSelecionada', atividade.idAtividade);
+                        window.location.href = "pagina_atividade_disciplina.html";
+                    });
+                    
+                    contentDiv.appendChild(link);
+                    
+                    if (tipoUsuario === "professor") {
+                        const optionsDiv = document.createElement("div");
+                        optionsDiv.innerHTML = `<p class='opcao-excluir' data-id-atividade="${atividade.idAtividade}">...</p>`;
+                        contentDiv.appendChild(optionsDiv);
+                    }
+                }
+
+                div.appendChild(contentDiv);
+
+                // Adicionar link para PDF se existir
+                if (atividade.caminhoGravacao) {
+                    const pdfLink = document.createElement("a");
+                    pdfLink.href = atividade.caminhoGravacao;
+                    pdfLink.target = "_blank";
+                    pdfLink.textContent = "Download PDF";
+                    div.appendChild(pdfLink);
+                }
 
                 container.appendChild(div);
             }
-        });
+        } catch (error) {
+            console.error("Erro ao renderizar atividade:", atividade.idAtividade, error);
+        }
     }
+}
+
+    // Evento para mostrar o popup de exclusão
+    document.getElementById('lista-atividades').addEventListener('click', (event) => {
+        if (event.target.classList.contains('opcao-excluir')) {
+            const popup = document.getElementById('popup-excluir');
+            const botaoExcluir = document.getElementById('botao-excluir');
+
+            // Posiciona o popup próximo ao botão clicado
+            const rect = event.target.getBoundingClientRect();
+            popup.style.top = (rect.bottom + window.scrollY) + "px";
+            popup.style.left = (rect.left + window.scrollX) + "px";
+            
+            // Armazena o ID da atividade no botão de excluir
+            botaoExcluir.dataset.idAtividade = event.target.dataset.idAtividade;
+            popup.classList.remove('hidden');
+        }
+    });
+
+    // Evento para fechar o popup quando clicar fora
+    document.addEventListener('click', (event) => {
+        if (!event.target.classList.contains('opcao-excluir') && 
+            event.target.id !== 'botao-excluir') {
+            document.getElementById('popup-excluir').classList.add('hidden');
+        }
+    });
+
+
+    document.getElementById('botao-editar').addEventListener('click', async ()=> {
+        document.getElementById('popup-editar').classList.remove('hidden')
+
+    })
+
+    // Evento para excluir a atividade
+    document.getElementById('botao-excluir').addEventListener('click', async () => {
+        const idAtividade = document.getElementById('botao-excluir').dataset.idAtividade;
+        
+        if (!idAtividade) return;
+        
+        try {
+            const resposta = await fetch(`/atividades/${idAtividade}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                }
+            });
+            
+            const obj = await resposta.json();
+            
+            if (obj.status === true) {
+                alert("Atividade excluída com sucesso!");
+                getAtividades(); // Recarrega a lista de atividades
+            } else {
+                alert(obj.msg || "Erro ao excluir atividade");
+            }
+        } catch (error) {
+            console.error("Erro ao excluir atividade:", error);
+            alert("Erro ao excluir atividade");
+        }
+        
+        document.getElementById('popup-excluir').classList.add('hidden');
+    });
+
 
     async function getTurma() {
         try {
@@ -266,59 +637,6 @@
 
         div.textContent = `${turma} - ${disciplina}`.trim();
     }
-
-    function postAtividade(tipoPostagem, idDisciplinaProfessor) {
-        const descricaoEditor = quill.root.innerHTML.trim();
-        const dataAtual = new Date();
-        const dataPostagem = dataAtual.toISOString().split('T')[0];
-        let dataEntrega = null;
-        let devolucao = 0;
-
-        if (tipoPostagem === "atividade") {
-            devolucao = 1;
-            const entrega = new Date();
-            entrega.setDate(dataAtual.getDate() + 1);
-            dataEntrega = entrega.toISOString().split('T')[0];
-        }
-
-        const objAtividade = {
-            atividade: {
-                descricao: descricaoEditor,
-                devolucao,
-                caminhoGravacao: "",
-                dataPostagem,
-                dataEntrega,
-                idDisciplinaProfessor
-            }
-        };
-
-        fetch("/atividades", {
-            method: "POST",
-            body: JSON.stringify(objAtividade),
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            }
-        })
-        .then(res => res.json())
-        .then(obj => {
-            if (obj.status === true) {
-                alert(obj.msg || "Postagem realizada com sucesso.");
-                quill.setContents([]); // limpa editor
-                getAtividades();
-            } else {
-                alert(obj.msg || "Erro ao postar.");
-            }
-        })
-        .catch(error => {
-            alert("Erro na requisição: " + error);
-        });
-
-        document.getElementById('popup').classList.add('hidden');
-    }
-</script>
-
-
+    </script>
 </body>
 </html>
