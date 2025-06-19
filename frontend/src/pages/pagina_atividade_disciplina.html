@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style/padrao.css">
+    <link rel="stylesheet" href="../style/pagina_atividade_disciplina.css">
     <title>Document</title>
 </head>
 <body>
@@ -11,7 +12,173 @@
         <p>muda tudo aqui</p>
     </aside>
     <main>
-        
+        <div class="atividade">
+            <div id="info">
+                <a href="" id="link-pdf">
+                    <div id="descricao-div"></div>
+                </a>
+                <p class="data" id="data">Data entrega : </p>
+            </div>
+            
+            <div id="arquivo-container" class="">
+                <input type="file" id="arquivo-upload" name="arquivo" accept=".pdf" class="hidden">
+                <img src="../../imgs/icone-de-dossier-symbole-png-gris (1).png" id="icone-upload" class="" alt="">
+                <p id="nome-arquivo">Nenhum arquivo selecionado</p>
+            </div>
+            <a href="#" id="enviar" class="botao">Enviar</a>
+        </div>
     </main>
+
+    <script>
+    const token = localStorage.getItem('token');
+    let file = null; // corrigido: agora é let para ser atualizado
+
+    getAtividade();
+
+    async function getAtividade() {
+    try {
+        const resposta = await fetch('atividades/' + localStorage.getItem('idAtividadeSelecionada'), {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+            }
+        });
+
+        const obj = await resposta.json();
+        if (obj.status === true && obj.atividade) {
+            renderizarAtividade(obj.atividade);
+
+            // Verifica se o aluno já enviou
+            const idAtividade = localStorage.getItem('idAtividadeSelecionada');
+            const matriculaAluno = localStorage.getItem('idUsuario');
+            verificarEntregaAluno(idAtividade, matriculaAluno);
+        } else {
+            console.error("Erro ao buscar atividade");
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+    }
+}
+
+
+    function renderizarAtividade(atividade){
+        const descricao = document.getElementById("descricao-div");
+        descricao.innerHTML = atividade.descricao;
+        if (atividade.caminhoGravacao !== '') {
+            const link_pdf = document.getElementById('link-pdf');
+            link_pdf.href = atividade.caminhoGravacao;
+        }
+        const data = document.getElementById("data");
+        data.innerHTML += atividade.dataEntrega;
+    }
+
+    // Abrir o seletor de arquivos ao clicar na imagem
+    document.getElementById('icone-upload').addEventListener('click', () => {
+        document.getElementById('arquivo-upload').click();
+    });
+
+    // Quando o arquivo for selecionado
+    document.getElementById('arquivo-upload').addEventListener('change', function(e) {
+        file = this.files[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+            alert('Por favor, selecione um arquivo PDF.');
+            file = null;
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('O arquivo é muito grande. Tamanho máximo: 5MB');
+            file = null;
+            return;
+        }
+
+        document.getElementById('nome-arquivo').textContent = file.name;
+    });
+
+    // Enviar o arquivo ao clicar no botão
+    document.getElementById('enviar').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!file) {
+            alert('Nenhum arquivo selecionado!');
+            return;
+        }
+        postAtividade();
+    });
+
+    async function postAtividade() {
+        const caminhoGravacao = '/uploads/' + file.name
+        const dataEntrega  = new Date();
+        const idAtividade = localStorage.getItem('idAtividadeSelecionada');
+        const matriculaAluno = localStorage.getItem('idUsuario');
+        const nota = 0
+
+        const obj ={
+            'atividadeentregue' : {
+                'caminhoGravacao' : caminhoGravacao,
+                'idAtividade' : idAtividade, 
+                'dataEntrega' : dataEntrega,
+                'matriculaAluno' : matriculaAluno,
+                'nota' : nota
+            }
+        }
+
+        try {
+            const resposta = await fetch('atividades-entregues', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            });
+
+            const result = await resposta.json();
+
+            console.log(result)
+
+            if (result.status === true) {
+                alert('Arquivo enviado com sucesso!'); 
+            } else {
+                alert('Erro ao enviar arquivo.');
+                console.error(result);
+            }
+        } catch (error) {
+            console.error('Erro ao enviar arquivo:', error);
+            alert('Erro na conexão com o servidor.');
+        }
+    }
+
+    async function verificarEntregaAluno(idAtividade, matriculaAluno) {
+    try {
+        const resposta = await fetch(`atividades-entregues/${idAtividade}/${matriculaAluno}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await resposta.json();
+        
+        if (resposta.ok && data.status === true) {
+            desabilitarAtividade();
+        }
+    } catch (erro) {
+        console.error('Erro ao verificar entrega:', erro);
+    }
+}
+
+
+    function desabilitarAtividade(){
+        document.getElementById('nome-arquivo').textContent = "Atividade já enviada.";
+        document.getElementById('icone-upload').style.pointerEvents = "none";
+        document.getElementById('icone-upload').style.opacity = "0.5";
+        document.getElementById('enviar').style.display = "none"; 
+    }
+
+    </script>
 </body>
 </html>

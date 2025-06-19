@@ -44,6 +44,37 @@ module.exports = class AtividadeEntregueControl {
         response.status(200).send(objResposta);
     }
 
+    async atividadeEntregue_read_atividades_by_id_control(request, response){
+        const model = new AtividadeEntregue();
+        model.idAtividade = request.params.idAtividade
+
+        const resultado = await model.listarAtividadesEntreguesporId();
+
+        const objResposta = {
+            cod : 1,
+            status: resultado.length > 0 ?  true : false,
+            resultado : resultado 
+        };
+
+        response.status(200).send(objResposta);
+    }
+
+    async atividadeEntregue_read_atividade_by_aluno_control(request, response){
+        const model = new AtividadeEntregue();
+        model.idAtividade = request.params.idAtividade;
+        model.matriculaAluno = request.params.matriculaAluno;
+
+        const resultado = await model.verificaEntrega();
+
+        const objResposta = {
+            cod : 1,
+            status : resultado,
+            msg : resultado === true ? 'Aluno enviou já enviou atividade' : 'Aluno não enviou atividade'
+        };
+
+        response.status(200).send(objResposta);
+    }    
+
     async atividadeEntregue_delete_control(request, response) {
         const model = new AtividadeEntregue();
         model.idAtividadeEntregue = request.params.idAtividadeEntregue;

@@ -23,11 +23,15 @@ module.exports = class AtividadeEntregueRouter {
  
         this._router.get('/:idAtividadeEntregue', this._authMiddleware.autenticarToken,this._atividadeEntregueControl.atividadeEntregue_read_by_id_control);
 
-        this._router.post('/', this._authMiddleware.autenticarToken,this._atividadeEntregueMiddleware.validar_matriculaAluno, this._atividadeEntregueMiddleware.validar_idAtividade, this._atividadeEntregueControl.atividadeEntregue_create_control);
+        this._router.get('/atividades/:idAtividade', this._authMiddleware.autenticarToken,this._atividadeEntregueControl.atividadeEntregue_read_atividades_by_id_control);
+       
+        this._router.get('/:idAtividade/:matriculaAluno', this._authMiddleware.autenticarToken,this._atividadeEntregueControl.atividadeEntregue_read_atividade_by_aluno_control);
+
+        this._router.post('/', this._authMiddleware.autenticarToken, this._atividadeEntregueControl.atividadeEntregue_create_control);
 
         this._router.delete('/:idAtividadeEntregue', this._authMiddleware.autenticarToken,this._atividadeEntregueControl.atividadeEntregue_delete_control);
 
-        this._router.put('/:idAtividadeEntregue', this._authMiddleware.autenticarToken,this._atividadeEntregueMiddleware.validar_matriculaAluno, this._atividadeEntregueMiddleware.validar_idAtividade,this._atividadeEntregueControl.atividadeEntregue_update_control);
+        this._router.put('/:idAtividadeEntregue', this._authMiddleware.autenticarToken, this._atividadeEntregueControl.atividadeEntregue_update_control);
 
         return this._router;
     }

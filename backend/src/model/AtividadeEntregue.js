@@ -11,6 +11,11 @@ class AtividadeEntregue {
     }
 
     async create() {
+        if (await this.verificaEntrega()) {
+            console.error('Este aluno já entregou esta atividade.');
+            return false;
+        }
+
         const conexao = await Banco.getConexao();
         const SQL = `
             INSERT INTO atividadeentregue
@@ -133,6 +138,39 @@ class AtividadeEntregue {
         }
     }
 
+    async verificaEntrega() {
+        const conexao = await Banco.getConexao();
+        const SQL = `
+            SELECT COUNT(*) AS qtd
+            FROM atividadeentregue
+            WHERE matriculaAluno = ? AND idAtividade = ?;
+        `;
+
+        try {
+            const [rows] = await conexao.execute(SQL, [this._matriculaAluno, this._idAtividade]);
+            return rows[0].qtd > 0;
+        } catch (error) {
+            console.error('Erro ao verificar entrega existente:', error.message);
+            return false;
+        }
+    }
+
+    async listarAtividadesEntreguesporId(){
+        const conexao = await Banco.getConexao();
+        const SQL = `
+            SELECT * FROM atividadeentregue 
+            WHERE idAtividade = ?;
+        `
+
+        try{
+            const [rows] = await conexao.execute(SQL, [this._idAtividade]);
+            return rows
+        }catch(error){
+            console.error('Erro ao listar atividades entrgues de uma atividade', error.message);
+            return false
+        }
+    }
+
     async verificaAlunoExiste() {
         const conexao = await Banco.getConexao();
         const SQL = 'SELECT COUNT(*) AS qtd FROM aluno WHERE matricula = ?;';
@@ -195,6 +233,13 @@ class AtividadeEntregue {
 
     set caminhoGravacao(valor) { 
         this._caminhoGravacao = valor; 
+    }
+    get nota() { 
+        return this._nota; 
+    }
+
+    set nota(valor) { 
+        this._nota = valor; 
     }
 }
 

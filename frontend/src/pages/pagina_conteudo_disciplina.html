@@ -1,453 +1,369 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor com Quill</title>
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-  <link rel="stylesheet" href="../style/padrao.css">
-  <link rel="stylesheet" href="../style/pagina_conteudos.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor com Quill</title>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style/padrao.css">
+    <link rel="stylesheet" href="../style/pagina_conteudos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <aside>
-        <p>muda tudo aqui dentro</p>
+        <p>muda tudo aqui</p>
     </aside>
     <main>
         <div>
             <div class="disciplina-sala">
-            </div>
-
-            <div class="editor-texto">
-                <div>
-                    <div id="toolbar">
-                        <select class="ql-header">
-                        <option selected></option>
-                        <option value="1"></option>
-                        <option value="2"></option>
-                        </select>
-                        <button class="ql-bold"></button>
-                        <button class="ql-italic"></button>
-                        <button class="ql-underline"></button>
-                        <button class="ql-link"></button>
-                    </div>
-                    <div id="editor-wrapper">
-                        <div id="editor-container"></div>
-                    </div>
-                     <div id="arquivo-container" class="">
-                        <input type="file" id="arquivo-upload" name="arquivo" accept=".pdf" class="hidden">
-                        <label for="arquivo-upload" class="botao-secundario">Adicionar PDF</label>
-                        <span id="nome-arquivo">Nenhum arquivo selecionado</span>
-                        <button id="remover-arquivo" class="botao-remover">×</button>
-                    </div>
-                </div>
-                <a href="" class="botao">postar</a>
             </div>
             <div id="atividades-container">
                 <div id="lista-atividades"></div>
             </div>
         </div>
     </main>
-    <div id="popup" class="popup hidden">
-        <div class="popup-content">
-            <div>
-                <input type="radio" name="tipo-postagem" value="atividade" id="radio-atividade">
-                <p>Atividades</p>
-            </div>
-            <div>
-                <input type="radio" name="tipo-postagem" value="comentario" id="radio-comentario">
-                <p>Comentario</p>
-            </div>
-            <a href="#" class="botao concluir">Concluir</a>             
-        </div>
-    </div>
-   
-    <div id="popup-excluir" class="popup-excluir hidden">
-        <button id="botao-excluir" class="botao">Excluir</button>
-        <button id="botao-editar" class="botao">Editar</button>
-    </div>
-    
-    <!-- Popup editar (corrigido) -->
-    <div id="popup-editar" class="popup-editar hidden">
+
+    <!-- Formulário para criar atividade/comentário -->
+    <div id="editor-container-wrapper" class="editor-container-wrapper hidden">
         <div class="editor-texto">
-            <div>
-                <div id="toolbar-editar">
-                    <select class="ql-header">
-                    <option selected></option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    </select>
-                    <button class="ql-bold"></button>
-                    <button class="ql-italic"></button>
-                    <button class="ql-underline"></button>
-                    <button class="ql-link"></button>
+            <div class="fundo-personalizado">
+            </div>
+            <div class="conteiner-post">
+                <div id="arquivo-container">
+                    <input type="file" id="arquivo-upload" name="arquivo" accept=".pdf" class="hidden">
+                    <div onclick="document.getElementById('arquivo-upload').click()" style="cursor: pointer;">
+                        <img src="../../imgs/icone-de-dossier-symbole-png-gris (1).png" class="botao-secundario" alt="Enviar arquivo">
+                        <span id="nome-arquivo">Nenhum arquivo selecionado <br>(.PDF .JPEG .DOC)</span>
+                    </div>
                 </div>
-                <div id="editor-wrapper-editar">
-                    <div id="editor-container-editar"></div>
-                </div>
-                <div id="arquivo-container-editar">
-                    <input type="file" id="arquivo-upload-editar" name="arquivo" accept=".pdf" class="hidden">
-                    <label for="arquivo-upload-editar" class="botao-secundario">Adicionar PDF</label>
-                    <span id="nome-arquivo-editar">Nenhum arquivo selecionado</span>
-                    <button id="remover-arquivo-editar" class="botao-remover">×</button>
+                <div class="grupo">
+                    <div>
+                        <p class="subtitulos">Escreva uma descrição da sua postagem : </p>
+                        <div id="toolbar" class="hidden">
+                            <select class="ql-header">
+                                <option selected></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                            </select>
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                        </div>
+                        <div id="editor-wrapper">
+                            <div id="editor-container"></div>
+                        </div>
+                    </div>
+                
+                    <div id="data-entrega-container" class="data-entrega-container hidden">
+                        <p class="subtitulos">Escreva uma data de entrega para a atividade : </p>
+                        <input type="text" id="data-entrega" placeholder="AAAA-MM-DD">
+                    </div>
+                
+                
+                    <div class="form-footer">
+                        <button id="btn-enviar" class="botao">Enviar</button>
+                        <button id="btn-cancelar" class="botao botao-cancelar">Cancelar</button>
+                    </div>
                 </div>
             </div>
-            <a href="#" class="botao" id="botao-salvar-edicao">Editar</a>
         </div>
+    </div>
+
+    <!-- Botão flutuante para iniciar nova postagem -->
+    <div class="botao-formulario" id="botao-nova-postagem">
+        <p>+</p>
+    </div>
+    <div id="popup-tipo" class="popup-tipo hidden">
+        <button id="btn-atividade"><i class="bi bi-journal-plus"></i></button>
+        <button id="btn-comentario"><i class="bi bi-chat-left-dots"></i></button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
-    const token = localStorage.getItem('token');
-    const idUsuario = localStorage.getItem('idUsuario');
-    const tipoUsuario = localStorage.getItem('tipoUsuario');
+        const token = localStorage.getItem('token');
+        const idUsuario = localStorage.getItem('idUsuario');
+        const tipoUsuario = localStorage.getItem('tipoUsuario');
 
-    const botao = document.querySelector('.botao');
-    const botaoConcluir = document.querySelector('.concluir');
+        // Elementos da UI
+        const botaoNovaPostagem = document.getElementById('botao-nova-postagem');
+        const popupTipo = document.getElementById('popup-tipo');
+        const btnAtividade = document.getElementById('btn-atividade');
+        const btnComentario = document.getElementById('btn-comentario');
+        const editorContainerWrapper = document.getElementById('editor-container-wrapper');
+        const dataEntregaContainer = document.getElementById('data-entrega-container');
+        const btnCancelar = document.getElementById('btn-cancelar');
+        const btnEnviar = document.getElementById('btn-enviar');
+        
+        // Elementos do editor e arquivo
+        const arquivoUpload = document.getElementById('arquivo-upload');
+        const nomeArquivo = document.getElementById('nome-arquivo');
+        const removerArquivo = document.getElementById('remover-arquivo');
+        let arquivoSelecionado = null;
+        
+        // Variáveis de controle
+        let tipoPostagemAtual = null; // 'atividade' ou 'comentario'
+        let quill = null;
 
-    const arquivoContainer = document.getElementById('arquivo-container');
-    const arquivoUpload = document.getElementById('arquivo-upload');
-    const nomeArquivo = document.getElementById('nome-arquivo');
-    const removerArquivo = document.getElementById('remover-arquivo');
-    let arquivoSelecionado = null;
+        // =============================================
+        // FUNÇÕES PRINCIPAIS (FLUXO DE POSTAGEM)
+        // =============================================
 
-    let atividadeOriginal = null;
-    let idAtividadeEditando = null;
+        // Inicializa o editor Quill quando o formulário é aberto
+        
+        const botaoPrincipal = document.getElementById('botao-nova-postagem');
 
-    let devolucaoEditar = '';
-    let dataEntregaEditar = '';
-    let dataPostagemEditar = '';
-    let caminhoGravacaoEditar = '';
-
-    if (tipoUsuario === 'aluno') {
-        const editor_texto = document.getElementsByClassName('editor-texto')[0];
-        editor_texto.classList.add('display-none');
-    }
-
-    const quill = new Quill('#editor-container', {
-        theme: 'snow',
-        modules: {
-            toolbar: '#toolbar'
-        }
-    });
-
-    const quillEditar = new Quill('#editor-container-editar', {
-        theme: 'snow',
-        modules: {
-            toolbar: '#toolbar-editar'
-        }
-    });
-
-
-    getTurma();
-    getDisciplina();
-    getAtividades();
-
-
-document.getElementById('botao-editar').addEventListener('click', async () => {
-    const idAtividade = document.getElementById('botao-excluir').dataset.idAtividade;
-    
-    if (!idAtividade) return;
-    
-    try {
-        const resposta = await fetch(`/atividades/${idAtividade}`, {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Accept": "application/json",
-            }
+        botaoPrincipal.addEventListener('click', function() {
+            popupTipo.classList.toggle('visible');
         });
-        
-        const obj = await resposta.json();
-        
-        if (obj.status === true && obj.atividade) {
-            // Armazena a atividade original completa
-            atividadeOriginal = obj.atividade;
-            idAtividadeEditando = idAtividade;
+
+        function inicializarEditor() {
+            if (!quill) {
+                quill = new Quill('#editor-container', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: '#toolbar'
+                    }
+                });
+            }
+        }
+
+        // Configura data mínima como amanhã
+        function configurarDataMinima() {
+            const hoje = new Date();
+            const amanha = new Date(hoje);
+            amanha.setDate(hoje.getDate() + 1);
+            const dataFormatada = amanha.toISOString().split('T')[0];
+            document.getElementById('data-entrega').min = dataFormatada;
+            document.getElementById('data-entrega').value = dataFormatada;
+        }
+
+        function podePostar(){
+            if(localStorage.getItem('tipoUsuario') === "aluno"){
+                botaoNovaPostagem.style.display = "none";
+            }
+        }
+
+        botaoNovaPostagem.addEventListener('click', function() {
+            document.getElementById('btn-comentario').classList.add('animar');
+            popupTipo.classList.remove('hidden');
+        });
+
+        // Evento do botão de atividade
+        btnAtividade.addEventListener('click', function() {
+            tipoPostagemAtual = 'atividade';
+            popupTipo.classList.add('hidden');
+            abrirFormulario();
+        });
+
+        // Evento do botão de comentário
+        btnComentario.addEventListener('click', function() {
+            tipoPostagemAtual = 'comentario';
+            popupTipo.classList.add('hidden');
+            abrirFormulario();
+        });
+
+        // Abre o formulário de postagem
+        function abrirFormulario() {
+            inicializarEditor();
             
-            // Preenche o editor
-            quillEditar.root.innerHTML = atividadeOriginal.descricao;
-            
-            // Mostra o nome do arquivo atual, se existir
-            if (atividadeOriginal.caminhoGravacao) {
-                const nomeArquivo = atividadeOriginal.caminhoGravacao.split('/').pop();
-                document.getElementById('nome-arquivo-editar').textContent = nomeArquivo;
+            // Mostra/oculta a data de entrega conforme o tipo
+            if (tipoPostagemAtual === 'atividade') {
+                dataEntregaContainer.classList.remove('hidden');
+                configurarDataMinima();
             } else {
-                document.getElementById('nome-arquivo-editar').textContent = 'Nenhum arquivo selecionado';
+                dataEntregaContainer.classList.add('hidden');
             }
             
-            // Mostra o popup de edição
-            document.getElementById('popup-excluir').classList.add('hidden');
-            document.getElementById('popup-editar').classList.remove('hidden');
-        } else {
-            alert(obj.msg || "Erro ao carregar atividade para edição");
+            editorContainerWrapper.classList.remove('hidden');
         }
-    } catch (error) {
-        console.error("Erro ao carregar atividade para edição:", error);
-        alert("Erro ao carregar atividade para edição");
-    }
-});
 
-// Gerenciar seleção de arquivo no editor de edição
-document.getElementById('arquivo-upload-editar').addEventListener('change', function(e) {
-    if (this.files && this.files[0]) {
-        const file = this.files[0];
-        if (file.type !== 'application/pdf') {
-            alert('Por favor, selecione um arquivo PDF.');
-            return;
-        }
-        
-        if (file.size > 5 * 1024 * 1024) { // 5MB
-            alert('O arquivo é muito grande. Tamanho máximo: 5MB');
-            return;
-        }
-        
-        document.getElementById('nome-arquivo-editar').textContent = file.name;
-    }
-});
-
-// Remover arquivo selecionado no editor de edição
-document.getElementById('remover-arquivo-editar').addEventListener('click', function() {
-    document.getElementById('arquivo-upload-editar').value = '';
-    document.getElementById('nome-arquivo-editar').textContent = 'Nenhum arquivo selecionado';
-});
-
-// Evento para salvar as edições
-document.getElementById('botao-salvar-edicao').addEventListener('click', async (e) => {
-    e.preventDefault();
-    
-    if (!idAtividadeEditando || !atividadeOriginal) return;
-    
-    const descricaoEditor = quillEditar.root.innerHTML.trim();
-    const arquivoUploadEditar = document.getElementById('arquivo-upload-editar');
-    const file = arquivoUploadEditar.files[0];
-    
-    const atividadeData = {
-        atividade: {
-            descricao: descricaoEditor,
-            devolucao: atividadeOriginal.devolucao, 
-            dataPostagem: atividadeOriginal.dataPostagem,
-            dataEntrega: atividadeOriginal.dataEntrega,
-            idDisciplinaProfessor: atividadeOriginal.idDisciplinaProfessor
-        }
-    };
-    
-    const formData = new FormData();
-    formData.append('atividade', JSON.stringify(atividadeData.atividade));
-    
-    if (file) {
-        formData.append('arquivo', file);
-    } else if (atividadeOriginal.caminhoGravacao) {
-        formData.append('manterArquivo', 'true');
-    }
-    
-    try {
-        const resposta = await fetch(`/atividades/${idAtividadeEditando}`, {
-            method: "PUT",
-            body: formData,
-            headers: {
-                "Authorization": "Bearer " + token
-            }
+        // Evento do botão cancelar
+        btnCancelar.addEventListener('click', function() {
+            editorContainerWrapper.classList.add('hidden');
+            limparFormulario();
         });
 
-        const obj = await resposta.json();
-
-        if (obj.status === true) {
-            alert(obj.msg || "Atividade editada com sucesso.");
-            document.getElementById('popup-editar').classList.add('hidden');
-            getAtividades();
-        } else {
-            alert(obj.msg || "Erro ao editar atividade.");
-        }
-    } catch (error) {
-        alert("Erro na requisição: " + error);
-    }
-    
-    idAtividadeEditando = null;
-    atividadeOriginal = null;
-});
-
-// Gerenciar seleção de arquivo
-arquivoUpload.addEventListener('change', function(e) {
-    if (this.files && this.files[0]) {
-        const file = this.files[0];
-        if (file.type !== 'application/pdf') {
-            alert('Por favor, selecione um arquivo PDF.');
-            return;
-        }
-        
-        if (file.size > 5 * 1024 * 1024) { // 5MB
-            alert('O arquivo é muito grande. Tamanho máximo: 5MB');
-            return;
-        }
-        
-        arquivoSelecionado = file;
-        nomeArquivo.textContent = file.name;
-    }
-});
-
-// Remover arquivo selecionado
-removerArquivo.addEventListener('click', function() {
-    arquivoUpload.value = '';
-    arquivoSelecionado = null;
-    nomeArquivo.textContent = 'Nenhum arquivo selecionado';
-});
-
-
-async function postAtividade(tipoPostagem, idDisciplinaProfessor) {
-    const descricaoEditor = quill.root.innerHTML.trim();
-    const dataAtual = new Date();
-    const dataPostagem = dataAtual.toISOString().split('T')[0];
-    let dataEntrega = null;
-    let devolucao = 0;
-
-    if (tipoPostagem === 'atividade') {
-        devolucao = 1;
-        const entrega = new Date();
-        entrega.setDate(dataAtual.getDate() + 1);
-        dataEntrega = entrega.toISOString().split('T')[0];
-    }
-
-    const formData = new FormData();
-    formData.append('atividade[descricao]', descricaoEditor);
-    formData.append('atividade[devolucao]', devolucao);
-    formData.append('atividade[dataPostagem]', dataPostagem);
-    formData.append('atividade[dataEntrega]', dataEntrega);
-    formData.append('atividade[idDisciplinaProfessor]', idDisciplinaProfessor);
-
-    if (arquivoSelecionado) {
-        formData.append('arquivo', arquivoSelecionado);
-    }
-
-    try {
-        const resposta = await fetch("/atividades", {
-            method: "POST",
-            body: formData,
-            headers: {
-                "Authorization": "Bearer " + token
+        // Evento do botão enviar
+        btnEnviar.addEventListener('click', async function() {
+            if (!quill) return;
+            
+            const descricao = quill.root.innerHTML.trim();
+            if (!descricao) {
+                alert("Por favor, escreva algo antes de enviar.");
+                return;
             }
+            
+            let dataEntrega = null;
+            if (tipoPostagemAtual === 'atividade') {
+                dataEntrega = document.getElementById('data-entrega').value;
+                if (!dataEntrega) {
+                    alert("Por favor, selecione uma data de entrega.");
+                    return;
+                }
+            }
+            
+            const idDisciplinaProfessor = await getIdDisciplinaProfessor(idUsuario);
+            if (!idDisciplinaProfessor) {
+                alert("Erro ao recuperar a disciplina.");
+                return;
+            }
+            
+            await postAtividade(tipoPostagemAtual, idDisciplinaProfessor, dataEntrega);
+            editorContainerWrapper.classList.add('hidden');
+            limparFormulario();
         });
 
-        const obj = await resposta.json();
-
-        if (obj.status === true) {
-            alert(obj.msg || "Postagem realizada com sucesso.");
-            quill.setContents([]);
+        // Limpa o formulário
+        function limparFormulario() {
+            if (quill) {
+                quill.setContents([]);
+            }
             arquivoUpload.value = '';
             arquivoSelecionado = null;
-            nomeArquivo.textContent = 'Nenhum arquivo selecionado';
-            removerArquivo.classList.add('hidden');
-            getAtividades();
-        } else {
-            alert(obj.msg || "Erro ao postar.");
-        }
-    } catch (error) {
-        alert("Erro na requisição: " + error);
-    }
-
-    document.getElementById('popup').classList.add('hidden');
-}
-
-
-    botao.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.getElementById('popup').classList.remove('hidden');
-    });
-
-    botaoConcluir.addEventListener('click', async function (e) {
-        e.preventDefault();
-        const tipoSelecionado = document.querySelector('input[name="tipo-postagem"]:checked');
-        if (!tipoSelecionado) {
-            alert("Selecione se é uma atividade ou comentário.");
-            return;
+            tipoPostagemAtual = null;
         }
 
-        if (tipoUsuario !== "professor") {
-            alert("Apenas professores podem postar.");
-            return;
-        }
-
-        const tipo = tipoSelecionado.value;
-        const idDisciplinaProfessor = await getIdDisciplinaProfessor(idUsuario);
-
-        if (!idDisciplinaProfessor) {
-            alert("Erro ao recuperar a disciplina.");
-            return;
-        }
-
-        postAtividade(tipo, idDisciplinaProfessor);
-    });
-
-    async function getAtividades() {
-        try {
-            const resposta = await fetch("/atividades", {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json",
+        // Evento para seleção de arquivo
+        arquivoUpload.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (file.type !== 'application/pdf') {
+                    alert('Por favor, selecione um arquivo PDF.');
+                    return;
                 }
-            });
-            const dados = await resposta.json();
-
-            if (dados.status === true && Array.isArray(dados.atividades)) {
-                renderizarAtividades(dados.atividades);
-            }
-        } catch (erro) {
-            console.error("Erro ao carregar atividades:", erro);
-        }
-    }
-
-    async function getIdDisciplinaProfessor(idProfessor) {
-        
-        try {
-            const resposta = await fetch('disciplinas-professores/professores/' + idProfessor, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json",
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('O arquivo é muito grande. Tamanho máximo: 5MB');
+                    return;
                 }
-            });
-            const obj = await resposta.json();
-            if (obj.status === true && obj.disciplinaProfessor) {
-                return obj.disciplinaProfessor.idDisciplinaProfessor;
-            } else {
-                console.error("Erro ao buscar disciplina");
-                return null;
-            }
-        } catch (error) {
-            console.error("Erro na requisição:", error);
-            return null;
-        }
-    }
-
-    async function getDisciplinaProfessor(idDisciplinaProfessor) {
-    try {
-        const resposta = await fetch('disciplinas-professores/' + idDisciplinaProfessor, {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Accept": "application/json",
+                
+                arquivoSelecionado = file;
+                nomeArquivo.textContent = file.name;
             }
         });
-        const obj = await resposta.json();
-        if (obj.status === true && obj.disciplinaProfessor) {
-            // Corrigido: retornar o valor obtido
-            return obj.disciplinaProfessor.idDisciplina
-        } else {
-            console.error("Erro ao buscar vínculo");
-            return null;
+
+        // Função para postar atividade/comentário
+        async function postAtividade(tipoPostagem, idDisciplinaProfessor, dataEntregaInput = null) {
+            const descricaoEditor = quill.root.innerHTML.trim();
+            const dataAtual = new Date();
+            const dataPostagem = dataAtual.toISOString().split('T')[0];
+            let dataEntrega = null;
+            let devolucao = 0;
+
+            if (tipoPostagem === 'atividade') {
+                devolucao = 1;
+                dataEntrega = dataEntregaInput;
+            }
+
+            const formData = new FormData();
+            formData.append('atividade[descricao]', descricaoEditor);
+            formData.append('atividade[devolucao]', devolucao);
+            formData.append('atividade[dataPostagem]', dataPostagem);
+            formData.append('atividade[dataEntrega]', dataEntrega);
+            formData.append('atividade[idDisciplinaProfessor]', idDisciplinaProfessor);
+
+            if (arquivoSelecionado) {
+                formData.append('arquivo', arquivoSelecionado);
+            }
+
+            try {
+                const resposta = await fetch("/atividades", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const obj = await resposta.json();
+
+                if (obj.status === true) {
+                    alert(obj.msg || "Postagem realizada com sucesso.");
+                    getAtividades();
+                } else {
+                    alert(obj.msg || "Erro ao postar.");
+                }
+            } catch (error) {
+                alert("Erro na requisição: " + error);
+            }
         }
-    } catch (error) {
-        console.error("Erro na requisição:", error);
-        return null;
-    }
-}
 
+        // =============================================
+        // FUNÇÕES ORIGINAIS (LISTAGEM, DISCIPLINA, ETC.)
+        // =============================================
 
-async function renderizarAtividades(atividades) {
+        // Busca o ID da disciplina do professor
+        async function getIdDisciplinaProfessor(idProfessor) {
+            try {
+                const resposta = await fetch('disciplinas-professores/professores/' + idProfessor, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                const obj = await resposta.json();
+                if (obj.status === true && obj.disciplinaProfessor) {
+                    return obj.disciplinaProfessor.idDisciplinaProfessor;
+                } else {
+                    console.error("Erro ao buscar disciplina");
+                    return null;
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                return null;
+            }
+        }
+
+        // Busca a disciplina associada ao vínculo professor-disciplina
+        async function getDisciplinaProfessor(idDisciplinaProfessor) {
+            try {
+                const resposta = await fetch('disciplinas-professores/' + idDisciplinaProfessor, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                const obj = await resposta.json();
+                if (obj.status === true && obj.disciplinaProfessor) {
+                    return obj.disciplinaProfessor.idDisciplina;
+                } else {
+                    console.error("Erro ao buscar vínculo");
+                    return null;
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                return null;
+            }
+        }
+
+        // Carrega todas as atividades
+        async function getAtividades() {
+            try {
+                const resposta = await fetch("/atividades", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                const dados = await resposta.json();
+
+                if (dados.status === true && Array.isArray(dados.atividades)) {
+                    renderizarAtividades(dados.atividades);
+                }
+            } catch (erro) {
+                console.error("Erro ao carregar atividades:", erro);
+            }
+        }
+
+        // Renderiza a lista de atividades/comentários
+        async function renderizarAtividades(atividades) {
     const container = document.getElementById("lista-atividades");
     container.innerHTML = "";
 
-    // Usar for...of para garantir ordem e espera das promises
     for (const atividade of atividades) {
         try {
             const idProf = tipoUsuario === "professor" ? await getIdDisciplinaProfessor(idUsuario) : null;
@@ -460,36 +376,47 @@ async function renderizarAtividades(atividades) {
                 const tipoClasse = atividade.devolucao === 0 ? "comentario" : "atividade";
                 div.classList.add(tipoClasse);
 
-                // Criar elementos DOM diretamente
+                // Verifica se é uma atividade e se o prazo expirou (para alunos)
+                const prazoExpirado = tipoUsuario === "aluno" && atividade.devolucao === 1 && 
+                                      verificarPrazoExpirado(atividade.dataEntrega);
+
+                if (prazoExpirado) {
+                    div.classList.add("atividade-bloqueada");
+                }
+
                 const contentDiv = document.createElement("div");
                 
                 if (atividade.devolucao === 0) {
-                    // Comentário
+                    // Comentário (código existente)
                     contentDiv.innerHTML = `
                         <div>
                             <p>Professor</p>
                             <p>${atividade.dataPostagem}</p>
-                            <div><p>${atividade.descricao}</p></div>
+                            <div>${atividade.descricao}</div>
                         </div>
                         ${tipoUsuario === "professor" ? `<div><p class='opcao-excluir' data-id-atividade="${atividade.idAtividade}">...</p></div>` : ''}
                     `;
                 } else {
                     // Atividade
-                    const link = document.createElement("a");
-                    link.id = `atividade-${atividade.idAtividade}`;
-                    link.innerHTML = `
-                        <div>
-                            <p>Professor</p>
-                            <p>${atividade.dataPostagem} - ${atividade.dataEntrega}</p>
-                            <div><p>${atividade.descricao}</p></div>
-                        </div>
-                    `;
+                    const link = document.createElement(prazoExpirado ? "div" : "a");
+                    if (!prazoExpirado) {
+                        link.id = `atividade-${atividade.idAtividade}`;
+                        link.addEventListener('click', () => {
+                            localStorage.setItem('idAtividadeSelecionada', atividade.idAtividade);
+                            if(localStorage.getItem('tipoUsuario') === 'aluno'){
+                                window.location.href = "pagina_atividade_disciplina.html";
+                            }else{
+                                window.location.href = "pagina_correcao_atividade.html"
+                            }
+                        });
+                    }
                     
-                    // Adicionar event listener diretamente ao elemento criado
-                    link.addEventListener('click', () => {
-                        localStorage.setItem('atividadeSelecionada', atividade.idAtividade);
-                        window.location.href = "pagina_atividade_disciplina.html";
-                    });
+                    link.innerHTML = `
+                            <p>Professor</p>
+                            ${prazoExpirado ? '<p class="aviso-prazo">(Prazo expirado)</p>' : ''}
+                            <p>${atividade.dataEntrega}</p>
+                            <p>${atividade.descricao}</p>
+                    `;
                     
                     contentDiv.appendChild(link);
                     
@@ -502,12 +429,14 @@ async function renderizarAtividades(atividades) {
 
                 div.appendChild(contentDiv);
 
-                // Adicionar link para PDF se existir
+                // Adiciona link para PDF se existir
                 if (atividade.caminhoGravacao) {
                     const pdfLink = document.createElement("a");
                     pdfLink.href = atividade.caminhoGravacao;
                     pdfLink.target = "_blank";
                     pdfLink.textContent = "Download PDF";
+                    pdfLink.style.display = "block";
+                    pdfLink.style.marginTop = "10px";
                     div.appendChild(pdfLink);
                 }
 
@@ -517,126 +446,143 @@ async function renderizarAtividades(atividades) {
             console.error("Erro ao renderizar atividade:", atividade.idAtividade, error);
         }
     }
-}
-
-    // Evento para mostrar o popup de exclusão
-    document.getElementById('lista-atividades').addEventListener('click', (event) => {
-        if (event.target.classList.contains('opcao-excluir')) {
-            const popup = document.getElementById('popup-excluir');
-            const botaoExcluir = document.getElementById('botao-excluir');
-
-            // Posiciona o popup próximo ao botão clicado
-            const rect = event.target.getBoundingClientRect();
-            popup.style.top = (rect.bottom + window.scrollY) + "px";
-            popup.style.left = (rect.left + window.scrollX) + "px";
-            
-            // Armazena o ID da atividade no botão de excluir
-            botaoExcluir.dataset.idAtividade = event.target.dataset.idAtividade;
-            popup.classList.remove('hidden');
-        }
-    });
-
-    // Evento para fechar o popup quando clicar fora
-    document.addEventListener('click', (event) => {
-        if (!event.target.classList.contains('opcao-excluir') && 
-            event.target.id !== 'botao-excluir') {
-            document.getElementById('popup-excluir').classList.add('hidden');
-        }
-    });
 
 
-    document.getElementById('botao-editar').addEventListener('click', async ()=> {
-        document.getElementById('popup-editar').classList.remove('hidden')
 
-    })
-
-    // Evento para excluir a atividade
-    document.getElementById('botao-excluir').addEventListener('click', async () => {
-        const idAtividade = document.getElementById('botao-excluir').dataset.idAtividade;
-        
-        if (!idAtividade) return;
-        
-        try {
-            const resposta = await fetch(`/atividades/${idAtividade}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json",
-                }
-            });
-            
-            const obj = await resposta.json();
-            
-            if (obj.status === true) {
-                alert("Atividade excluída com sucesso!");
-                getAtividades(); // Recarrega a lista de atividades
-            } else {
-                alert(obj.msg || "Erro ao excluir atividade");
+            function verificarPrazoExpirado(dataEntrega) {
+                const hoje = new Date();
+                const dataEntregaObj = new Date(dataEntrega);
+                return hoje > dataEntregaObj;
             }
-        } catch (error) {
-            console.error("Erro ao excluir atividade:", error);
-            alert("Erro ao excluir atividade");
-        }
-        
-        document.getElementById('popup-excluir').classList.add('hidden');
-    });
 
-
-    async function getTurma() {
-        try {
-            const resposta = await fetch('turmas/' + localStorage.getItem('idTurmaSelecionada'), {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json",
-                }
+            // Adiciona eventos para os botões de exclusão
+            document.querySelectorAll('.opcao-excluir').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const popupExcluir = document.createElement('div');
+                    popupExcluir.className = 'popup-excluir';
+                    
+                    // Usando pageY e pageX em vez de clientY e clientX
+                    popupExcluir.style.position = 'absolute';
+                    popupExcluir.style.top = `${e.pageY}px`;
+                    popupExcluir.style.left = `${e.pageX}px`;
+                    
+                    popupExcluir.innerHTML = `
+                        <button class="botao-excluir" data-id-atividade="${btn.dataset.idAtividade}" onclick="excluirAtividade(this)">Excluir</button>
+                    `;
+                    
+                    document.body.appendChild(popupExcluir);
+                    
+                    // Fecha o popup ao clicar fora
+                    setTimeout(() => {
+                        const fecharPopup = (e) => {
+                            if (!popupExcluir.contains(e.target)) {
+                                popupExcluir.remove();
+                                document.removeEventListener('click', fecharPopup);
+                            }
+                        };
+                        document.addEventListener('click', fecharPopup);
+                    }, 0);
+                });
             });
-            const obj = await resposta.json();
-            if (obj.status === true && obj.turma) {
-                nomearDivTurmaDisciplina(obj.turma.curso, 'turma');
-            } else {
-                console.error("Erro ao buscar turma");
-            }
-        } catch (error) {
-            console.error("Erro na requisição:", error);
         }
-    }
 
-    async function getDisciplina() {
-        try {
-            const resposta = await fetch('disciplinas/' + localStorage.getItem('idDisciplinaSelecionada'), {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json",
+
+        // Função para excluir atividade (chamada pelo botão dinâmico)
+        window.excluirAtividade = async function(botao) {
+            const idAtividade = botao.dataset.idAtividade;
+            
+            try {
+                const resposta = await fetch(`/atividades/${idAtividade}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                
+                const obj = await resposta.json();
+                
+                if (obj.status === true) {
+                    alert("Atividade excluída com sucesso!");
+                    getAtividades();
+                } else {
+                    alert(obj.msg || "Erro ao excluir atividade");
                 }
-            });
-            const obj = await resposta.json();
-            if (obj.status === true && obj.disciplina) {
-                nomearDivTurmaDisciplina(obj.disciplina.nome, 'disciplina');
-            } else {
-                console.error("Erro ao buscar disciplina");
+            } catch (error) {
+                console.error("Erro ao excluir atividade:", error);
+                alert("Erro ao excluir atividade");
             }
-        } catch (error) {
-            console.error("Erro na requisição:", error);
+            
+            // Remove todos os popups abertos
+            document.querySelectorAll('.popup-excluir').forEach(p => p.remove());
+        };
+
+    
+
+        // Carrega os dados da turma
+        async function getTurma() {
+            try {
+                const resposta = await fetch('turmas/' + localStorage.getItem('idTurmaSelecionada'), {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                const obj = await resposta.json();
+                if (obj.status === true && obj.turma) {
+                    nomearDivTurmaDisciplina(obj.turma.curso, 'turma');
+                } else {
+                    console.error("Erro ao buscar turma");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+            }
         }
-    }
 
-    function nomearDivTurmaDisciplina(conteudo, tipo) {
-        const div = document.querySelector('.disciplina-sala');
-        if (!div) return;
-
-        if (tipo === "turma") {
-            div.dataset.turma = conteudo;
-        } else if (tipo === "disciplina") {
-            div.dataset.disciplina = conteudo;
+        // Carrega os dados da disciplina
+        async function getDisciplina() {
+            try {
+                const resposta = await fetch('disciplinas/' + localStorage.getItem('idDisciplinaSelecionada'), {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                    }
+                });
+                const obj = await resposta.json();
+                if (obj.status === true && obj.disciplina) {
+                    nomearDivTurmaDisciplina(obj.disciplina.nome, 'disciplina');
+                } else {
+                    console.error("Erro ao buscar disciplina");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+            }
         }
 
-        const turma = div.dataset.turma || "";
-        const disciplina = div.dataset.disciplina || "";
+        // Atualiza o nome da turma/disciplina no cabeçalho
+        function nomearDivTurmaDisciplina(conteudo, tipo) {
+            const div = document.querySelector('.disciplina-sala');
+            if (!div) return;
 
-        div.textContent = `${turma} - ${disciplina}`.trim();
-    }
+            if (tipo === "turma") {
+                div.dataset.turma = conteudo;
+            } else if (tipo === "disciplina") {
+                div.dataset.disciplina = conteudo;
+            }
+
+            const turma = div.dataset.turma || "";
+            const disciplina = div.dataset.disciplina || "";
+
+            div.innerHTML = `${turma} - ${disciplina}`.trim();
+        }
+
+        getTurma();
+        getDisciplina();
+        getAtividades();
+        podePostar();
     </script>
 </body>
 </html>

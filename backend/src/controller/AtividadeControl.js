@@ -114,7 +114,7 @@ module.exports = class AtividadeControl {
         const objResposta = {
             cod: 1,
             status: isDeleted,
-            msg: isDeleted ? 'Atividade excluída com sucesso' : 'Erro ao excluir atividade'
+            msg: isDeleted ? 'Atividade excluída com sucesso' : 'Erro ao excluir atividade (Alunos já fizeram entregas)'
         };
 
         response.status(200).send(objResposta);

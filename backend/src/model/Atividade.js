@@ -18,20 +18,32 @@ class Atividade {
             (descricao, devolucao, caminhoGravacao, dataPostagem, dataEntrega, idDisciplinaProfessor)
             VALUES (?, ?, ?, ?, ?, ?);
         `;
+
+        function formatDateMySQL(date) {
+            if (!date || date === 'null') return null;
+            const d = new Date(date);
+            return d.toISOString().slice(0, 19).replace('T', ' ');
+        }
+
+        const caminhoGravacao = (!this._caminhoGravacao || this._caminhoGravacao === 'null') ? null : this._caminhoGravacao;
+        const dataPostagem = formatDateMySQL(this._dataPostagem);
+        const dataEntrega = formatDateMySQL(this._dataEntrega);
+
         try {
             if (!(await this.verificaDisciplinaProfessorExiste())) {
                 console.error('ID de disciplinaProfessor inválido.');
                 return false;
             }
-    
+
             const [result] = await conexao.execute(SQL, [
                 this._descricao,
                 this._devolucao,
-                this._caminhoGravacao,
-                this._dataPostagem,
-                this._dataEntrega,
+                caminhoGravacao,
+                dataPostagem,
+                dataEntrega,
                 this._idDisciplinaProfessor
             ]);
+
             this._idAtividade = result.insertId;
             return result.affectedRows > 0;
         } catch (error) {
@@ -39,7 +51,7 @@ class Atividade {
             return false;
         }
     }
-    
+
     async update() {
         const conexao = await Banco.getConexao();
         const SQL = `
@@ -52,18 +64,29 @@ class Atividade {
                 idDisciplinaProfessor = ?
             WHERE idAtividade = ?;
         `;
+
+        function formatDateMySQL(date) {
+            if (!date || date === 'null') return null;
+            const d = new Date(date);
+            return d.toISOString().slice(0, 19).replace('T', ' ');
+        }
+
+        const caminhoGravacao = (!this._caminhoGravacao || this._caminhoGravacao === 'null') ? null : this._caminhoGravacao;
+        const dataPostagem = formatDateMySQL(this._dataPostagem);
+        const dataEntrega = formatDateMySQL(this._dataEntrega);
+
         try {
             if (!(await this.verificaDisciplinaProfessorExiste())) {
                 console.error('ID de disciplinaProfessor inválido.');
                 return false;
             }
-            
+
             const [result] = await conexao.execute(SQL, [
                 this._descricao,
                 this._devolucao,
-                this._caminhoGravacao,
-                this._dataPostagem,
-                this._dataEntrega,
+                caminhoGravacao,
+                dataPostagem,
+                dataEntrega,
                 this._idDisciplinaProfessor,
                 this._idAtividade
             ]);
@@ -73,10 +96,29 @@ class Atividade {
             console.error('Erro ao atualizar atividade:', error.message);
             return false;
         }
-    }    
+    }
+
+    async verificaAtividadeReferenciada() {
+        const conexao = await Banco.getConexao();
+        const SQL = 'SELECT COUNT(*) AS qtd FROM atividadeentregue WHERE idAtividade = ?;';
+        try {
+            const [rows] = await conexao.execute(SQL, [this._idAtividade]);
+            return rows.length > 0 && rows[0].qtd > 0;
+        } catch (error) {
+            console.error('Erro ao verificar referências da atividade:', error.message);
+            return false;
+        }
+    }
 
     async delete() {
         const conexao = await Banco.getConexao();
+        
+        // Primeiro verifica se a atividade está sendo referenciada
+        if (await this.verificaAtividadeReferenciada()) {
+            console.error('Não é possível excluir a atividade pois ela possui entregas associadas.');
+            return false;
+        }
+
         const SQL = 'DELETE FROM atividade WHERE idAtividade = ?;';
         try {
             const [result] = await conexao.execute(SQL, [this._idAtividade]);
@@ -90,18 +132,17 @@ class Atividade {
     async readAll() {
         const conexao = await Banco.getConexao();
         const SQL = `
-                    SELECT 
-                        a.idAtividade,
-                        a.descricao,
-                        a.devolucao,
-                        a.caminhoGravacao,
-                        a.dataPostagem,
-                        a.dataEntrega,
-                        a.idDisciplinaProfessor
-                    FROM atividade a
-                    ORDER BY a.dataPostagem DESC;
-
-                  `;
+            SELECT 
+                a.idAtividade,
+                a.descricao,
+                a.devolucao,
+                a.caminhoGravacao,
+                a.dataPostagem,
+                a.dataEntrega,
+                a.idDisciplinaProfessor
+            FROM atividade a
+            ORDER BY a.dataPostagem DESC;
+        `;
         try {
             const [rows] = await conexao.execute(SQL);
             return rows;
@@ -114,18 +155,17 @@ class Atividade {
     async readByID() {
         const conexao = await Banco.getConexao();
         const SQL = `
-                        SELECT 
-                            a.idAtividade,
-                            a.descricao,
-                            a.devolucao,
-                            a.caminhoGravacao,
-                            a.dataPostagem,
-                            a.dataEntrega,
-                            a.idDisciplinaProfessor
-                        FROM atividade a
-                        WHERE a.idAtividade = ?;
-
-                    `;
+            SELECT 
+                a.idAtividade,
+                a.descricao,
+                a.devolucao,
+                a.caminhoGravacao,
+                a.dataPostagem,
+                a.dataEntrega,
+                a.idDisciplinaProfessor
+            FROM atividade a
+            WHERE a.idAtividade = ?;
+        `;
         try {
             const [rows] = await conexao.execute(SQL, [this._idAtividade]);
             if (rows.length > 0) {
@@ -150,7 +190,6 @@ class Atividade {
             return false;
         }
     }
-
 
     get idAtividade() {
         return this._idAtividade;

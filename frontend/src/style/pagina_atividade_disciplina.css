@@ -1,0 +1,75 @@
+.atividade{
+    width: 80em;
+    height: auto;
+    background-color: white;
+    padding: 5rem;
+    display: flex;
+    flex-flow: column;
+    gap: 5rem;
+    border-left: solid 1rem var(--cor-secundaria);
+    & > div#info{
+        padding-bottom: 1rem;
+        border-bottom: solid 0.1rem #a4a4a4;    
+    }
+
+}
+
+p.data{
+    font-size: 1.4rem;
+    color: #a4a4a4;
+}
+
+#descricao-div > p{
+    color: var(--cor-secundaria);
+    font-size: 3rem;
+
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
+.arquivo-container{
+    width: auto;
+    border: dashed 0.1rem #a4a4a4;
+}
+
+a.botao{
+    border-radius: 0;
+    align-self: flex-end;
+    box-shadow: none;
+    &.concluir {
+        width: 100%;
+    }
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+#arquivo-container {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px dashed #a4a4a4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 25rem;
+    justify-content: center;
+    gap: 10px;
+
+    & > p{
+        color: #a4a4a4;
+        font-size: 1.25rem;
+    }
+}
+
+img{
+    width: 12rem;
+    cursor: pointer;
+    transition: opacity 0.15s ease-in-out;
+
+    &:hover{
+        opacity: 0.75;
+    }
+}

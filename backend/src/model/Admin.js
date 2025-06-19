@@ -15,6 +15,7 @@ class Admin{
         const sql = 'SELECT * FROM admin WHERE email = ?';
         const [rows] = await conexao.execute(sql, [this.email]);
 
+
         if (rows.length === 0){
             return false;
         }
@@ -22,7 +23,10 @@ class Admin{
         const admin = rows[0];
 
         const senhaCorreta = await compararSenha(this.senha, admin.senha);
+
+
         if (!senhaCorreta){
+            console.log('entreiii')
             return false;
         }
 

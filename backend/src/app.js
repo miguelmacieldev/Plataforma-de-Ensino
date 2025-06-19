@@ -56,3 +56,4 @@ app.use('/atividades-entregues', atividadeEntregueRoteador.criarRotasAtividadeEn
 app.listen(portaServico, () => {    
     console.log(`API rodando no endereço: http://localhost:${portaServico}/`);
 });
+

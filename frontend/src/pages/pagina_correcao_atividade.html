@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correção de Atividade</title>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style/padrao.css">
+    <link rel="stylesheet" href="../style/pagina_correcao_atividade.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <aside>
+        <p>muda tudo aqui</p>
+    </aside>
+    <main>
+        <nav>
+            <ul>
+                <li id="corrigir" class="active">
+                    Corrigir                    
+                </li>
+                <li id="grafico">
+                    Gráficos
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="conteudo-tab">
+            <div id="corrigir-tab" class="tab-content active">
+            
+            <div id="atividades-entregues" class="atividades-entregues"></div>
+        </div>
+            
+        <div id="popup-options" class="popup-options">
+            <button class="popup-option" id="baixar-entrega">
+                Baixar
+            </button>
+            <button class="popup-option" id="corrigir-entrega">
+                Corrigir
+            </button>
+        </div>
+
+        <div class="popup-corrigir hidden" id="popup-corrigir">
+            <div class="conteudo">
+                <input name="nota" id="input-nota" min="0" max="10" type="number" placeholder="Digite a nota da atividade">
+                <div>
+                    <button class="botao" id="cancelar">Cancelar</button>
+                    <button class="botao" id="enviar-nota">Enviar</button>
+                </div>
+            </div>
+        </div>
+        <div id="grafico-tab" class="grafico-tab hidden">
+            <canvas id="graficoNotas"></canvas>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const token = localStorage.getItem('token');
+    const botao_corrigir = document.getElementById('corrigir');
+    const botao_grafico = document.getElementById('grafico');
+    const div_atividades_entregues = document.getElementById('atividades-entregues');
+    const enviar_nota = document.getElementById('enviar-nota');
+    const popupOptions = document.getElementById('popup-options');
+
+    let entregas = []; // Lista global de entregas
+    let currentEntregaId = null;
+
+    // Função para buscar entregas da atividade
+    async function getAtividadeEntregues() {
+        try {
+            const resposta = await fetch(`/atividades-entregues/atividades/${localStorage.getItem('idAtividadeSelecionada')}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const obj = await resposta.json();
+
+            if (obj.status === true) {
+                return obj.resultado;
+            } else {
+                div_atividades_entregues.innerHTML = '<p class="sem-entregas">Nenhuma entrega encontrada.</p>';
+                return [];
+            }
+        } catch (error) {
+            console.error("Erro ao carregar entregas:", error);
+            div_atividades_entregues.innerHTML = '<p class="erro">Erro ao carregar entregas.</p>';
+            return [];
+        }
+    }
+
+    document.getElementById('cancelar').addEventListener('click', ()=>{
+        document.getElementById('popup-corrigir').classList.add('hidden');
+    });
+
+    // Renderiza as entregas na tela
+    async function renderizarAtividades() {
+        entregas = await getAtividadeEntregues();
+        div_atividades_entregues.innerHTML = '';
+
+        if (entregas.length === 0) {
+            div_atividades_entregues.innerHTML = '<p class="sem-entregas">Nenhuma entrega encontrada.</p>';
+            return;
+        }
+
+        entregas.forEach(entrega => {
+            const div = document.createElement('div');
+            div.classList.add('card-entrega');
+
+            div.innerHTML = `
+                <div class="info-aluno">
+                    <p>Matrícula: ${entrega.matriculaAluno || 'N/A'}</p>
+                    <p>Entregue em: ${entrega.dataEntrega ? new Date(entrega.dataEntrega).toLocaleString() : 'Data não informada'}</p>
+                    ${entrega.nota ? `<p class="nota">Nota: ${entrega.nota}</p>` : '<p class="pendente">Pendente</p>'}
+                </div>
+                <div class="acoes">
+                    <p class="botao-opcoes" data-id="${entrega.idAtividadeEntregue}">...</p>
+                </div>
+            `;
+
+            if (entrega.nota >= 0){
+                document.getElementById('corrigir-tab').classList.add('corrigido')
+            }
+
+            div_atividades_entregues.appendChild(div);
+        });
+
+        // Botões de "..." para cada entrega
+        document.querySelectorAll('.botao-opcoes').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentEntregaId = e.currentTarget.getAttribute('data-id');
+
+                popupOptions.classList.remove('show');
+
+                const rect = e.currentTarget.getBoundingClientRect();
+                popupOptions.style.top = `${rect.bottom + window.scrollY - popupOptions.offsetHeight - 55}px`;
+                popupOptions.style.left = `${rect.left + window.scrollX - popupOptions.offsetWidth - 300}px`;
+
+                setTimeout(() => {
+                    popupOptions.classList.add('show');
+                }, 0);
+            });
+        });
+    }
+
+    function exibirGraficoNotas() {
+    const ctx = document.getElementById('graficoNotas').getContext('2d');
+
+    const alunos = entregas.map(entrega => entrega.matriculaAluno);
+    const notas = entregas.map(entrega => entrega.nota ?? 0); // Se não tiver nota, usa 0
+
+    Chart.getChart("graficoNotas")?.destroy();
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: alunos,
+            datasets: [{
+                label: 'Nota por aluno',
+                data: notas,
+                backgroundColor: 'rgba(69, 77, 246, 0.5)',
+                borderColor: 'rgba(69, 77, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10
+                }
+            }
+        }
+    });
+}
+
+
+    // Fecha popup se clicar fora
+    document.addEventListener('click', (e) => {
+        if (!popupOptions.contains(e.target) && !e.target.classList.contains('botao-opcoes')) {
+            popupOptions.classList.remove('show');
+        }
+    });
+
+    // Botão de "Corrigir"
+    document.getElementById('corrigir-entrega').addEventListener('click', () => {
+        document.getElementById('popup-corrigir').classList.remove('hidden');
+    });
+
+    // Botão de "Enviar Nota"
+    enviar_nota.addEventListener('click', () => {
+        const nota = document.getElementById('input-nota').value;
+        
+        const entrega = entregas.find(e => e.idAtividadeEntregue == currentEntregaId);
+
+        if (!entrega) {
+            alert('Erro: entrega não encontrada.');
+            return;
+        }
+
+        const obj = {
+            atividadeentregue : {
+                nota: nota,
+                caminhoGravacao: entrega.caminhoGravacao,
+                matriculaAluno: entrega.matriculaAluno,
+                idAtividade: entrega.idAtividade,
+                dataEntrega: entrega.dataEntrega
+            }
+        };
+
+
+        // Aqui você pode adicionar o POST para salvar a nota no backend:
+        
+        fetch('/atividades-entregues/' + currentEntregaId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(obj)
+        }).then(res => res.json())
+          .then(data => {
+              if (data.status) {
+                  alert('Nota enviada com sucesso!');
+                  document.getElementById('popup-corrigir').classList.add('hidden');
+                  renderizarAtividades(); // Atualiza a lista
+              } else {
+                  alert('Erro ao enviar nota.');
+              }
+          });
+    });
+
+    // Alterna entre abas
+    function alternarAba(abaSelecionada) {
+        document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+        abaSelecionada.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        if (abaSelecionada.id === 'corrigir') {
+            document.getElementById('corrigir-tab').classList.remove('hidden');
+            document.getElementById('grafico-tab').classList.add('hidden');
+            renderizarAtividades();
+        } else {
+            document.getElementById('grafico-tab').classList.remove('hidden');
+            document.getElementById('corrigir-tab').classList.add('hidden');
+
+            exibirGraficoNotas();
+        }
+    }
+
+    // Listeners de abas
+    botao_corrigir.addEventListener('click', () => alternarAba(botao_corrigir));
+    botao_grafico.addEventListener('click', () => alternarAba(botao_grafico));
+
+    // Quando a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+        renderizarAtividades();
+    });
+
+    
+</script>
+
+</body>
+</html>
