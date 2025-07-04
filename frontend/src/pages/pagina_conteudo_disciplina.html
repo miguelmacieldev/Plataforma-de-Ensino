@@ -11,9 +11,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-    <aside>
-        <p>muda tudo aqui</p>
-    </aside>
+    <aside class="menu-lateral">
+            <p class="logo">
+                <i class="bi bi-backpack3-fill"></i>
+                infotec
+            </p>
+            <ul>
+                <li>
+                    <i class="bi bi-house-door-fill"></i>
+                    <a href="" class="item-barra">Início</a>
+                </li>
+                <li class="graficos">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <a href="" class="item-barra">Gráficos</a>
+                </li>
+                <li >
+                    <i class="bi bi-book-fill"></i>
+                    <a href="" class="item-barra">Agenda</a>
+                </li>
+                <li class="sair">                    
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="" class="item-barra">Sair</a>
+                </li>
+            </ul>
+        </aside>
     <main>
         <div>
             <div class="disciplina-sala">
@@ -79,510 +100,337 @@
         <button id="btn-comentario"><i class="bi bi-chat-left-dots"></i></button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <script>
-        const token = localStorage.getItem('token');
-        const idUsuario = localStorage.getItem('idUsuario');
-        const tipoUsuario = localStorage.getItem('tipoUsuario');
+    <!-- mantive tudo igual até o final do <body> -->
 
-        // Elementos da UI
-        const botaoNovaPostagem = document.getElementById('botao-nova-postagem');
-        const popupTipo = document.getElementById('popup-tipo');
-        const btnAtividade = document.getElementById('btn-atividade');
-        const btnComentario = document.getElementById('btn-comentario');
-        const editorContainerWrapper = document.getElementById('editor-container-wrapper');
-        const dataEntregaContainer = document.getElementById('data-entrega-container');
-        const btnCancelar = document.getElementById('btn-cancelar');
-        const btnEnviar = document.getElementById('btn-enviar');
-        
-        // Elementos do editor e arquivo
-        const arquivoUpload = document.getElementById('arquivo-upload');
-        const nomeArquivo = document.getElementById('nome-arquivo');
-        const removerArquivo = document.getElementById('remover-arquivo');
-        let arquivoSelecionado = null;
-        
-        // Variáveis de controle
-        let tipoPostagemAtual = null; // 'atividade' ou 'comentario'
-        let quill = null;
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+    const token = localStorage.getItem('token');
+    const idUsuario = localStorage.getItem('idUsuario');
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
-        // =============================================
-        // FUNÇÕES PRINCIPAIS (FLUXO DE POSTAGEM)
-        // =============================================
+    // Elementos
+    const botaoNovaPostagem = document.getElementById('botao-nova-postagem');
+    const popupTipo = document.getElementById('popup-tipo');
+    const btnAtividade = document.getElementById('btn-atividade');
+    const btnComentario = document.getElementById('btn-comentario');
+    const editorContainerWrapper = document.getElementById('editor-container-wrapper');
+    const dataEntregaContainer = document.getElementById('data-entrega-container');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const btnEnviar = document.getElementById('btn-enviar');
+    const arquivoUpload = document.getElementById('arquivo-upload');
+    const nomeArquivo = document.getElementById('nome-arquivo');
+    let quill = null;
+    let tipoPostagemAtual = null;
+    let arquivoSelecionado = null;
 
-        // Inicializa o editor Quill quando o formulário é aberto
-        
-        const botaoPrincipal = document.getElementById('botao-nova-postagem');
+botaoNovaPostagem.addEventListener('click', function() {
+    const estaVisivel = popupTipo.classList.contains('visible');
+    
+    if (estaVisivel) {
+        popupTipo.classList.remove('visible');
+        popupTipo.classList.add('hidden');
+    } else {
+        popupTipo.classList.remove('hidden');
+        popupTipo.classList.add('visible');
+        document.getElementById('btn-comentario').classList.add('animar');
+    }
+});
+    btnAtividade.addEventListener('click', () => {
+        tipoPostagemAtual = 'atividade';
+        abrirFormulario();
+    });
 
-        botaoPrincipal.addEventListener('click', function() {
-            popupTipo.classList.toggle('visible');
-        });
+    btnComentario.addEventListener('click', () => {
+        tipoPostagemAtual = 'comentario';
+        abrirFormulario();
+    });
 
-        function inicializarEditor() {
-            if (!quill) {
-                quill = new Quill('#editor-container', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: '#toolbar'
-                    }
-                });
-            }
+    function abrirFormulario() {
+        if (!quill) {
+            quill = new Quill('#editor-container', {
+                theme: 'snow',
+                modules: { toolbar: '#toolbar' }
+            });
         }
+        editorContainerWrapper.classList.remove('hidden');
+        popupTipo.classList.add('hidden');
 
-        // Configura data mínima como amanhã
-        function configurarDataMinima() {
-            const hoje = new Date();
-            const amanha = new Date(hoje);
-            amanha.setDate(hoje.getDate() + 1);
-            const dataFormatada = amanha.toISOString().split('T')[0];
-            document.getElementById('data-entrega').min = dataFormatada;
-            document.getElementById('data-entrega').value = dataFormatada;
-        }
-
-        function podePostar(){
-            if(localStorage.getItem('tipoUsuario') === "aluno"){
-                botaoNovaPostagem.style.display = "none";
-            }
-        }
-
-        botaoNovaPostagem.addEventListener('click', function() {
-            document.getElementById('btn-comentario').classList.add('animar');
-            popupTipo.classList.remove('hidden');
-        });
-
-        // Evento do botão de atividade
-        btnAtividade.addEventListener('click', function() {
-            tipoPostagemAtual = 'atividade';
-            popupTipo.classList.add('hidden');
-            abrirFormulario();
-        });
-
-        // Evento do botão de comentário
-        btnComentario.addEventListener('click', function() {
-            tipoPostagemAtual = 'comentario';
-            popupTipo.classList.add('hidden');
-            abrirFormulario();
-        });
-
-        // Abre o formulário de postagem
-        function abrirFormulario() {
-            inicializarEditor();
-            
-            // Mostra/oculta a data de entrega conforme o tipo
-            if (tipoPostagemAtual === 'atividade') {
-                dataEntregaContainer.classList.remove('hidden');
-                configurarDataMinima();
-            } else {
-                dataEntregaContainer.classList.add('hidden');
-            }
-            
-            editorContainerWrapper.classList.remove('hidden');
-        }
-
-        // Evento do botão cancelar
-        btnCancelar.addEventListener('click', function() {
-            editorContainerWrapper.classList.add('hidden');
-            limparFormulario();
-        });
-
-        // Evento do botão enviar
-        btnEnviar.addEventListener('click', async function() {
-            if (!quill) return;
-            
-            const descricao = quill.root.innerHTML.trim();
-            if (!descricao) {
-                alert("Por favor, escreva algo antes de enviar.");
-                return;
-            }
-            
-            let dataEntrega = null;
-            if (tipoPostagemAtual === 'atividade') {
-                dataEntrega = document.getElementById('data-entrega').value;
-                if (!dataEntrega) {
-                    alert("Por favor, selecione uma data de entrega.");
-                    return;
-                }
-            }
-            
-            const idDisciplinaProfessor = await getIdDisciplinaProfessor(idUsuario);
-            if (!idDisciplinaProfessor) {
-                alert("Erro ao recuperar a disciplina.");
-                return;
-            }
-            
-            await postAtividade(tipoPostagemAtual, idDisciplinaProfessor, dataEntrega);
-            editorContainerWrapper.classList.add('hidden');
-            limparFormulario();
-        });
-
-        // Limpa o formulário
-        function limparFormulario() {
-            if (quill) {
-                quill.setContents([]);
-            }
-            arquivoUpload.value = '';
-            arquivoSelecionado = null;
-            tipoPostagemAtual = null;
-        }
-
-        // Evento para seleção de arquivo
-        arquivoUpload.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                if (file.type !== 'application/pdf') {
-                    alert('Por favor, selecione um arquivo PDF.');
-                    return;
-                }
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('O arquivo é muito grande. Tamanho máximo: 5MB');
-                    return;
-                }
-                
-                arquivoSelecionado = file;
-                nomeArquivo.textContent = file.name;
-            }
-        });
-
-        // Função para postar atividade/comentário
-        async function postAtividade(tipoPostagem, idDisciplinaProfessor, dataEntregaInput = null) {
-            const descricaoEditor = quill.root.innerHTML.trim();
-            const dataAtual = new Date();
-            const dataPostagem = dataAtual.toISOString().split('T')[0];
-            let dataEntrega = null;
-            let devolucao = 0;
-
-            if (tipoPostagem === 'atividade') {
-                devolucao = 1;
-                dataEntrega = dataEntregaInput;
-            }
-
-            const formData = new FormData();
-            formData.append('atividade[descricao]', descricaoEditor);
-            formData.append('atividade[devolucao]', devolucao);
-            formData.append('atividade[dataPostagem]', dataPostagem);
-            formData.append('atividade[dataEntrega]', dataEntrega);
-            formData.append('atividade[idDisciplinaProfessor]', idDisciplinaProfessor);
-
-            if (arquivoSelecionado) {
-                formData.append('arquivo', arquivoSelecionado);
-            }
-
-            try {
-                const resposta = await fetch("/atividades", {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                });
-
-                const obj = await resposta.json();
-
-                if (obj.status === true) {
-                    alert(obj.msg || "Postagem realizada com sucesso.");
-                    getAtividades();
-                } else {
-                    alert(obj.msg || "Erro ao postar.");
-                }
-            } catch (error) {
-                alert("Erro na requisição: " + error);
-            }
-        }
-
-        // =============================================
-        // FUNÇÕES ORIGINAIS (LISTAGEM, DISCIPLINA, ETC.)
-        // =============================================
-
-        // Busca o ID da disciplina do professor
-        async function getIdDisciplinaProfessor(idProfessor) {
-            try {
-                const resposta = await fetch('disciplinas-professores/professores/' + idProfessor, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                const obj = await resposta.json();
-                if (obj.status === true && obj.disciplinaProfessor) {
-                    return obj.disciplinaProfessor.idDisciplinaProfessor;
-                } else {
-                    console.error("Erro ao buscar disciplina");
-                    return null;
-                }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-                return null;
-            }
-        }
-
-        // Busca a disciplina associada ao vínculo professor-disciplina
-        async function getDisciplinaProfessor(idDisciplinaProfessor) {
-            try {
-                const resposta = await fetch('disciplinas-professores/' + idDisciplinaProfessor, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                const obj = await resposta.json();
-                if (obj.status === true && obj.disciplinaProfessor) {
-                    return obj.disciplinaProfessor.idDisciplina;
-                } else {
-                    console.error("Erro ao buscar vínculo");
-                    return null;
-                }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-                return null;
-            }
-        }
-
-        // Carrega todas as atividades
-        async function getAtividades() {
-            try {
-                const resposta = await fetch("/atividades", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                const dados = await resposta.json();
-
-                if (dados.status === true && Array.isArray(dados.atividades)) {
-                    renderizarAtividades(dados.atividades);
-                }
-            } catch (erro) {
-                console.error("Erro ao carregar atividades:", erro);
-            }
-        }
-
-        // Renderiza a lista de atividades/comentários
-        async function renderizarAtividades(atividades) {
-    const container = document.getElementById("lista-atividades");
-    container.innerHTML = "";
-
-    for (const atividade of atividades) {
-        try {
-            const idProf = tipoUsuario === "professor" ? await getIdDisciplinaProfessor(idUsuario) : null;
-            const idDisciplina = await getDisciplinaProfessor(atividade.idDisciplinaProfessor);
-
-            if ((tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisciplina) || 
-                (tipoUsuario === "professor" && idProf === atividade.idDisciplinaProfessor)) {
-                
-                const div = document.createElement("div");
-                const tipoClasse = atividade.devolucao === 0 ? "comentario" : "atividade";
-                div.classList.add(tipoClasse);
-
-                // Verifica se é uma atividade e se o prazo expirou (para alunos)
-                const prazoExpirado = tipoUsuario === "aluno" && atividade.devolucao === 1 && 
-                                      verificarPrazoExpirado(atividade.dataEntrega);
-
-                if (prazoExpirado) {
-                    div.classList.add("atividade-bloqueada");
-                }
-
-                const contentDiv = document.createElement("div");
-                
-                if (atividade.devolucao === 0) {
-                    // Comentário (código existente)
-                    contentDiv.innerHTML = `
-                        <div>
-                            <p>Professor</p>
-                            <p>${atividade.dataPostagem}</p>
-                            <div>${atividade.descricao}</div>
-                        </div>
-                        ${tipoUsuario === "professor" ? `<div><p class='opcao-excluir' data-id-atividade="${atividade.idAtividade}">...</p></div>` : ''}
-                    `;
-                } else {
-                    // Atividade
-                    const link = document.createElement(prazoExpirado ? "div" : "a");
-                    if (!prazoExpirado) {
-                        link.id = `atividade-${atividade.idAtividade}`;
-                        link.addEventListener('click', () => {
-                            localStorage.setItem('idAtividadeSelecionada', atividade.idAtividade);
-                            if(localStorage.getItem('tipoUsuario') === 'aluno'){
-                                window.location.href = "pagina_atividade_disciplina.html";
-                            }else{
-                                window.location.href = "pagina_correcao_atividade.html"
-                            }
-                        });
-                    }
-                    
-                    link.innerHTML = `
-                            <p>Professor</p>
-                            ${prazoExpirado ? '<p class="aviso-prazo">(Prazo expirado)</p>' : ''}
-                            <p>${atividade.dataEntrega}</p>
-                            <p>${atividade.descricao}</p>
-                    `;
-                    
-                    contentDiv.appendChild(link);
-                    
-                    if (tipoUsuario === "professor") {
-                        const optionsDiv = document.createElement("div");
-                        optionsDiv.innerHTML = `<p class='opcao-excluir' data-id-atividade="${atividade.idAtividade}">...</p>`;
-                        contentDiv.appendChild(optionsDiv);
-                    }
-                }
-
-                div.appendChild(contentDiv);
-
-                // Adiciona link para PDF se existir
-                if (atividade.caminhoGravacao) {
-                    const pdfLink = document.createElement("a");
-                    pdfLink.href = atividade.caminhoGravacao;
-                    pdfLink.target = "_blank";
-                    pdfLink.textContent = "Download PDF";
-                    pdfLink.style.display = "block";
-                    pdfLink.style.marginTop = "10px";
-                    div.appendChild(pdfLink);
-                }
-
-                container.appendChild(div);
-            }
-        } catch (error) {
-            console.error("Erro ao renderizar atividade:", atividade.idAtividade, error);
+        if (tipoPostagemAtual === 'atividade') {
+            dataEntregaContainer.classList.remove('hidden');
+            configurarDataMinima();
+        } else {
+            dataEntregaContainer.classList.add('hidden');
         }
     }
 
+    btnCancelar.addEventListener('click', () => {
+        editorContainerWrapper.classList.add('hidden');
+        limparFormulario();
+    });
 
-
-            function verificarPrazoExpirado(dataEntrega) {
-                const hoje = new Date();
-                const dataEntregaObj = new Date(dataEntrega);
-                return hoje > dataEntregaObj;
+    arquivoUpload.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            if (file.type !== 'application/pdf' || file.size > 5 * 1024 * 1024) {
+                alert("Arquivo inválido. Apenas PDF até 5MB.");
+                return;
             }
+            arquivoSelecionado = file;
+            nomeArquivo.textContent = file.name;
+        }
+    });
 
-            // Adiciona eventos para os botões de exclusão
-            document.querySelectorAll('.opcao-excluir').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const popupExcluir = document.createElement('div');
-                    popupExcluir.className = 'popup-excluir';
-                    
-                    // Usando pageY e pageX em vez de clientY e clientX
-                    popupExcluir.style.position = 'absolute';
-                    popupExcluir.style.top = `${e.pageY}px`;
-                    popupExcluir.style.left = `${e.pageX}px`;
-                    
-                    popupExcluir.innerHTML = `
-                        <button class="botao-excluir" data-id-atividade="${btn.dataset.idAtividade}" onclick="excluirAtividade(this)">Excluir</button>
-                    `;
-                    
-                    document.body.appendChild(popupExcluir);
-                    
-                    // Fecha o popup ao clicar fora
-                    setTimeout(() => {
-                        const fecharPopup = (e) => {
-                            if (!popupExcluir.contains(e.target)) {
-                                popupExcluir.remove();
-                                document.removeEventListener('click', fecharPopup);
-                            }
-                        };
-                        document.addEventListener('click', fecharPopup);
-                    }, 0);
-                });
+    btnEnviar.addEventListener('click', async () => {
+        console.log('oi')
+        if (!quill) return;
+        const descricao = quill.root.innerHTML.trim();
+        if (!descricao) return alert("Escreva algo.");
+
+        let dataEntrega = null;
+        if (tipoPostagemAtual === 'atividade') {
+            dataEntrega = document.getElementById('data-entrega').value;
+            if (!dataEntrega) return alert("Defina a data de entrega.");
+        }
+
+        const ids = await getIdsDisciplinaProfessor(idUsuario);
+        if (!ids || ids.length === 0) return alert("Nenhum vínculo encontrado.");
+
+        // Se houver mais de um vínculo, use o primeiro
+        const idDisciplinaProfessor = ids[0];
+        await postAtividade(tipoPostagemAtual, idDisciplinaProfessor, dataEntrega);
+        limparFormulario();
+        editorContainerWrapper.classList.add('hidden');
+    });
+
+    function limparFormulario() {
+        if (quill) quill.setContents([]);
+        arquivoUpload.value = '';
+        nomeArquivo.textContent = "Nenhum arquivo selecionado";
+        arquivoSelecionado = null;
+        tipoPostagemAtual = null;
+    }
+
+    function configurarDataMinima() {
+        const amanha = new Date(Date.now() + 86400000);
+        const dataFormatada = amanha.toISOString().split('T')[0];
+        document.getElementById('data-entrega').min = dataFormatada;
+        document.getElementById('data-entrega').value = dataFormatada;
+    }
+
+    function podePostar() {
+        if (tipoUsuario === "aluno") {
+            botaoNovaPostagem.style.display = "none";
+        }
+    }
+
+    // ======================= FUNÇÕES DE BACKEND ========================
+
+    async function getIdsDisciplinaProfessor(idProf) {
+        try {
+            const res = await fetch(`/disciplinas-professores/professores/${idProf}`, {
+                headers: { "Authorization": "Bearer " + token }
             });
+            const json = await res.json();
+            if (json.status) {
+                return json.disciplinaProfessor.map(r => r.idDisciplinaProfessor);
+            }else{
+                return false
+            }
+
+            return [];
+        } catch (err) {
+            console.error("Erro ao buscar vínculos:", err);
+            return [];
         }
+    }
+
+    async function postAtividade(tipo, idDisciplinaProfessor, dataEntrega = null) {
+        const descricao = quill.root.innerHTML.trim();
+        const dataPostagem = new Date().toISOString().split('T')[0];
+
+        const formData = new FormData();
+        formData.append('atividade[descricao]', descricao);
+        formData.append('atividade[devolucao]', tipo === 'atividade' ? 1 : 0);
+        formData.append('atividade[dataPostagem]', dataPostagem);
+        formData.append('atividade[dataEntrega]', dataEntrega);
+        formData.append('atividade[idDisciplinaProfessor]', idDisciplinaProfessor);
+        if (arquivoSelecionado) formData.append('arquivo', arquivoSelecionado);
+
+        const res = await fetch("/atividades", {
+            method: "POST",
+            body: formData,
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const json = await res.json();
+        alert(json.msg || (json.status ? "Postado!" : "Erro ao postar."));
+        if (json.status) getAtividades();
+    }
+
+    async function getAtividades() {
+        try {
+            const res = await fetch("/atividades", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const dados = await res.json();
+
+            if (dados.status && Array.isArray(dados.atividades)) {
+                renderizarAtividades(dados.atividades);
+            }
+        } catch (err) {
+            console.error("Erro ao buscar atividades:", err);
+        }
+    }
+
+    async function renderizarAtividades(atividades) {
+const container = document.getElementById("lista-atividades");
+    container.innerHTML = "";
+
+    const idProfList = tipoUsuario === "professor"
+        ? (await getIdsDisciplinaProfessor(idUsuario))
+        : [];
 
 
-        // Função para excluir atividade (chamada pelo botão dinâmico)
-        window.excluirAtividade = async function(botao) {
-            const idAtividade = botao.dataset.idAtividade;
-            
-            try {
-                const resposta = await fetch(`/atividades/${idAtividade}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                
-                const obj = await resposta.json();
-                
-                if (obj.status === true) {
-                    alert("Atividade excluída com sucesso!");
-                    getAtividades();
-                } else {
-                    alert(obj.msg || "Erro ao excluir atividade");
+    for (const atividade of atividades) {
+        try {
+            const idDisc = await getDisciplinaProfessor(atividade.idDisciplinaProfessor);
+            const corresponde =
+                (tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisc) ||
+                (tipoUsuario === "professor" && idProfList.includes(Number(atividade.idDisciplinaProfessor)));
+
+                if (!corresponde) continue;
+
+                const div = document.createElement("div");
+                const tipo = atividade.devolucao === 1 ? "atividade" : "comentario";
+                div.classList.add(tipo);
+
+                const content = document.createElement("div");
+
+                const prazoExpirado = tipoUsuario === "aluno" && atividade.devolucao === 1 &&
+                    new Date(atividade.dataEntrega) < new Date();
+
+                if (prazoExpirado) div.classList.add("atividade-bloqueada");
+
+                const item = document.createElement(prazoExpirado ? "div" : "a");
+
+                if (!prazoExpirado && atividade.devolucao === 1) {
+                    item.addEventListener("click", () => {
+                        localStorage.setItem('idAtividadeSelecionada', atividade.idAtividade);
+                        window.location.href = tipoUsuario === "aluno" ?
+                            "pagina_atividade_disciplina.html" :
+                            "pagina_correcao_atividade.html";
+                    });
                 }
-            } catch (error) {
-                console.error("Erro ao excluir atividade:", error);
-                alert("Erro ao excluir atividade");
-            }
-            
-            // Remove todos os popups abertos
-            document.querySelectorAll('.popup-excluir').forEach(p => p.remove());
-        };
 
-    
+                item.innerHTML = `
+                    <p>Professor</p>
+                    ${atividade.devolucao === 1 ? `<p>${atividade.dataEntrega}</p>` : `<p>${atividade.dataPostagem}</p>`}
+                    <p>${atividade.descricao}</p>
+                    ${prazoExpirado ? '<p class="aviso-prazo">(Prazo expirado)</p>' : ''}
+                `;
+                content.appendChild(item);
 
-        // Carrega os dados da turma
-        async function getTurma() {
-            try {
-                const resposta = await fetch('turmas/' + localStorage.getItem('idTurmaSelecionada'), {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                const obj = await resposta.json();
-                if (obj.status === true && obj.turma) {
-                    nomearDivTurmaDisciplina(obj.turma.curso, 'turma');
-                } else {
-                    console.error("Erro ao buscar turma");
+                if (tipoUsuario === "professor") {
+                    const opcoes = document.createElement("div");
+                    opcoes.innerHTML = `<p class="opcao-excluir" data-id-atividade="${atividade.idAtividade}">...</p>`;
+                    content.appendChild(opcoes);
                 }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-            }
-        }
 
-        // Carrega os dados da disciplina
-        async function getDisciplina() {
-            try {
-                const resposta = await fetch('disciplinas/' + localStorage.getItem('idDisciplinaSelecionada'), {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json",
-                    }
-                });
-                const obj = await resposta.json();
-                if (obj.status === true && obj.disciplina) {
-                    nomearDivTurmaDisciplina(obj.disciplina.nome, 'disciplina');
-                } else {
-                    console.error("Erro ao buscar disciplina");
+                if (atividade.caminhoGravacao) {
+                    const link = document.createElement("a");
+                    link.href = atividade.caminhoGravacao;
+                    link.textContent = "Download PDF";
+                    link.target = "_blank";
+                    link.style.display = "block";
+                    link.style.marginTop = "10px";
+                    content.appendChild(link);
                 }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
+
+                div.appendChild(content);
+                container.appendChild(div);
+            } catch (e) {
+                console.error("Erro ao renderizar atividade:", e);
             }
         }
 
-        // Atualiza o nome da turma/disciplina no cabeçalho
-        function nomearDivTurmaDisciplina(conteudo, tipo) {
-            const div = document.querySelector('.disciplina-sala');
-            if (!div) return;
+        document.querySelectorAll('.opcao-excluir').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                const id = btn.dataset.idAtividade;
+                const popup = document.createElement('div');
+                popup.className = 'popup-excluir';
+                popup.style.position = 'absolute';
+                popup.style.top = `${e.pageY}px`;
+                popup.style.left = `${e.pageX}px`;
+                popup.innerHTML = `<button class="botao-excluir" data-id-atividade="${id}" onclick="excluirAtividade(this)">Excluir</button>`;
+                document.body.appendChild(popup);
 
-            if (tipo === "turma") {
-                div.dataset.turma = conteudo;
-            } else if (tipo === "disciplina") {
-                div.dataset.disciplina = conteudo;
-            }
+                setTimeout(() => {
+                    const close = ev => {
+                        if (!popup.contains(ev.target)) {
+                            popup.remove();
+                            document.removeEventListener('click', close);
+                        }
+                    };
+                    document.addEventListener('click', close);
+                }, 0);
+            });
+        });
+    }
 
-            const turma = div.dataset.turma || "";
-            const disciplina = div.dataset.disciplina || "";
-
-            div.innerHTML = `${turma} - ${disciplina}`.trim();
+    window.excluirAtividade = async function (botao) {
+        const id = botao.dataset.idAtividade;
+        try {
+            const res = await fetch(`/atividades/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const json = await res.json();
+            alert(json.msg || "Excluído");
+            if (json.status) getAtividades();
+        } catch (err) {
+            console.error("Erro ao excluir:", err);
+            alert("Erro ao excluir.");
         }
+    };
 
-        getTurma();
-        getDisciplina();
-        getAtividades();
-        podePostar();
-    </script>
+    async function getDisciplinaProfessor(id) {
+        const res = await fetch(`/disciplinas-professores/${id}`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const json = await res.json();
+        return json?.disciplinaProfessor?.idDisciplina || null;
+    }
+
+    // Nome da turma/disciplina no topo
+    async function getTurma() {
+        const res = await fetch(`/turmas/${localStorage.getItem('idTurmaSelecionada')}`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const json = await res.json();
+        if (json.turma) nomearDivTurmaDisciplina(json.turma.curso, 'turma');
+    }
+
+    async function getDisciplina() {
+        const res = await fetch(`/disciplinas/${localStorage.getItem('idDisciplinaSelecionada')}`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const json = await res.json();
+        if (json.disciplina) nomearDivTurmaDisciplina(json.disciplina.nome, 'disciplina');
+    }
+
+    function nomearDivTurmaDisciplina(conteudo, tipo) {
+        const div = document.querySelector('.disciplina-sala');
+        if (!div) return;
+        div.dataset[tipo] = conteudo;
+        const texto = `${div.dataset.turma || ''} - ${div.dataset.disciplina || ''}`;
+        div.innerHTML = texto.trim();
+    }
+
+    getTurma();
+    getDisciplina();
+    getAtividades();
+    podePostar();
+</script>
+
 </body>
 </html>

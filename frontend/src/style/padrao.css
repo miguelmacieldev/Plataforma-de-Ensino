@@ -39,14 +39,6 @@ nav {
     align-items: center;
 }
 
-aside{
-    height: 100vh;
-    width: 30rem;
-    position: fixed;
-    left: 0;
-    background-color: #1c202b;
-}
-
 .hidden {
   display: none;
   visibility: hidden;
@@ -117,9 +109,11 @@ p, li, a {
 
 main {
     display: flex;
-    justify-content: center;
     height: calc(100vh - 90px);
-    padding-top: 5rem;
+    width: calc(100vw - 30rem);
+    position: absolute;
+    right: 0;
+    padding: 5rem 0 0 5rem;
 }
 
 .descricao {
@@ -282,4 +276,64 @@ input[type="text"]:focus {
 .input-radio label:hover::before {
     border-color: var(--cor-secundaria);
     transform: scale(1.1);
+}
+
+aside{
+    height: 100vh;
+    width: 30rem;
+    position: fixed;
+    left: 0;
+    background-color: #1c202b;
+    display: flex;
+    flex-flow: column;
+    padding-top: 5rem;
+}
+
+aside > ul{
+    display: flex;
+    flex-flow: column;   
+    gap: 0;
+    height: 50%;
+    position: relative;
+
+}
+
+aside > ul > li{
+    padding-left: 5rem;
+    height: 7rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    &:hover{
+        background-color: hsla(237, 91%, 62%, 0.5);
+        border-right: 0.5rem solid var(--cor-secundaria);
+    }
+}
+
+.sair{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.logo{
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+
+    & > i {
+        background-color: var(--cor-secundaria);
+        padding: 1rem 1.55rem 1rem 1.55rem;
+        border-radius: 50%;
+    }
+}
+
+aside > p{
+    padding-left: 5rem;
+    margin-bottom: 10rem;
+}
+
+.item-barra{
+    overflow: hidden;
 }

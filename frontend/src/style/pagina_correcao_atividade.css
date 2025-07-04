@@ -7,10 +7,11 @@ nav{
     justify-content: start;
     width: calc(100% - 30rem);
     border-bottom: solid 0.1rem white;
-    z-index: 2;
+    z-index: 10000;
 }
 
-ul > li {
+ul > li#corrigir,
+ul > li#grafico{
     width: 100%;
     position: relative;
     padding-bottom: 1.5rem;
@@ -57,44 +58,59 @@ ul > li {
 }
 
 .grafico-tab{
+    width: 100%;
+}
+
+.grafs {
+    width: 100%;
+    display: flex;
+    gap: 0;
+    padding-top: 10rem;
+    box-sizing: border-box;
+}
+
+canvas {
     background-color: white;
-    width: 100rem;
-    height: 50rem;
-    padding: 5rem;
     border-left: 0.5rem solid var(--cor-secundaria);
+    max-width: 60rem;
+    min-width: 60rem;
+    padding: 5rem;
+    transform: scale(0.85);
 }
 
 #conteudo-tab{
-    display: grid;
-    right: 0;
-    grid-template-columns: repeat(2, 1fr); /* Duas colunas com largura igual */
-    grid-auto-rows: auto;
-    position: absolute;
-    height: 100%;
-    align-items: start;
-    padding: 10rem;  
-    width: calc(100% - 30rem);
+    width: 100%;
+    height: auto;
+    margin-right: 10rem;
+}
+
+.card-entrega.corrigido{
+    border-color: rgb(5, 144, 5);
 }
 
 .card-entrega{
     position: relative;
     width: 40rem;
+    background-color: white;
+    padding: 2.5rem;
+    border-left: 0.5rem solid var(--cor-primaria);
+
+    & p{
+        color: black;
+    }
 
     & > .acoes{
         cursor: pointer;
         position: absolute;
-        right: 0;
-        top: 0;
+        right: 1.5rem;
+        top: 1rem;
     }
 }
 
 
 .tab-content{
-    background-color: white;
-    width: 50rem;
-    height: 10rem;
-    padding: 7rem 3rem;
-    border-left: solid 0.5rem var(--cor-primaria);  
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: start;
     align-items: center;
@@ -105,8 +121,14 @@ ul > li {
     }
 }
 
-.tab-content.corrigido{
-    border-left-color: green;
+.atividades-entregues{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Duas colunas com largura igual */
+    grid-auto-rows: auto;
+    height: 100%;
+    gap: 10rem;
+    align-items: start;
+    padding-top: 10rem;
 }
 
 .popup-options {

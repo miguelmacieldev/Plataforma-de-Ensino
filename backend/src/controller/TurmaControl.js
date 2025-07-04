@@ -128,6 +128,24 @@ module.exports = class TurmaControl {
         response.status(200).send(objResposta);
     }
 
+        async turma_read_all_alunos_control(request, response){
+        const turma = new Turma();
+        turma.idTurma = request.params.idTurma
+
+        const resultado = await turma.readAlunosPorTurma()
+
+             
+        const objResposta = {
+            cod: 1,
+            status: true,
+            msg: 'Executado com sucesso',
+            alunos_qtd: resultado
+        };
+
+        response.status(200).send(objResposta);
+    }
+
+
     async turma_read_all_control(request, response) {
 
         var turma = new Turma();

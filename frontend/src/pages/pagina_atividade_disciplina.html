@@ -5,12 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style/padrao.css">
     <link rel="stylesheet" href="../style/pagina_atividade_disciplina.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
     <title>Document</title>
 </head>
 <body>
-    <aside>
-        <p>muda tudo aqui</p>
-    </aside>
+    <aside class="menu-lateral">
+            <p class="logo">
+                <i class="bi bi-backpack3-fill"></i>
+                infotec
+            </p>
+            <ul>
+                <li>
+                    <i class="bi bi-house-door-fill"></i>
+                    <a href="" class="item-barra">Início</a>
+                </li>
+                <li class="graficos">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <a href="" class="item-barra">Gráficos</a>
+                </li>
+                <li >
+                    <i class="bi bi-book-fill"></i>
+                    <a href="" class="item-barra">Aegenda</a>
+                </li>
+                <li class="sair">                    
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="" class="item-barra">Sair</a>
+                </li>
+            </ul>
+        </aside>
     <main>
         <div class="atividade">
             <div id="info">
@@ -109,47 +132,41 @@
     });
 
     async function postAtividade() {
-        const caminhoGravacao = '/uploads/' + file.name
-        const dataEntrega  = new Date();
-        const idAtividade = localStorage.getItem('idAtividadeSelecionada');
-        const matriculaAluno = localStorage.getItem('idUsuario');
-        const nota = 0
+    const dataEntrega = new Date().toISOString();
+    const idAtividade = localStorage.getItem('idAtividadeSelecionada');
+    const matriculaAluno = localStorage.getItem('idUsuario');
+    const nota = -1;
 
-        const obj ={
-            'atividadeentregue' : {
-                'caminhoGravacao' : caminhoGravacao,
-                'idAtividade' : idAtividade, 
-                'dataEntrega' : dataEntrega,
-                'matriculaAluno' : matriculaAluno,
-                'nota' : nota
-            }
+    const formData = new FormData();
+    formData.append('arquivo', file); 
+    formData.append('idAtividade', idAtividade);
+    formData.append('dataEntrega', dataEntrega);
+    formData.append('matriculaAluno', matriculaAluno);
+    formData.append('nota', nota);
+
+    try {
+        const resposta = await fetch('atividades-entregues', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            body: formData
+        });
+
+        const result = await resposta.json();
+
+        if (result.status === true) {
+            alert('Arquivo enviado com sucesso!');
+            desabilitarAtividade();
+        } else {
+            alert('Erro ao enviar arquivo.');
+            console.error(result);
         }
-
-        try {
-            const resposta = await fetch('atividades-entregues', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(obj)
-            });
-
-            const result = await resposta.json();
-
-            console.log(result)
-
-            if (result.status === true) {
-                alert('Arquivo enviado com sucesso!'); 
-            } else {
-                alert('Erro ao enviar arquivo.');
-                console.error(result);
-            }
-        } catch (error) {
-            console.error('Erro ao enviar arquivo:', error);
-            alert('Erro na conexão com o servidor.');
-        }
+    } catch (error) {
+        console.error('Erro ao enviar arquivo:', error);
+        alert('Erro na conexão com o servidor.');
     }
+}
 
     async function verificarEntregaAluno(idAtividade, matriculaAluno) {
     try {

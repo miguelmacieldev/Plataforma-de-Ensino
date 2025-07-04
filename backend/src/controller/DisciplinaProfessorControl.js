@@ -105,6 +105,29 @@ module.exports = class DisciplinaProfessorControl {
         }    
     }
 
+
+    async disciplinaProfessor_read_by_id_disciplina_control(req, res) {
+        const dp = new DisciplinaProfessor();
+        dp.idDisciplina  = req.params.idDisciplina;
+
+
+        try {
+            const resultados = await dp.procurarIdDisciplinaProfessorpeloIdDisciplina();
+
+            res.status(200).send({
+                cod: 1,
+                status: resultados? true : false,
+                msg: resultados ? 'Vínculos encontrados com sucesso.' : 'Vínculos não encontrado.',
+                resultados : resultados 
+            });
+
+
+        } catch (erro) {
+            console.error("Erro ao buscar vínculos:", erro);
+            res.status(500).json({ status: false, msg: 'Erro interno do servidor' });
+        }
+    }
+
     async disciplinaProfessor_delete_control(req, res) {
         const dp = new DisciplinaProfessor();
         dp.idDisciplinaProfessor = req.params.idDisciplinaProfessor;

@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Upload de Turmas</title>
+  <link rel="stylesheet" href="../style/admin.css">
 </head>
-  <body>
+  <body class="cadastro">
     <h1>CRUD - Disciplinas</h1>
-    <form id="uploadForm">
-      <label for="arquivo">Selecione o arquivo CSV:</label>
-      <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
-      <br><br>
-      <button type="button" id="btnUpload">Enviar</button>
-    </form>
-    <div>
-      <input type="text" id="txtNome">
-      <input type="text" id="txtIdTurma">
+    <div class="conteiner">
+      <form id="uploadForm">
+        <label for="arquivo">Selecione o arquivo CSV:</label>
+        <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
+        <br><br>
+        <button type="button" id="btnUpload">Enviar</button>
+      </form>
+      <div>
+        <input placeholder="nome" type="text" id="txtNome">
+        <input placeholder="idTurma" type="text" id="txtIdTurma">
+      </div>
+      <div>
+        <button id="btnCadastrar">Cadastrar Disciplina</button>
+      </div>
+      <div id="divDados"></div>
     </div>
-    <div>
-      <button id="btnCadastrar">Cadastrar Disciplina</button>
-    </div>
-    <div id="divDados"></div>
   </body>
   <script>
     const txtIdTurma = document.getElementById("txtIdTurma");

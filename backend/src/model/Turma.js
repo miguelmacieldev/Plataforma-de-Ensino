@@ -85,6 +85,25 @@ class Turma {
         }
     }
 
+    async readAlunosPorTurma(){
+        const conexao = await Banco.getConexao();
+        const SQL = 'SELECT * FROM aluno WHERE idTurmaPrimaria = ? OR idTurmaSecundaria = ?;';
+         try {
+            const [rows] = await conexao.execute(SQL, [this._idTurma, this._idTurma]);
+            
+            // Verifica se retornou algum registro
+            if (rows.length > 0) {
+                return rows.length;
+            } else {
+                console.log('Nenhum aluno encontrado na turma com o ID:', this._idTurma);
+                return null;
+            }
+        } catch (error) {
+            console.error('Erro ao ler alunos pelo id da turma:', error);
+            return null;
+        }
+    }
+
     // Método assíncrono para ler uma turma pelo ID.
     async readByID() {
         const conexao = await Banco.getConexao();

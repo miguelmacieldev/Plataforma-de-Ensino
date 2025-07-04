@@ -5,12 +5,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../style/padrao.css" />
         <link rel="stylesheet" href="../style/pagina_principal.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <script src="../script/jwt-decode.min.js"></script>
         <title>Document</title>
     </head>
     <body>
-        <aside>
-            <p>muda tudo aqui dentro</p>
+        <aside class="menu-lateral">
+            <p class="logo">
+                <i class="bi bi-backpack3-fill"></i>
+                infotec
+            </p>
+            <ul>
+                <li>
+                    <i class="bi bi-house-door-fill"></i>
+                    <a href="" class="item-barra">Início</a>
+                </li>
+                <li class="graficos">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <a href="" class="item-barra">Gráficos</a>
+                </li>
+                <li >
+                    <i class="bi bi-book-fill"></i>
+                    <a href="./pagina_agenda.html" class="item-barra">Agenda</a>
+                </li>
+                <li class="sair">                    
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="" class="item-barra">Sair</a>
+                </li>
+            </ul>
         </aside>
         <main>
             <div class="disciplinas" id="disciplinas"></div>
@@ -21,10 +43,31 @@
             const decoded = jwt_decode(token);
 
             buscarDisciplinasPorTurmas(decoded.id)
+            
+async function totalDeAlunos(idTurma) {
+    try {
+        const resposta = await fetch(`/turmas/${idTurma}/alunos`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            }
+        });
+
+        const dados = await resposta.json();
+
+        return dados.alunos_qtd;
+
+    } catch (err) {
+        console.error("Erro ao buscar total de alunos:", err);
+        return 0;
+    }
+}
 
             async function buscarDisciplinasPorTurmas(idProfessor) {
                 try {
                 const resposta = await fetch(`/professores/${idProfessor}/disciplinas-turmas/`, {
+                    method : "GET",
                     headers: {
                         "Authorization": "Bearer " + token,
                         "Accept": "application/json"
@@ -41,11 +84,16 @@
                 const link = document.createElement("a");
                 link.innerHTML = `<p>${resultado.nomeDisciplina} - ${resultado.nomeTurma}</p>`;
                 link.href = "#"; // Impede navegação automática
-                div.addEventListener("click", () => {
-                    localStorage.setItem("idDisciplinaSelecionada", resultado.idDisciplina);
-                    localStorage.setItem("idTurmaSelecionada", resultado.idTurma);
-                    window.location.href = `pagina_conteudo_disciplina.html`;
-                });
+                div.addEventListener("click", async () => {
+                localStorage.setItem("idDisciplinaSelecionada", resultado.idDisciplina);
+                localStorage.setItem("idTurmaSelecionada", resultado.idTurma);
+
+                // 👉 Aqui buscamos o total de alunos e salvamos no localStorage
+                const total = await totalDeAlunos(resultado.idTurma);
+                localStorage.setItem("totalAlunos", total);
+
+                window.location.href = `pagina_conteudo_disciplina.html`;
+            });
 
                 div.appendChild(link);
                 div.innerHTML += `<p class="opcoes">...</p>`;

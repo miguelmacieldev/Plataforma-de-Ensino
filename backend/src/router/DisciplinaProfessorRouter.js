@@ -29,6 +29,8 @@ module.exports = class DisciplinaProfessorRouter {
  
         this._router.get('/:idDisciplinaProfessor', this._authMiddleware.autenticarToken,this._disciplinaProfessorControl.disciplinaProfessor_read_by_id_control);
         
+        this._router.get('/disciplinas/:idDisciplina', this._authMiddleware.autenticarToken,this._disciplinaProfessorControl.disciplinaProfessor_read_by_id_disciplina_control);
+        
         this._router.get('/professores/:idProfessor', this._authMiddleware.autenticarToken,this._disciplinaProfessorControl.disciplinaProfessor_read_by_id_professor_control);
  
         this._router.post('/', this._authMiddleware.autenticarToken,this._disciplinaProfessorMiddleware.validar_idDisciplinaProfessor, this._disciplinaProfessorControl.disciplinaProfessor_create_control);

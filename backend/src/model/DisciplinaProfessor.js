@@ -59,10 +59,20 @@ class DisciplinaProfessor {
             `;
         
         const [rows] = await conexao.execute(SQL, [idProfessor]);
-        return rows[0] || null;    
+        return rows || null;    
     }
 
 
+    async procurarIdDisciplinaProfessorpeloIdDisciplina() {
+        const conexao = await Banco.getConexao();
+        const SQL = `
+                        SELECT * FROM disciplinaprofessor
+                         WHERE idDisciplina = ?
+                    `;
+        const [rows] = await conexao.execute(SQL, [this._idDisciplina]);
+        return rows|| null;
+    }
+    
     async readByID() {
         const conexao = await Banco.getConexao();
         const SQL = `

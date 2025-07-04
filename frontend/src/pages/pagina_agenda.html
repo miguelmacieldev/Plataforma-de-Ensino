@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../style/padrao.css">
+        <link rel="stylesheet" href="../style/agenda.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <title>Agenda</title>
+    </head>
+    <body>
+        <aside class="menu-lateral">
+            <p class="logo">
+                <i class="bi bi-backpack3-fill"></i>
+                infotec
+            </p>
+            <ul>
+                <li>
+                    <i class="bi bi-house-door-fill"></i>
+                    <a href="" class="item-barra">Início</a>
+                </li>
+                <li class="graficos">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <a href="" class="item-barra">Gráficos</a>
+                </li>
+                <li >
+                    <i class="bi bi-book-fill"></i>
+                    <a href="" class="item-barra">Atividades</a>
+                </li>
+                <li class="sair">                    
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="" class="item-barra">Sair</a>
+                </li>
+            </ul>
+        </aside>
+        <main>
+            <div class="calendario">
+                <div class="calendario-header">
+                    <button id="prev-month"><i class="bi bi-chevron-left"></i></button>
+                    <h2 id="current-month-year">Julho 2023</h2>
+                    <button id="next-month"><i class="bi bi-chevron-right"></i></button>
+                </div>
+                <div class="dias-semana">
+                    <div>Dom</div>
+                    <div>Seg</div>
+                    <div>Ter</div>
+                    <div>Qua</div>
+                    <div>Qui</div>
+                    <div>Sex</div>
+                    <div>Sáb</div>
+                </div>
+                <div class="dias-mes" id="dias-mes"></div>
+            </div>
+            <div class="eventos">
+                <h3 id="evento-data">Selecione um dia</h3>
+                <div id="evento-detalhes">
+                    <p>Clique em um dia com evento para ver os detalhes</p>
+                </div>
+            </div>
+        </main>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            // Dados de exemplo para eventos
+            const eventos = {};
+
+            const token = localStorage.getItem('token');
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+
+            // Elementos do DOM
+            const diasMesElement = document.getElementById('dias-mes');
+            const currentMonthYearElement = document.getElementById('current-month-year');
+            const prevMonthButton = document.getElementById('prev-month');
+            const nextMonthButton = document.getElementById('next-month');
+            const eventoDataElement = document.getElementById('evento-data');
+            const eventoDetalhesElement = document.getElementById('evento-detalhes');
+
+function getAtividade() {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("tipoUsuario");
+    const idUsuario = localStorage.getItem("idUsuario"); // pode ser aluno ou professor
+
+    if (role === "aluno") {
+        // ALUNO: Buscar atividades da turma
+        fetch(`/alunos/${idUsuario}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+        })
+        .then(res => res.json())
+        .then(aluno => {
+            
+            const idTurmaPrimaria = aluno.aluno.idTurmaPrimaria;
+
+            return fetch(`/disciplinas/turmas/${idTurmaPrimaria}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
+        })
+        .then(res => res.json())
+        .then(disciplinas => {
+
+            const promessas = disciplinas.disciplinas.map(disc =>
+                fetch(`/disciplinas-professores/disciplinas/${disc.idDisciplina}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    },
+                }).then(res => res.json())
+            );
+
+            return Promise.all(promessas);
+        })
+        .then(listaDisciplinaProfessores => {
+            const idsPermitidos = [];
+            console.log("DisciplinaProfessores:", listaDisciplinaProfessores);
+            listaDisciplinaProfessores.forEach(item => {
+            if (Array.isArray(item.resultados)) {
+                    item.resultados.forEach(dp => idsPermitidos.push(dp.idDisciplinaProfessor));
+                }
+            });
+
+
+            return fetch("/atividades", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            }).then(res => res.json())
+              .then(atividades => {
+                  const atividadesFiltradas = atividades.atividades.filter(atividade =>
+                      idsPermitidos.includes(atividade.idDisciplinaProfessor)
+                  );
+
+                  montarEventos(atividadesFiltradas);
+                  renderCalendar();
+              });
+        })
+        .catch(error => {
+            console.error("Erro ao buscar atividades para o aluno:", error);
+            alert("Erro ao carregar atividades.");
+        });
+
+    } else if (role === "professor") {
+        // PROFESSOR: Buscar atividades das disciplinas que ele ministra
+        fetch(`/disciplinas-professores/professores/${idUsuario}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+        })
+        .then(res => res.json())
+        .then(response => {
+            const idsPermitidos = [];
+            console.log(response)
+
+            if (Array.isArray(response.disciplinaProfessor)) {
+                response.disciplinaProfessor.forEach(dp => idsPermitidos.push(dp.idDisciplinaProfessor));
+            } else if (response.disciplinaProfessor) {
+                idsPermitidos.push(response.disciplinaProfessor.idDisciplinaProfessor);
+            }
+
+            return fetch("/atividades", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            }).then(res => res.json())
+              .then(atividades => {
+                  const atividadesFiltradas = atividades.atividades.filter(atividade =>
+                      idsPermitidos.includes(atividade.idDisciplinaProfessor)
+                  );
+
+                  montarEventos(atividadesFiltradas);
+                  renderCalendar();
+              });
+        })
+        .catch(error => {
+            console.error("Erro ao buscar atividades para o professor:", error);
+            alert("Erro ao carregar atividades do professor.");
+        });
+    }
+}
+
+
+    function montarEventos(lista) {
+    lista.forEach(atividade => {
+        const data = new Date(atividade.dataEntrega);
+        const dateStr = `${data.getFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+
+        if (!eventos[dateStr]) {
+            eventos[dateStr] = [];
+        }
+
+        eventos[dateStr].push({
+            titulo: atividade.titulo || 'Atividade',
+            descricao: atividade.descricao || 'Entrega de atividade',
+            horario: ''
+        });
+    });
+}
+
+
+
+            // Renderizar calendário
+            function renderCalendar() {
+                // Limpar calendário
+                diasMesElement.innerHTML = '';
+                
+                // Atualizar cabeçalho com mês/ano atual
+                currentMonthYearElement.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+                
+                // Obter primeiro dia do mês e último dia do mês
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                
+                // Dias da semana (0 = Domingo, 6 = Sábado)
+                const startDayOfWeek = firstDay.getDay();
+                const totalDays = lastDay.getDate();
+                
+                // Dias do mês anterior para preencher o início
+                const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+                
+                // Dias do próximo mês para preencher o final
+                const daysNextMonth = 6 - lastDay.getDay();
+                
+                // Renderizar dias do mês anterior
+                for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                    const diaElement = createDayElement(prevMonthLastDay - i, true);
+                    diasMesElement.appendChild(diaElement);
+                }
+                
+                // Renderizar dias do mês atual
+                for (let i = 1; i <= totalDays; i++) {
+                    const dateStr = `${currentYear}-${currentMonth + 1}-${i}`;
+                    const hasEvent = eventos[dateStr] !== undefined;
+                    const isToday = currentDate.getDate() === i && 
+                                currentDate.getMonth() === currentMonth && 
+                                currentDate.getFullYear() === currentYear;
+                    
+                    const diaElement = createDayElement(i, false, hasEvent, isToday, dateStr);
+                    diasMesElement.appendChild(diaElement);
+                }
+                
+                // Renderizar dias do próximo mês
+                for (let i = 1; i <= daysNextMonth; i++) {
+                    const diaElement = createDayElement(i, true);
+                    diasMesElement.appendChild(diaElement);
+                }
+            }
+            
+            // Criar elemento de dia
+            function createDayElement(day, isOtherMonth, hasEvent = false, isToday = false, dateStr = '') {
+                const diaElement = document.createElement('div');
+                diaElement.classList.add('dia');
+                diaElement.textContent = day;
+                
+                if (isOtherMonth) {
+                    diaElement.classList.add('outro-mes');
+                }
+                
+                if (hasEvent) {
+                    diaElement.classList.add('com-evento');
+                }
+                
+                if (isToday) {
+                    diaElement.classList.add('hoje');
+                }
+                
+                if (!isOtherMonth) {
+                    diaElement.addEventListener('click', function() {
+                        // Remover seleção anterior
+                        document.querySelectorAll('.dia.selecionado').forEach(el => {
+                            el.classList.remove('selecionado');
+                        });
+                        
+                        // Adicionar seleção ao dia clicado
+                        diaElement.classList.add('selecionado');
+                        
+                        // Mostrar eventos do dia
+                        showEvents(dateStr);
+                    });
+                }
+                
+                return diaElement;
+            }
+            
+            // Mostrar eventos de um dia específico
+            function showEvents(dateStr) {
+                const date = new Date(dateStr);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                
+                eventoDataElement.textContent = `${day} de ${getMonthName(date.getMonth())} de ${year}`;
+                
+                if (eventos[dateStr]) {
+                    eventoDetalhesElement.innerHTML = '';
+                    
+                    eventos[dateStr].forEach(evento => {
+                        const eventoElement = document.createElement('div');
+                        eventoElement.classList.add('evento-item');
+                        eventoElement.innerHTML = `
+                            <h4>${evento.titulo}</h4>
+                            <p>${evento.descricao}</p>
+                            <p><small>${evento.horario}</small></p>
+                        `;
+                        eventoDetalhesElement.appendChild(eventoElement);
+                    });
+                } else {
+                    eventoDetalhesElement.innerHTML = '<p>Nenhum evento agendado para este dia.</p>';
+                }
+            }
+            
+            // Obter nome do mês
+            function getMonthName(monthIndex) {
+                const months = [
+                    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+                ];
+                return months[monthIndex];
+            }
+            
+            // Event listeners para navegação entre meses
+            prevMonthButton.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+            
+            nextMonthButton.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+            
+            // Renderizar calendário inicial
+            renderCalendar();
+            
+            // Mostrar eventos do dia atual se existirem 
+            const todayStr = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+            if (eventos[todayStr]) {
+                showEvents(todayStr);
+            }
+
+            getAtividade();
+        });
+        </script>
+    </body>
+</html>

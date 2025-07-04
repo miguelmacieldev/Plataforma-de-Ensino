@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Upload de Turmas</title>
+  <link rel="stylesheet" href="../style/admin.css">
 </head>
-  <body>
+  <body class="cadastro">
     <h1>CRUD - Alunos</h1>
-    <form id="uploadForm">
-      <label for="arquivo">Selecione o arquivo CSV:</label>
-      <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
-      <br><br>
-      <button type="button" id="btnUpload">Enviar</button>
-    </form>
-    <div>
-      <input type="text" id="txtMatricula">
-      <input type="text" id="txtNome">
-      <input type="text" id="txtTelefone">
-      <input type="text" id="txtEmail">
-      <input type="text" id="txtIdTurmaPrimaria">
-      <input type="text" id="txtIdTurmaSecundaria">
-      <input type="text" id="txtSenha">
+    <div class="conteiner">
+      <form id="uploadForm">
+        <label for="arquivo">Selecione o arquivo CSV:</label>
+        <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
+        <br><br>
+        <button type="button" id="btnUpload">Enviar</button>
+      </form>
+      <div>
+        <input placeholder="matricula" type="text" id="txtMatricula">
+        <input placeholder="nome" type="text" id="txtNome">
+        <input placeholder="telefone" type="text" id="txtTelefone">
+        <input placeholder="Email" type="text" id="txtEmail">
+        <input placeholder="idTurmaPrimaria" type="text" id="txtIdTurmaPrimaria">
+        <input placeholder="idTurmaSecundaria" type="text" id="txtIdTurmaSecundaria">
+        <input placeholder="senha" type="text" id="txtSenha">
+      </div>
+      <div>
+        <button id="btnCadastrar">Cadastrar aluno</button>
+      </div>
+      <div id="divDados"></div>
     </div>
-    <div>
-      <button id="btnCadastrar">Cadastrar aluno</button>
-    </div>
-    <div id="divDados"></div>
   </body>
   <script>
     const txtMatricula = document.getElementById("txtMatricula");
@@ -230,6 +233,7 @@
           idTurmaSecundaria: idTurmaSecundaria,
         },
       };
+
 
       fetch(URI, {
         method: "PUT",

@@ -1,13 +1,24 @@
 const AtividadeEntregue = require('../model/AtividadeEntregue');
 
 module.exports = class AtividadeEntregueControl {
+
     async atividadeEntregue_create_control(request, response) {
         const model = new AtividadeEntregue();
-        model.matriculaAluno = request.body.atividadeentregue.matriculaAluno;
-        model.idAtividade = request.body.atividadeentregue.idAtividade;
-        model.dataEntrega = request.body.atividadeentregue.dataEntrega;
-        model.caminhoGravacao = request.body.atividadeentregue.caminhoGravacao;
-        model.nota = request.body.atividadeentregue.nota;
+        const { matriculaAluno, idAtividade, dataEntrega, nota } = request.body;
+        const file = request.file;
+
+        if (!file) {
+            return response.status(400).send({
+                status: false,
+                msg: "Arquivo não enviado"
+            });
+        }
+
+        model.matriculaAluno = matriculaAluno;
+        model.idAtividade = idAtividade;
+        model.dataEntrega = dataEntrega;
+        model.caminhoGravacao = '/uploads/' + file.filename;
+        model.nota = nota;
 
         const isCreated = await model.create();
 

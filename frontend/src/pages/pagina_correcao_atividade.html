@@ -10,9 +10,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <aside>
-        <p>muda tudo aqui</p>
-    </aside>
+    <aside class="menu-lateral">
+            <p class="logo">
+                <i class="bi bi-backpack3-fill"></i>
+                infotec
+            </p>
+            <ul>
+                <li>
+                    <i class="bi bi-house-door-fill"></i>
+                    <a href="" class="item-barra">Início</a>
+                </li>
+                <li class="graficos">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <a href="" class="item-barra">Gráficos</a>
+                </li>
+                <li >
+                    <i class="bi bi-book-fill"></i>
+                    <a href="" class="item-barra">Agenda</a>
+                </li>
+                <li class="sair">                    
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="" class="item-barra">Sair</a>
+                </li>
+            </ul>
+        </aside>
     <main>
         <nav>
             <ul>
@@ -25,11 +46,9 @@
             </ul>
         </nav>
         
-        <div id="conteudo-tab">
-            <div id="corrigir-tab" class="tab-content active">
-            
-            <div id="atividades-entregues" class="atividades-entregues"></div>
-        </div>
+  
+        <div id="atividades-entregues" class="atividades-entregues"></div>
+      
             
         <div id="popup-options" class="popup-options">
             <button class="popup-option" id="baixar-entrega">
@@ -50,7 +69,10 @@
             </div>
         </div>
         <div id="grafico-tab" class="grafico-tab hidden">
-            <canvas id="graficoNotas"></canvas>
+            <div class="grafs">
+                <canvas id="graficoMediaNotas"></canvas>
+                <canvas id="graficoEntregaStatus" ></canvas>
+            </div>
         </div>
     </main>
 
@@ -63,6 +85,7 @@
     const div_atividades_entregues = document.getElementById('atividades-entregues');
     const enviar_nota = document.getElementById('enviar-nota');
     const popupOptions = document.getElementById('popup-options');
+    const botao_baixar_entrega = document.getElementById('baixar-entrega');
 
     let entregas = []; // Lista global de entregas
     let currentEntregaId = null;
@@ -113,16 +136,20 @@
                 <div class="info-aluno">
                     <p>Matrícula: ${entrega.matriculaAluno || 'N/A'}</p>
                     <p>Entregue em: ${entrega.dataEntrega ? new Date(entrega.dataEntrega).toLocaleString() : 'Data não informada'}</p>
-                    ${entrega.nota ? `<p class="nota">Nota: ${entrega.nota}</p>` : '<p class="pendente">Pendente</p>'}
+                    ${entrega.nota >=0 ? `<p class="nota">Nota: ${entrega.nota}</p>` : '<p class="pendente">Pendente</p>'}
                 </div>
                 <div class="acoes">
                     <p class="botao-opcoes" data-id="${entrega.idAtividadeEntregue}">...</p>
                 </div>
             `;
 
-            if (entrega.nota >= 0){
-                document.getElementById('corrigir-tab').classList.add('corrigido')
+            if(entrega.nota >= 0){
+                div.classList.add('corrigido'); 
             }
+
+            botao_baixar_entrega.addEventListener('click', ()=>{
+                window.location.href = entrega.caminhoGravacao;
+            });
 
             div_atividades_entregues.appendChild(div);
         });
@@ -146,23 +173,29 @@
         });
     }
 
-    function exibirGraficoNotas() {
-    const ctx = document.getElementById('graficoNotas').getContext('2d');
 
-    const alunos = entregas.map(entrega => entrega.matriculaAluno);
-    const notas = entregas.map(entrega => entrega.nota ?? 0); // Se não tiver nota, usa 0
+function exibirGraficoMediaNotas() {
+    const ctx = document.getElementById('graficoMediaNotas').getContext('2d');
+    
+    const notasValidas = entregas
+        .filter(e => typeof e.nota === 'number' && e.nota >= 0)
+        .map(e => e.nota);
 
-    Chart.getChart("graficoNotas")?.destroy();
+    const media = notasValidas.length > 0
+        ? notasValidas.reduce((acc, nota) => acc + nota, 0) / notasValidas.length
+        : 0;
+
+    Chart.getChart("graficoMediaNotas")?.destroy();
 
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: alunos,
+            labels: ['Média Geral'],
             datasets: [{
-                label: 'Nota por aluno',
-                data: notas,
-                backgroundColor: 'rgba(69, 77, 246, 0.5)',
-                borderColor: 'rgba(69, 77, 246, 1)',
+                label: 'Nota média',
+                data: [media.toFixed(2)],
+                backgroundColor: 'rgba(69, 77, 246)',
+                borderColor: 'rgba(75, 192, 192)',
                 borderWidth: 1
             }]
         },
@@ -177,6 +210,35 @@
     });
 }
 
+function exibirGraficoEntregaStatus() {
+    const ctx = document.getElementById('graficoEntregaStatus').getContext('2d');
+
+    const entregaram = entregas.filter(e => e.dataEntrega).length;
+    const totalEsperado = parseInt(localStorage.getItem('totalAlunos') || entregaram); // Ajuste conforme sua lógica
+    const naoEntregaram = totalEsperado - entregaram;
+
+    Chart.getChart("graficoEntregaStatus")?.destroy();
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Entregaram', 'Não Entregaram'],
+            datasets: [{
+                data: [entregaram, naoEntregaram],
+                backgroundColor: ['#454df6', '#f13a3c'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+}
 
     // Fecha popup se clicar fora
     document.addEventListener('click', (e) => {
@@ -241,14 +303,14 @@
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
 
         if (abaSelecionada.id === 'corrigir') {
-            document.getElementById('corrigir-tab').classList.remove('hidden');
+            div_atividades_entregues.classList.remove('hidden');
             document.getElementById('grafico-tab').classList.add('hidden');
             renderizarAtividades();
         } else {
             document.getElementById('grafico-tab').classList.remove('hidden');
-            document.getElementById('corrigir-tab').classList.add('hidden');
-
-            exibirGraficoNotas();
+            div_atividades_entregues.classList.add('hidden');
+            exibirGraficoMediaNotas();
+            exibirGraficoEntregaStatus();
         }
     }
 

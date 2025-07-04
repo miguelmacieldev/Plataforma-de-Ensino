@@ -3,25 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Upload de Professor</title>
+  <link rel="stylesheet" href="../style/admin.css">
 </head>
-  <body>
+  <body class="cadastro">
     <h1>CRUD - Professores</h1>
-    <form id="uploadForm">
-      <label for="arquivo">Selecione o arquivo CSV:</label>
-      <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
-      <br><br>
-      <button type="button" id="btnUpload">Enviar</button>
-    </form>
-    <div>
-      <input type="text" id="txtNome">
-      <input type="text" id="txtSenha">
-      <input type="text" id="txtTelefone">
-      <input type="text" id="txtEmail">
+    <div class="conteiner">
+      <form id="uploadForm">
+        <label for="arquivo">Selecione o arquivo CSV:</label>
+        <input type="file" id="arquivo" name="arquivo" accept=".csv" required />
+        <br><br>
+        <button type="button" id="btnUpload">Enviar</button>
+      </form>
+      <div>
+        <input placeholder="nome" type="text" id="txtNome">
+        <input placeholder="senha" type="text" id="txtSenha">
+        <input placeholder="telefone" type="text" id="txtTelefone">
+        <input placeholder="email" type="text" id="txtEmail">
+      </div>
+      <div>
+        <button id="btnCadastrar">Cadastrar Professor</button>
+      </div>
+      <div id="divDados"></div>
     </div>
-    <div>
-      <button id="btnCadastrar">Cadastrar Professor</button>
-    </div>
-    <div id="divDados"></div>
   </body>
   <script>
     const txtNome = document.getElementById("txtNome");

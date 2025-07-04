@@ -1,0 +1,143 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+/* Fundo geral */
+body.cadastro {
+    background-color: #f2f2f2; /* cinza claro */
+    padding: 20px;
+    color: #202020;
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #000;
+}
+
+.lista{
+    display: flex;
+    flex-flow: column;
+    padding: 5rem;
+    gap: 1.5rem;
+
+    & > a{
+        color: black;
+        font-size: 1.25rem;
+        text-decoration: none;
+        
+        &:hover{
+            text-decoration: underline;
+        }
+    }
+}
+
+/* Container */
+.conteiner {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    padding: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* Formulário */
+form {
+    margin-bottom: 30px;
+}
+
+label {
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="file"],
+input[type="text"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #aaa;
+    background-color: #f9f9f9;
+    color: #000;
+    font-size: 14px;
+}
+
+/* Botões */
+button {
+    padding: 10px;
+    background-color: #202020;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+button:hover {
+    background-color: #444;
+}
+
+/* Área onde a tabela aparece */
+#divDados {
+    margin-top: 20px;
+}
+
+/* Tabela de alunos */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    table-layout: fixed; /* Colunas se ajustam */
+    font-size: 14px;
+}
+
+table th,
+table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Cabeçalho da tabela */
+table th {
+    background-color: #e0e0e0;
+    color: #000;
+}
+
+/* Linhas alternadas */
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Deixar colunas de botões menores */
+table th:nth-child(8),
+table td:nth-child(8),
+table th:nth-child(9),
+table td:nth-child(9),
+table th:nth-child(10),
+table td:nth-child(10) {
+    width: 80px;
+}
+
+/* Responsividade básica */
+@media (max-width: 768px) {
+    .conteiner {
+        padding: 20px;
+    }
+
+    input[type="text"],
+    button,
+    table th,
+    table td {
+        font-size: 13px;
+    }
+}

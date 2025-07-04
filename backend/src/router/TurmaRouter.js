@@ -26,6 +26,8 @@ module.exports = class TurmaRouter {
 
     criarRotasTurma() {
         this._router.get('/', this._authMiddleware.autenticarToken , this._turmaControl.turma_read_all_control);
+        
+        this._router.get('/:idTurma/alunos', this._authMiddleware.autenticarToken , this._turmaControl.turma_read_all_alunos_control);
  
         this._router.get('/:idTurma', this._authMiddleware.autenticarToken,this._turmaControl.turma_read_by_id_control);
  
