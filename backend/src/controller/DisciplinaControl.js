@@ -147,8 +147,6 @@ module.exports = class DisciplinaControl {
         var disciplina = new Disciplina();
         const resultado = await disciplina.buscarPorTurma(idTurma);
         
-        console.log(resultado)
-
         const objResposta = {
             cod: 1,
             status: true,

@@ -10,12 +10,13 @@ class Aluno {
         this._email = '';
         this._idTurmaPrimaria = null;
         this._idTurmaSecundaria = null;
+        this._pontuacao = 0;
     }
 
     // Criação de um novo aluno
     async create() {
         const conexao = await Banco.getConexao();
-        const SQL = 'INSERT INTO aluno (matricula, nome, telefone, email, idTurmaPrimaria, idTurmaSecundaria, senha) VALUES (?, ?, ?, ?, ?, ?, ?);';
+        const SQL = 'INSERT INTO aluno (matricula, nome, telefone, email, idTurmaPrimaria, idTurmaSecundaria, senha, pontuacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
         try {
             if (await this.isAluno()) {
@@ -28,6 +29,7 @@ class Aluno {
 
             const senhaHash = await gerarHashSenha(this._senha);
 
+
             const [result] = await conexao.execute(SQL, [
                 this._matricula,
                 this._nome,
@@ -35,7 +37,8 @@ class Aluno {
                 this._email,
                 this._idTurmaPrimaria,
                 this._idTurmaSecundaria,
-                senhaHash
+                senhaHash,
+                this._pontuacao
             ]);
             return result.affectedRows > 0;
         } catch (error) {
@@ -46,7 +49,9 @@ class Aluno {
 
     async update() {
         const conexao = await Banco.getConexao();
-        const SQL = 'UPDATE aluno SET nome = ?, telefone = ?, email = ?, idTurmaPrimaria = ?, idTurmaSecundaria = ?, senha = ? WHERE matricula = ?;';
+        const SQL = `
+            UPDATE aluno SET nome = ?, telefone = ?, email = ?, idTurmaPrimaria = ?, idTurmaSecundaria = ?, senha = ?, pontuacao = ? WHERE matricula = ?;
+        `;
 
         try {
             if (!(await this.verificaTurmasExistem()) || !(await this.isAluno())) {
@@ -62,6 +67,7 @@ class Aluno {
                 this._idTurmaPrimaria,
                 this._idTurmaSecundaria,
                 senhaHash,
+                this._pontuacao,
                 this._matricula
             ]);
             return result.affectedRows > 0;
@@ -135,7 +141,8 @@ class Aluno {
                             a.email,
                             a.idTurmaPrimaria,
                             a.idTurmaSecundaria,
-                            a.senha
+                            a.senha,
+                            a.pontuacao
                         FROM aluno a
                         ORDER BY a.nome;
                     `;
@@ -160,7 +167,8 @@ class Aluno {
                         a.email,
                         a.idTurmaPrimaria,
                         a.idTurmaSecundaria,
-                        a.senha
+                        a.senha, 
+                        a.pontuacao
                     FROM aluno a
                     WHERE a.matricula = ?;
                      `;
@@ -199,7 +207,7 @@ class Aluno {
         this.telefone = aluno.telefone;
         this.idTurmaPrimaria = aluno.idTurmaPrimaria;
         this.idTurmaSecundaria = aluno.idTurmaSecundaria;
-
+        this.pontuacao = aluno.pontuacao;
         
         return true;
     }
@@ -259,6 +267,14 @@ class Aluno {
 
     set senha(valor) {
         this._senha = valor;
+    }
+
+    get pontuacao() {
+        return this._pontuacao;
+    }
+
+    set pontuacao(valor) {
+        this._pontuacao = valor;
     }
 }
 

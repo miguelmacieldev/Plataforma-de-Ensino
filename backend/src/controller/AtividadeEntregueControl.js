@@ -44,12 +44,14 @@ module.exports = class AtividadeEntregueControl {
 
         const isUpdated = await model.update();
 
+
         const objResposta = {
             cod: 1,
             status: isUpdated,
             msg: isUpdated
                 ? 'Atividade entregue atualizada com sucesso'
-                : 'Erro ao atualizar atividade entregue (verifique se matrícula ou idAtividade existem)'
+                : 'Erro ao atualizar atividade entregue (verifique se matrícula ou idAtividade existem)',
+            resultado : isUpdated
         };
 
         response.status(200).send(objResposta);

@@ -45,39 +45,53 @@ class AtividadeEntregue {
         }
     }
 
-    async update() {
-        const conexao = await Banco.getConexao();
-        const SQL = `
-            UPDATE atividadeentregue SET
-                matriculaAluno = ?,
-                idAtividade = ?,
-                dataEntrega = ?,
-                caminhoGravacao = ?,
-                nota = ?
-            WHERE idAtividadeEntregue = ?;
-        `;
+async update() {
+    const conexao = await Banco.getConexao();
+    
+    const SQL_UPDATE = `
+        UPDATE atividadeentregue SET
+            matriculaAluno = ?,
+            idAtividade = ?,
+            dataEntrega = ?,
+            caminhoGravacao = ?,
+            nota = ?
+        WHERE idAtividadeEntregue = ?;
+    `;
 
-        try {
-            if (!(await this.verificaAlunoExiste()) || !(await this.verificaAtividadeExiste())) {
-                console.error('ID de aluno ou atividade inválido.');
-                return false;
-            }
+    const SQL_SELECT = `
+        SELECT * FROM atividadeentregue WHERE idAtividadeEntregue = ?;
+    `;
 
-            const [result] = await conexao.execute(SQL, [
-                this._matriculaAluno,
-                this._idAtividade,
-                this._dataEntrega,
-                this._caminhoGravacao,
-                this._nota,
-                this._idAtividadeEntregue
-            ]);
-
-            return result.affectedRows > 0;
-        } catch (error) {
-            console.error('Erro ao atualizar entrega:', error.message);
+    try {
+        if (!(await this.verificaAlunoExiste()) || !(await this.verificaAtividadeExiste())) {
+            console.error('ID de aluno ou atividade inválido.');
             return false;
         }
+
+        const [result] = await conexao.execute(SQL_UPDATE, [
+            this._matriculaAluno,
+            this._idAtividade,
+            this._dataEntrega,
+            this._caminhoGravacao,
+            this._nota,
+            this._idAtividadeEntregue
+        ]);
+
+        // Se nenhuma linha foi afetada, não precisa buscar
+        if (result.affectedRows === 0) {
+            return false;
+        }
+
+        // Buscar o registro atualizado
+        const [rows] = await conexao.execute(SQL_SELECT, [this._idAtividadeEntregue]);
+
+        return rows[0]; // Retorna o objeto atualizado
+    } catch (error) {
+        console.error('Erro ao atualizar entrega:', error.message);
+        return false;
     }
+}
+
 
     async delete() {
         const conexao = await Banco.getConexao();

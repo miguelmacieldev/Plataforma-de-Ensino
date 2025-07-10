@@ -103,7 +103,6 @@ module.exports = class AtividadeControl {
                 
                 if (fs.existsSync(caminhoCompleto)) {
                     fs.unlinkSync(caminhoCompleto);
-                    console.log(`Arquivo ${nomeArquivo} removido com sucesso`);
                 }
             } catch (error) {
                 console.error('Erro ao remover arquivo:', error);

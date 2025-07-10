@@ -8,7 +8,7 @@ module.exports = {
             conexao = await mysql.createConnection({
                 host: 'localhost',
                 user: 'root',
-                password: '',
+                password: '100607mateus',
                 database: 'plataforma_de_estudos'
             });
         }

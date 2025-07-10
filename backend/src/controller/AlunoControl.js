@@ -16,6 +16,7 @@ module.exports = class AlunoControl {
         aluno.senha = request.body.aluno.senha;
         aluno.idTurmaPrimaria = request.body.aluno.idTurmaPrimaria;
         aluno.idTurmaSecundaria = request.body.aluno.idTurmaSecundaria;
+        aluno.pontuacao = request.body.aluno.pontuacao;
 
         const isCreated = await aluno.create();
 
@@ -54,6 +55,7 @@ module.exports = class AlunoControl {
                     aluno.email = linhaLimpa.email || null;
                     aluno.idTurmaPrimaria = linhaLimpa.idTurmaPrimaria || null;
                     aluno.idTurmaSecundaria = linhaLimpa.idTurmaSecundaria || null;
+                    aluno.pontuacao = linhaLimpa.pontuacao || null;
 
                     if (await aluno.isAluno()) {
                         alunosIgnorados.push({
@@ -75,7 +77,8 @@ module.exports = class AlunoControl {
                                 email: aluno.email,
                                 senha: aluno.senha,
                                 idTurmaPrimaria : aluno.idTurmaPrimaria,
-                                idTurmaSecundaria : aluno.idTurmaSecundaria
+                                idTurmaSecundaria : aluno.idTurmaSecundaria,
+                                pontuacao : aluno.pontuacao
                             });
                         }
                     }
@@ -115,6 +118,7 @@ module.exports = class AlunoControl {
         aluno.senha = request.body.aluno.senha;
         aluno.idTurmaPrimaria = request.body.aluno.idTurmaPrimaria;
         aluno.idTurmaSecundaria = request.body.aluno.idTurmaSecundaria;
+        aluno.pontuacao = request.body.aluno.pontuacao;
 
         const isUpdated = await aluno.update();
 
@@ -165,7 +169,6 @@ module.exports = class AlunoControl {
     async aluno_read_by_id_control(request, response) {
         const aluno = new Aluno();
         aluno.matricula = request.params.matricula;
-        console.log(request.params.matricula)
 
         const resultado = await aluno.readByID();
 

@@ -33,7 +33,7 @@ module.exports = class AlunoRouter {
 
         this._router.delete('/:matricula', this._authMiddleware.autenticarToken, this._alunoControl.aluno_delete_control);
 
-        this._router.put('/:matricula',  this._authMiddleware.autenticarToken, this._alunoMiddleware.validar_nomeAluno, this._alunoMiddleware.validar_matriculaAluno,  this._alunoMiddleware.validar_idTurmasAluno, this._alunoMiddleware.validar_senhaAluno,this._alunoControl.aluno_update_control);
+        this._router.put('/:matricula',  this._authMiddleware.autenticarToken, this._alunoMiddleware.validar_nomeAluno, this._alunoMiddleware.validar_matriculaAluno,  this._alunoMiddleware.validar_idTurmasAluno, this._alunoMiddleware.validar_senhaAluno, this._alunoControl.aluno_update_control);
 
         this._router.post('/upload-csv', this._authMiddleware.autenticarToken, this._upload.single('arquivo'), this._alunoControl.aluno_upload_csv_control);
 
