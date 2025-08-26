@@ -130,6 +130,23 @@ module.exports = class AlunoControl {
 
         response.status(200).send(objResposta);
     }
+    
+    async aluno_update_pontuacao_control(request, response) {
+        console.log('chegeui')
+        const aluno = new Aluno();
+        aluno.matricula = request.params.matricula;
+        aluno.pontuacao = request.body.aluno.pontuacao;
+
+        const isUpdated = await aluno.updatePontuacao();
+
+        const objResposta = {
+            cod: 1,
+            status: isUpdated,
+            msg: isUpdated ? 'Aluno atualizado com sucesso' : 'Erro ao atualizar o aluno (verifique se a matrícula existe e as turmas são válidas)'
+        };
+
+        response.status(200).send(objResposta);
+    }
 
     async aluno_delete_control(request, response) {
         const aluno = new Aluno();
@@ -176,6 +193,23 @@ module.exports = class AlunoControl {
             cod: 1,
             status: !!resultado,
             msg: resultado ? 'Aluno encontrado' : 'Aluno não encontrado',
+            aluno: resultado
+        };
+
+        response.status(200).send(objResposta);
+    }
+    
+    async aluno_read_by_id_turma_control(request, response) {
+        const aluno = new Aluno();
+        aluno.idTurmaPrimaria = request.params.idTurma;
+        console.log(aluno.idTurmaPrimaria)
+        const resultado = await aluno.readByIDTurma();
+
+
+        const objResposta = {
+            cod: 1,
+            status: !!resultado,
+            msg: resultado ? 'Alunos encontrados' : 'Alunos não encontrados',
             aluno: resultado
         };
 

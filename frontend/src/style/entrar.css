@@ -1,45 +1,113 @@
-main {
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+
+.image-container {
+  display: flex;
+    width: 35%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
 }
 
 form {
-    width: 40%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    gap: 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 85%;
+  height: 100%;
 }
 
+input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
 
-h2 {
-    text-align: center;
+    appearance: none; /* remove estilo padrão do navegador */
+    border: 2px solid #999;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
 }
 
-.qrcode {
-    width: 60%;
-    height: 100%;
+label{
     display: flex;
-    flex-direction: column;
-    gap: 5rem;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
 }
 
-.qrcode > div {
+.min{
+    font-size: 0.8rem;
+
+}
+
+.social-media {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.input-container{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2.5rem;
+    gap: 0.5rem;
 }
 
-img {
-    width: 25rem;
+.input-wrapper {
+  position: relative;
 }
 
-p.descricao {
-    text-align: center;
+.input-wrapper input[type="text"],
+.input-wrapper input[type="password"] {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid white;
+  font-size: 1rem;
+  background-color: transparent;
+  color: white;
+  outline: none;
+}
+
+.input-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.input-wrapper:focus-within::after {
+  width: 5px;
+}
+
+/* Botão de envio */
+input[type="submit"] {
+  padding: 1rem;
+  font-size: 1rem;
+  background-color: white;
+  color: black;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: gray;
+}
+
+img.github{
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    filter: brightness(0) invert(1); /* deixa o ícone branco */
+}
+
+img.linkdin {
+    width: 2.25rem;
+    height: 2.25rem;
 }

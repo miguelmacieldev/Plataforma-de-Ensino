@@ -1,48 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../style/padrao.css">
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
         <link rel="stylesheet" href="../style/entrar.css">
-        <script src="../script/jwt-decode.min.js"></script>
-        <title>Document</title>
-    </head>
-    <body>
+    <link rel="stylesheet" href="../style/pagina_inicial.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+            <script src="../script/jwt-decode.min.js"></script>
+    <script src="https://www.goat1000.com/tagcanvas.min.js"></script>
+</head>
+<body>
+    <img class="image-gradient" src="../../imgs/gradient.png" alt="gradient">
+    <div class="layer-blur"></div>
+
+
+    <div class="container">
         <header>
+            <h1 data-aos="fade-down" data-aos-duration="1500" class="logo">TECHINFO</h1>
+
             <nav>
-                <p id="nome-pagina">infotec.</p>
-                <ul>
-                    <li><a href="./">início</a></li>
-                </ul>
-                <a href="./entrar.html" class="botao">entrar</a>
+                <a data-aos="fade-down" data-aos-duration="1500" href="#">INÍCIO</a>
             </nav>
+
+            <button data-aos="fade-down" data-aos-duration="1500" class="btn-signing">LOGAR</button>
         </header>
+
         <main>
-            <div class="fundo">
-                <form action="">
-                    <h2>Seja Bem-Vindo Novamente!</h2>
-                    <div class="input-conteiner">
-                        <input type="text" id="nome" required>
-                        <label for="email">Email</label>
-                    </div>
-                    <div class="input-conteiner">
-                        <input type="text" id="senha" required>
-                        <label for="senha">Senha</label>
-                    </div>
-                    <input type="submit" class="inverso">
-                </form>
+            <div
+            data-aos="fade-zoom-in"
+                      data-aos-easing="ease-in-back"
+                      data-aos-delay="300"
+                      data-aos-offset="0" data-aos-duration="1500"
+            class="content">
+               <h1>SEJA BEM VINDO!</h1>
+               <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae fugit, consectetur doloremque similique temporibus, quisquam suscipit, illum velit et eum molestias distinctio minus autem nobis aliquid voluptas nisi est qui!</p>
+            </div>
+            <div 
+            data-aos="fade-zoom-in"
+                      data-aos-easing="ease-in-back"
+                      data-aos-delay="300"
+                      data-aos-offset="0" data-aos-duration="2500"
+            class="image-container">
+            <form action="">
+              <div class="input-container">
+                <div class="input-wrapper">
+                  <input type="text" placeholder="Usuário" id="nome" required>
+                </div>
+                <div class="input-wrapper">
+                  <input id="senha" type="password" placeholder="Senha" id="senha" required>
+                </div>
+                <label>
+                  <input type="checkbox" onclick="toggleSenha()"> <p class="description min">Mostra senha</p>
+                </label>
+              </div>
+              <input type="submit" value="Entrar">
+            </form>
+            <div class="social-media">
+              <img class="linkdin" src="../../imgs/linkdin.png" alt="">
+              <img class="github" src="../../imgs/github.png" alt="">
+            </div>
             </div>
         </main>
-    </body>
-    <script>
-    const form = document.querySelector('form');
+         
+    <div class="cursor-outer"></div>
+  <div class="cursor-inner"></div>
 
-    form.addEventListener('submit', async (e) => {
+    </div>
+    <script src="../script/cursor.js"></script>
+     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+     <script>
+        const form = document.querySelector('form');
+
+         form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.querySelector('#nome').value;
         const senha = document.querySelector('#senha').value;
+
+        console.log('Tentando logar com:', { email, senha });
 
         try {
             const resposta = await fetch('/login', {
@@ -80,5 +116,18 @@
             alert('Erro ao tentar logar');
         }
     });
+       
+       AOS.init();
+      
+ 
+  function toggleSenha() {
+    const senha = document.getElementById("senha");
+    senha.type = senha.type === "password" ? "text" : "password";
+
+  }
+
+
+        
     </script>
+</body>
 </html>

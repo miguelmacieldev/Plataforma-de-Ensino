@@ -5,37 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Correção de Atividade</title>
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../style/padrao.css">
     <link rel="stylesheet" href="../style/pagina_correcao_atividade.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <aside class="menu-lateral">
-            <p class="logo">
-                <i class="bi bi-backpack3-fill"></i>
-                infotec
-            </p>
-            <ul>
-                <li>
-                    <i class="bi bi-house-door-fill"></i>
-                    <a href="" class="item-barra">Início</a>
+    <aside class="barra">
+        <header class="barra-topo">
+            <a href="#" class="header-logo">
+                <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
+            </a>
+            <div class="header-titulo">
+                <p>TechInfo</p>   
+            </div>
+        </header>
+
+        <nav class="barralateral-nav">
+            <!--Primária Nav-->
+            <ul class="primeiralinhabarra">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="nav-label">Início</span>
+                    </a>
                 </li>
-                <li class="graficos">
-                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                    <a href="" class="item-barra">Gráficos</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">star</span>
+                        <span class="nav-label">Pontuação</span>
+                    </a>
                 </li>
-                <li >
-                    <i class="bi bi-book-fill"></i>
-                    <a href="" class="item-barra">Agenda</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="nav-label">Agenda</span>
+                    </a>
                 </li>
-                <li class="sair">                    
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <a href="" class="item-barra">Sair</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span class="nav-label">Sair</span>
+                    </a>
                 </li>
             </ul>
-        </aside>
+            <div class="usuario-info">
+                <p class="foto-barra"></p>
+                <p class="nome"></pc>
+            </div>
+        </nav>
+    </aside>
     <main>
-        <nav>
+        <nav class="nav-atividades">
             <ul>
                 <li id="corrigir" class="active">
                     Corrigir                    
@@ -63,8 +84,8 @@
             <div class="conteudo">
                 <input name="nota" id="input-nota" min="0" max="10" type="number" placeholder="Digite a nota da atividade">
                 <div>
-                    <button class="botao" id="cancelar">Cancelar</button>
                     <button class="botao" id="enviar-nota">Enviar</button>
+                    <button class="botao" id="cancelar">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -76,6 +97,14 @@
         </div>
     </main>
 
+    <div class="cursor-outer"></div>
+    <div class="cursor-inner"></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script src="../script/cursor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -253,15 +282,17 @@ function exibirGraficoEntregaStatus() {
     });
 
     // Botão de "Enviar Nota"
-    enviar_nota.addEventListener('click', () => {
-        const nota = document.getElementById('input-nota').value;
-        
+    enviar_nota.addEventListener('click', async () => {
+        const nota = parseFloat(document.getElementById('input-nota').value);
         const entrega = entregas.find(e => e.idAtividadeEntregue == currentEntregaId);
 
-        if (!entrega) {
-            alert('Erro: entrega não encontrada.');
+        if (!entrega || isNaN(nota)) {
+            alert('Erro: entrega não encontrada ou nota inválida.');
             return;
         }
+
+        const dataEntregaFormatada = new Date(entrega.dataEntrega)
+            .toISOString().replace('T', ' ').split('.')[0];
 
         const obj = {
             atividadeentregue : {
@@ -269,33 +300,85 @@ function exibirGraficoEntregaStatus() {
                 caminhoGravacao: entrega.caminhoGravacao,
                 matriculaAluno: entrega.matriculaAluno,
                 idAtividade: entrega.idAtividade,
-                dataEntrega: entrega.dataEntrega
+                dataEntrega: dataEntregaFormatada
             }
         };
 
-
-        // Aqui você pode adicionar o POST para salvar a nota no backend:
-        
-        fetch('/atividades-entregues/' + currentEntregaId, {
+        // Envia a nota
+        const resposta = await fetch('/atividades-entregues/' + currentEntregaId, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(obj)
-        }).then(res => res.json())
-          .then(data => {
-              if (data.status) {
-                  alert('Nota enviada com sucesso!');
-                  document.getElementById('popup-corrigir').classList.add('hidden');
-                  renderizarAtividades(); // Atualiza a lista
-              } else {
-                  alert('Erro ao enviar nota.');
-              }
-          });
+        });
+
+        const data = await resposta.json();
+
+        if (data.status) {
+            // Buscar a pontuação atual do aluno
+            const pontuacaoAtual = await getAluno(entrega.matriculaAluno);
+            const notaAntiga = typeof entrega.nota === 'number' ? entrega.nota : 0;
+            const novaPontuacao = pontuacaoAtual - notaAntiga + nota;
+
+            await atualizarPontuacaoAluno(entrega.matriculaAluno, novaPontuacao);
+            
+
+            alert('Nota enviada com sucesso!');
+            document.getElementById('popup-corrigir').classList.add('hidden');
+            renderizarAtividades();
+        } else {
+            alert('Erro ao enviar nota.');
+        }
     });
 
-    // Alterna entre abas
+
+    async function getAluno(matriculaAluno) {
+        try {
+            const res = await fetch(`/alunos/${matriculaAluno}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            if (data.status) {
+                return data.aluno.pontuacao; 
+            } else {
+                console.error("Erro ao buscar aluno:", data);
+                return null;
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            return null;
+        }
+    }
+
+    async function atualizarPontuacaoAluno(matriculaAluno, novaPontuacao) {
+        try {
+            const res = await fetch(`/alunos/pontuacao/${matriculaAluno}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 'aluno': {
+                    pontuacao: novaPontuacao
+                }
+             })
+            });
+            
+            const data = await res.json();
+            
+            if (data.status === true) {
+                console.log(data);
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+        }
+    }
+
     function alternarAba(abaSelecionada) {
         document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
         abaSelecionada.classList.add('active');
@@ -323,7 +406,26 @@ function exibirGraficoEntregaStatus() {
         renderizarAtividades();
     });
 
-    
+    if (localStorage.getItem("tipoUsuario") === "professor") {
+        getProfessor();
+    }
+
+    async function getProfessor() {
+        const professor = await fetch("/professores/" + localStorage.getItem("idUsuario"), {
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            }
+        });
+
+        const dados = await professor.json();
+        const nome = dados.professor[0].nome;
+        const foto = nome[0];
+        
+        document.querySelector(".foto-barra").textContent = foto;
+        document.querySelector(".nome").textContent = nome;
+    }
+
 </script>
 
 </body>

@@ -18,10 +18,11 @@
         <input placeholder="matricula" type="text" id="txtMatricula">
         <input placeholder="nome" type="text" id="txtNome">
         <input placeholder="telefone" type="text" id="txtTelefone">
-        <input placeholder="Email" type="text" id="txtEmail">
+        <input placeholder="email" type="text" id="txtEmail">
         <input placeholder="idTurmaPrimaria" type="text" id="txtIdTurmaPrimaria">
         <input placeholder="idTurmaSecundaria" type="text" id="txtIdTurmaSecundaria">
         <input placeholder="senha" type="text" id="txtSenha">
+        <input placeholder="pontuacao" type="text" id="txtPontuacao">
       </div>
       <div>
         <button id="btnCadastrar">Cadastrar aluno</button>
@@ -37,6 +38,7 @@
     const txtIdTurmaPrimaria = document.getElementById("txtIdTurmaPrimaria");
     const txtIdTurmaSecundaria = document.getElementById("txtIdTurmaSecundaria");
     const txtSenha = document.getElementById("txtSenha");
+    const txtPontuacao = document.getElementById("txtPontuacao");
     const btnCadastrar = document.getElementById("btnCadastrar");
     const divDados = document.getElementById("divDados");
     const token = localStorage.getItem("token");
@@ -86,7 +88,7 @@
       divDados.appendChild(tabela);
 
       const cabecalho = document.createElement("tr");
-      const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Senha", "Excluir", "Selecionar","Atualizar"];
+      const colunas = ["Matrícula", "Nome", "Telefone", "Email", "ID Turma Primária", "ID Turma Secundária", "Senha", "Pontuacao" ,"Excluir", "Selecionar","Atualizar"];
       for (let texto of colunas) {
         const th = document.createElement("th");
         th.appendChild(document.createTextNode(texto));
@@ -125,6 +127,7 @@
           txtIdTurmaPrimaria.value = aluno.idTurmaPrimaria;
           txtIdTurmaSecundaria.value = aluno.idTurmaSecundaria;
           txtSenha.value = aluno.senha;
+          txtPontuacao.value = aluno.pontuacao;
         }
         
         btnAtualizar.onclick = function(){
@@ -155,6 +158,10 @@
         const tdSenha = document.createElement("td");
         tdSenha.appendChild(document.createTextNode(aluno.senha));
         linha.appendChild(tdSenha);
+        
+        const tdPontuacao = document.createElement("td");
+        tdPontuacao.appendChild(document.createTextNode(aluno.pontuacao));
+        linha.appendChild(tdPontuacao);
 
         linha.appendChild(tdExcluir);
         linha.appendChild(tdSelecionar);
@@ -215,9 +222,10 @@
       const idTurmaPrimaria = txtIdTurmaPrimaria.value;
       const idTurmaSecundaria = txtIdTurmaSecundaria.value;
       const senha = txtSenha.value;
+      const pontuacao = txtPontuacao.value;
       const URI = "/alunos/" + matricula_;
 
-      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria || !senha) {
+      if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria || !senha || !pontuacao) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -231,6 +239,7 @@
           senha: senha,
           idTurmaPrimaria: idTurmaPrimaria,
           idTurmaSecundaria: idTurmaSecundaria,
+          pontuacao: pontuacao
         },
       };
 
@@ -247,7 +256,9 @@
         .then((resposta) => resposta.text())
         .then((respostaConvertida) => {
           const obj = JSON.parse(respostaConvertida);
+          console.log(obj)
           if (obj.status === true) {
+            
             getAluno();
 
             txtMatricula.value = "";
@@ -257,6 +268,7 @@
             txtSenha.value = "";
             txtIdTurmaPrimaria.value = "";
             txtIdTurmaSecundaria.value = "";
+            pontuacao.value = "";
           }
 
           alert(obj.msg)
@@ -274,6 +286,7 @@
       const senha = txtSenha.value;
       const idTurmaPrimaria = txtIdTurmaPrimaria.value;
       const idTurmaSecundaria = txtIdTurmaSecundaria.value;
+      const pontuacao = txtPontuacao.value;
       const URI = "/alunos";
 
       if (!matricula || !nome || !telefone || !email || !idTurmaPrimaria || !idTurmaSecundaria || !senha) {
@@ -290,6 +303,7 @@
           senha: senha,
           idTurmaPrimaria: idTurmaPrimaria,
           idTurmaSecundaria: idTurmaSecundaria,
+          pontuacao: pontuacao
         },
       };
 
@@ -314,6 +328,7 @@
             txtEmail.value = "";
             txtIdTurmaPrimaria.value = "";
             txtIdTurmaSecundaria.value = "";
+            txtPontuacao.value = "";
           }
           
           alert(obj.msg);

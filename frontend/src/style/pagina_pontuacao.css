@@ -1,0 +1,128 @@
+.tabela{
+    min-height: max-content;
+    padding: 2.5rem;
+    background-color: black;
+    border-radius: 1.6rem;
+    width: 100rem;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+
+    & > table{
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 1.5rem;
+
+        & > thead,
+        & > tbody{
+            width: 100%;
+
+            & > tr{
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+                background-color: rgba(39, 34, 34, 0.5);
+                padding: 1.6rem;    
+                border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+
+                & > th, 
+                & > td{
+                    font-size: 1.25rem;
+                    width: 10rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                 
+                }
+            }
+        }
+    }
+}
+
+.nome,
+.matricula{
+    background-color: #8800ffff;
+    border-radius: 1.6rem;
+}
+
+thead{
+    padding: 2rem 1.5rem 3rem 1.5rem;
+         background-image: 
+            linear-gradient(135deg, var(--cor-secundaria), var(--cor-terciaria));
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        animation: brilhar 3s infinite alternate;
+        box-shadow:
+            0 0 10px var(--cor-secundaria),
+            0 0 20px var(--cor-terciaria);
+}
+
+tbody{
+    padding: 0rem 1.5rem 1.5rem 1.5rem;
+}
+
+.foto {
+    position: relative;
+}
+
+.letra-aluno{
+    z-index: 1;
+}
+
+.tabela tr.info-aluno:nth-child(1){
+    &:hover{
+        background-color: rgba(255, 217, 0, 0.5);
+    }
+}
+
+.tabela tr.info-aluno:nth-child(2){
+    &:hover{
+        background-color: rgba(192, 192, 192, 0.5);
+    }
+}
+
+.tabela tr.info-aluno:nth-child(3){
+    &:hover{
+        background-color: rgba(205, 128, 50, 0.5);
+    }
+}
+
+.info-aluno{
+    padding: 1.75rem 0 1.75rem 0;
+
+    &:hover{
+        background-color: rgba(70, 79, 246, 0.5);
+    }
+}
+
+.info-aluno:last-of-type{
+    border-bottom: none;
+}
+
+.foto::before {
+    content: '';
+    position: absolute;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color:#8800ffff;
+    z-index: 0; /* fica atrás */
+}
+
+.tabela tr.info-aluno:nth-child(odd) {
+    background-color: transparent; /* mais escuro */
+}
+
+/* Linhas pares (2, 4, 6...) */
+.tabela tr.info-aluno:nth-child(even) {
+    background-color:  rgba(39, 34, 34, 0.5); /* mais claro */
+}
+
+/* Efeito hover */
+.tabela tr.info-aluno:hover {
+    background-color: rgba(70, 79, 246, 0.5) !important;
+}

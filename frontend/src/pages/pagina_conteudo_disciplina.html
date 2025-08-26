@@ -9,34 +9,55 @@
     <link rel="stylesheet" href="../style/pagina_conteudos.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 <body>
-    <aside class="menu-lateral">
-            <p class="logo">
-                <i class="bi bi-backpack3-fill"></i>
-                infotec
-            </p>
-            <ul>
-                <li>
-                    <i class="bi bi-house-door-fill"></i>
-                    <a href="" class="item-barra">Início</a>
+     <aside class="barra">
+        <header class="barra-topo">
+            <a href="#" class="header-logo">
+                <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
+            </a>
+            <div class="header-titulo">
+                <p>TechInfo</p>   
+            </div>
+        </header>
+
+        <nav class="barralateral-nav">
+            <!--Primária Nav-->
+            <ul class="primeiralinhabarra">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="nav-label">Início</span>
+                    </a>
                 </li>
-                <li class="graficos">
-                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                    <a href="" class="item-barra">Gráficos</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">star</span>
+                        <span class="nav-label">Pontuação</span>
+                    </a>
                 </li>
-                <li >
-                    <i class="bi bi-book-fill"></i>
-                    <a href="" class="item-barra">Agenda</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="nav-label">Agenda</span>
+                    </a>
                 </li>
-                <li class="sair">                    
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <a href="" class="item-barra">Sair</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span class="nav-label">Sair</span>
+                    </a>
                 </li>
             </ul>
-        </aside>
+            <div class="usuario-info">
+                <p class="foto-barra"></p>
+                <p class="nome"></pc>
+            </div>
+        </nav>
+    </aside>
     <main>
-        <div>
+        <div class="conteiner-disciplina">
             <div class="disciplina-sala">
             </div>
             <div id="atividades-container">
@@ -48,19 +69,20 @@
     <!-- Formulário para criar atividade/comentário -->
     <div id="editor-container-wrapper" class="editor-container-wrapper hidden">
         <div class="editor-texto">
-            <div class="fundo-personalizado">
-            </div>
+            <button id="btn-cancelar" class="botao-cancelar"><span class="material-symbols-outlined">close</span></button>
             <div class="conteiner-post">
                 <div id="arquivo-container">
                     <input type="file" id="arquivo-upload" name="arquivo" accept=".pdf" class="hidden">
                     <div onclick="document.getElementById('arquivo-upload').click()" style="cursor: pointer;">
-                        <img src="../../imgs/icone-de-dossier-symbole-png-gris (1).png" class="botao-secundario" alt="Enviar arquivo">
+                        <span class="material-symbols-outlined" id="icone-upload" class="botao-secundario">create_new_folder</span>
                         <span id="nome-arquivo">Nenhum arquivo selecionado <br>(.PDF .JPEG .DOC)</span>
                     </div>
                 </div>
+                <div id="data-entrega-container" class="data-entrega-container">
+                    <input type="text" id="data-entrega" placeholder="AAAA-MM-DD">
+                </div>
                 <div class="grupo">
-                    <div>
-                        <p class="subtitulos">Escreva uma descrição da sua postagem : </p>
+                    <div class="editor">
                         <div id="toolbar" class="hidden">
                             <select class="ql-header">
                                 <option selected></option>
@@ -72,19 +94,11 @@
                             <button class="ql-underline"></button>
                         </div>
                         <div id="editor-wrapper">
-                            <div id="editor-container"></div>
+                            <div id="editor-container">
+                                <p>Escreva uma menssagem para seus alunos!</p>
+                            </div>
                         </div>
-                    </div>
-                
-                    <div id="data-entrega-container" class="data-entrega-container hidden">
-                        <p class="subtitulos">Escreva uma data de entrega para a atividade : </p>
-                        <input type="text" id="data-entrega" placeholder="AAAA-MM-DD">
-                    </div>
-                
-                
-                    <div class="form-footer">
-                        <button id="btn-enviar" class="botao">Enviar</button>
-                        <button id="btn-cancelar" class="botao botao-cancelar">Cancelar</button>
+                        <button id="btn-enviar" class="botao"><span class="material-symbols-outlined" id="enviar" class="botao">send_and_archive</span></button>
                     </div>
                 </div>
             </div>
@@ -102,6 +116,9 @@
 
     <!-- mantive tudo igual até o final do <body> -->
 
+                  <div class="cursor-outer"></div>
+  <div class="cursor-inner"></div>
+        <script src="../script/cursor.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script>
     const token = localStorage.getItem('token');
@@ -119,9 +136,13 @@
     const btnEnviar = document.getElementById('btn-enviar');
     const arquivoUpload = document.getElementById('arquivo-upload');
     const nomeArquivo = document.getElementById('nome-arquivo');
+    // const navegacao_inicio = document.getElementById('navegacao-inicio');
     let quill = null;
     let tipoPostagemAtual = null;
     let arquivoSelecionado = null;
+    
+
+    // navegacao_inicio.href = tipoUsuario === 'professor'? './pagina_professor_principal.html' : './pagina_aluno_principal.html';
 
 botaoNovaPostagem.addEventListener('click', function() {
     const estaVisivel = popupTipo.classList.contains('visible');
@@ -181,7 +202,6 @@ botaoNovaPostagem.addEventListener('click', function() {
     });
 
     btnEnviar.addEventListener('click', async () => {
-        console.log('oi')
         if (!quill) return;
         const descricao = quill.root.innerHTML.trim();
         if (!descricao) return alert("Escreva algo.");
@@ -297,14 +317,14 @@ const container = document.getElementById("lista-atividades");
                 (tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisc) ||
                 (tipoUsuario === "professor" && idProfList.includes(Number(atividade.idDisciplinaProfessor)));
 
+
                 if (!corresponde) continue;
 
                 const div = document.createElement("div");
                 const tipo = atividade.devolucao === 1 ? "atividade" : "comentario";
-                div.classList.add(tipo);
-
+               
                 const content = document.createElement("div");
-
+            
                 const prazoExpirado = tipoUsuario === "aluno" && atividade.devolucao === 1 &&
                     new Date(atividade.dataEntrega) < new Date();
 
@@ -321,29 +341,21 @@ const container = document.getElementById("lista-atividades");
                     });
                 }
 
+
+
+                item.className = `container-${tipo}`;
+
                 item.innerHTML = `
-                    <p>Professor</p>
-                    ${atividade.devolucao === 1 ? `<p>${atividade.dataEntrega}</p>` : `<p>${atividade.dataPostagem}</p>`}
-                    <p>${atividade.descricao}</p>
-                    ${prazoExpirado ? '<p class="aviso-prazo">(Prazo expirado)</p>' : ''}
+                    <p class="foto">P</p>
+                    <div class=${tipo}>
+                        <p>${atividade.descricao}</p> 
+                        ${atividade.devolucao === 1 ? `<p class="data">${atividade.dataEntrega}</p>` : `<p class="data">${atividade.dataPostagem}</p>`}
+                        ${prazoExpirado ? '<p class="aviso-prazo">Prazo expirado</p>' : ''}
+                        ${atividade.caminhoGravacao != null && atividade.devolucao === 0? `<a class='link-download' href=${atividade.caminhoGravacao}>download</a>` : ''}
+                    ${tipoUsuario === "professor" ? `<p class="opcao-excluir" data-id-atividade="${atividade.idAtividade}">...</p>` : ''}
+                    </div>
                 `;
                 content.appendChild(item);
-
-                if (tipoUsuario === "professor") {
-                    const opcoes = document.createElement("div");
-                    opcoes.innerHTML = `<p class="opcao-excluir" data-id-atividade="${atividade.idAtividade}">...</p>`;
-                    content.appendChild(opcoes);
-                }
-
-                if (atividade.caminhoGravacao) {
-                    const link = document.createElement("a");
-                    link.href = atividade.caminhoGravacao;
-                    link.textContent = "Download PDF";
-                    link.target = "_blank";
-                    link.style.display = "block";
-                    link.style.marginTop = "10px";
-                    content.appendChild(link);
-                }
 
                 div.appendChild(content);
                 container.appendChild(div);
@@ -424,6 +436,44 @@ const container = document.getElementById("lista-atividades");
         div.dataset[tipo] = conteudo;
         const texto = `${div.dataset.turma || ''} - ${div.dataset.disciplina || ''}`;
         div.innerHTML = texto.trim();
+    }
+
+    if (localStorage.getItem("tipoUsuario") === "aluno") {
+        getAluno();
+    }else{
+        getProfessor();
+    }
+
+    async function getAluno() {
+        const aluno = await fetch("/alunos/" + localStorage.getItem("idUsuario"), {
+            headers: {
+                    "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            }
+        });
+
+        const dados = await aluno.json();
+        const nome = dados.aluno.nome;
+        const foto = nome[0];
+        
+        document.querySelector(".foto-barra").textContent = foto;
+        document.querySelector(".nome").textContent = nome;
+    }
+
+    async function getProfessor() {
+        const professor = await fetch("/professores/" + localStorage.getItem("idUsuario"), {
+            headers: {
+                    "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            }
+        });
+
+        const dados = await professor.json();
+        const nome = dados.professor[0].nome;
+        const foto = nome[0];
+        
+        document.querySelector(".foto-barra").textContent = foto;
+        document.querySelector(".nome").textContent = nome;
     }
 
     getTurma();

@@ -4,6 +4,7 @@
     grid-auto-rows: 275px;
     gap: 25px;
     margin-right: -20rem;
+    
 }
 
 .imagem{
@@ -14,32 +15,110 @@
 }
 
 .disciplina {
-    background-color: transparent;
+  position: relative;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  width: 320px;
+  color: white;
+  overflow: hidden;
+  background-clip: padding-box;
+  transition: all 0.25s ease;
+}
+
+.disciplina > a {
+  padding: 1.5rem;
+  gap: 6rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 125px;
+  color: white;
+  text-decoration: none;
+}
+
+.disciplina:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(84, 3, 191, 0.51);
+}
+
+.disciplina > .opcoes {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+}
+
+
+
+.foto{
+    background-color: #8a00ff;
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    padding: 1rem 1.3rem;
+    margin-right: 1.5rem;
+}
+
+.nome-professor {
+    position: absolute;   
+    bottom: 25px;
+    left: 20px;
+    width: 15rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: rgba(39, 34, 34, 0.5);
     color: white;
-    border: 0.1rem solid white;
-    position: relative;
-    transition: transform 0.25s ease;
-
-    & > a{
-        padding: 1.5rem;
-        gap: 6rem;
-        display: flex;
-        align-items: center;
-        background-color: var(--cor-secundaria);
-        width: 100%;
-        height: 125px;
-    }
-
-    & > .opcoes{
-        position: absolute;
-        bottom: 25px;
-        right: 25px;
-    }
+    text-align: center;
+    font-size: 1.2rem;
+    
 }
 
-.disciplina:hover{
-    transform: scale(1.09);
-    text-decoration: underline;
+.bubble {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, #aa2bffff, #9500ffff);
+  box-shadow:
+    0 0 10px #a36eff,
+    0 0 20px #7a2cff,
+    0 0 30px #4b0082;
+  opacity: 0.8;
+  z-index: 1;
 }
 
+.b1 {
+  width: 20px;
+  height: 20px;
+  top: 10%;
+  left: 15%;
+}
 
+.b2 {
+  width: 25px;
+  height: 25px;
+  top: 40%;
+  left: 70%;
+}
+
+.b3 {
+  width: 15px;
+  height: 15px;
+  bottom: 20%;
+  left: 30%;
+}
+
+.b4 {
+  width: 18px;
+  height: 18px;
+  bottom: 10%;
+  right: 10%;
+}
+
+.b5 {
+  width: 22px;
+  height: 22px;
+  top: 20%;
+  right: 25%;
+}

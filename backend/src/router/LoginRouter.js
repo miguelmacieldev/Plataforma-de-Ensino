@@ -10,7 +10,6 @@ module.exports = class LoginRouter {
     }
 
     criarRotasLogin() {
-        console.log('po')
         this._router.post('/',
                     this._loginMiddleware.validar_emailLogin,
                     this._loginMiddleware.validar_senhaLogin,

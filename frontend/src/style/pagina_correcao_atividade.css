@@ -1,13 +1,19 @@
-nav{
+nav.nav-atividades{
     position: fixed;
     top: 0;
     right: 0;
     padding: 2.5rem 2.5rem 0 10rem;
     display: flex;
     justify-content: start;
-    width: calc(100% - 30rem);
-    border-bottom: solid 0.1rem white;
+    width: calc(100% - 26rem);
+    border-bottom: solid 0.1rem rgba(255, 255, 255, 0.2);
     z-index: 10000;
+    
+}
+
+ul{
+    display: flex;
+    gap: 5rem;
 }
 
 ul > li#corrigir,
@@ -23,7 +29,7 @@ ul > li#grafico{
         width: 0;
         height: 2px; /* Aumentei um pouco a espessura */
         position: absolute;
-        background: linear-gradient(90deg, var(--cor-secundaria), var(--cor-terciaria)); /* Gradiente para mais estilo */
+        background: #8800ff;
         bottom: 0;
         left: 0;
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -34,7 +40,7 @@ ul > li#grafico{
     }
 
     &:hover {
-        color: var(--cor-secundaria);
+        color: #8800ff;
         
         &::after {
             width: 100%;
@@ -45,12 +51,12 @@ ul > li#grafico{
 
     /* Efeito para itens ativos */
     &.active {
-        color: var(--cor-secundaria);
+        color: #8800ff;
         font-weight: 500;
         
         &::after {
             width: 100%;
-            background: var(--cor-secundaria);
+            background: #8800ff;
             opacity: 1;
             height: 3px;
         }
@@ -70,8 +76,8 @@ ul > li#grafico{
 }
 
 canvas {
-    background-color: white;
-    border-left: 0.5rem solid var(--cor-secundaria);
+    background-color: black;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
     max-width: 60rem;
     min-width: 60rem;
     padding: 5rem;
@@ -182,7 +188,7 @@ canvas {
     & > .conteudo{
         height: 15rem;
         width: 40rem;
-        background-color: white;
+        background-color: #1c202b;
         display: flex;
         flex-flow:column;
         gap: 2rem;
@@ -196,6 +202,10 @@ canvas {
     }
 }
 
+.popup-corrigir.hidden{
+    display: none;
+}
+
 button.botao{
     width: 49%;
     border-radius: 0;
@@ -207,7 +217,7 @@ input[type="number"]{
     padding: 1rem; 
     border-width: 0.1rem;
     border: 0;
-    border: 0.1rem solid black;
+    border: 0.1rem solid white;
     
     &:focus{
         border-color: var(--cor-secundaria);

@@ -76,6 +76,24 @@ class Aluno {
         }
     }
 
+    async updatePontuacao() {
+        const conexao = await Banco.getConexao();
+        const SQL = `
+            UPDATE aluno SET pontuacao = ? WHERE matricula = ?;
+        `;
+
+        try {
+
+            const [result] = await conexao.execute(SQL, [
+                this._pontuacao,
+                this._matricula
+            ]);
+            return result.affectedRows > 0;
+        } catch (error) {
+            return false;
+        }
+    }
+
     // Excluir aluno
     async delete() {
         const conexao = await Banco.getConexao();
@@ -176,6 +194,29 @@ class Aluno {
             const [rows] = await conexao.execute(SQL, [this._matricula]);
             if (rows.length > 0) {
                 return rows[0];
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Erro ao ler aluno por matrícula:', error.message);
+            return null;
+        }
+    }
+    
+    async readByIDTurma() {
+        const conexao = await Banco.getConexao();
+        const SQL = `
+                       SELECT 
+                        a.matricula,
+                        a.nome,
+                        a.pontuacao
+                    FROM aluno a
+                    WHERE a.idTurmaPrimaria = ? ORDER BY a.pontuacao DESC;
+                     `;
+        try {
+            const [rows] = await conexao.execute(SQL, [this._idTurmaPrimaria]);
+            if (rows.length > 0) {
+                return rows;
             } else {
                 return null;
             }

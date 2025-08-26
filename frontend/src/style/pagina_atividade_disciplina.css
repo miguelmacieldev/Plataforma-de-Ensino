@@ -1,17 +1,18 @@
 .atividade{
     width: 80em;
     height: auto;
-    background-color: white;
+    background-color: black;
+    border: rgba(255, 255, 255, 0.2) solid 1px;
+    border-radius: 1.6rem;
     padding: 5rem;
     display: flex;
     flex-flow: column;
     gap: 5rem;
-    border-left: solid 1rem var(--cor-secundaria);
+    
     & > div#info{
         padding-bottom: 1rem;
-        border-bottom: solid 0.1rem #a4a4a4;    
+        border-bottom: solid 0.1rem rgba(255, 255, 255, 0.2);    
     }
-
 }
 
 p.data{
@@ -20,7 +21,6 @@ p.data{
 }
 
 #descricao-div > p{
-    color: var(--cor-secundaria);
     font-size: 3rem;
 
     &:hover{
@@ -28,19 +28,46 @@ p.data{
     }
 }
 
-.arquivo-container{
-    width: auto;
-    border: dashed 0.1rem #a4a4a4;
+.botao-container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 2rem;
 }
 
-a.botao{
-    border-radius: 0;
-    align-self: flex-end;
-    box-shadow: none;
-    &.concluir {
-        width: 100%;
-    }
+a.botao {
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(
+        800px 500px at 20% 20%, 
+        rgba(173, 94, 255, 0.95) 0%,
+        rgba(120, 65, 220, 0.85) 25%,
+        rgba(60, 30, 160, 0.75) 50%,
+        rgba(45, 9, 177, 0.65) 75%,
+        rgba(50, 8, 219, 0) 100%
+    );
+    background-size: 300% 300%;
+    background-position: center;
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    border: solid 0.1rem rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transition: all .4s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
+
+
+a.botao:hover {
+    background-position: 80% 20%;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+
 
 .hidden{
     visibility: hidden;
@@ -49,13 +76,15 @@ a.botao{
 #arquivo-container {
     margin-top: 15px;
     padding: 10px;
-    border: 1px dashed #a4a4a4;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     height: 25rem;
     justify-content: center;
+    background-color: #18181b80;
+    border-radius: 1.6rem;
     gap: 10px;
 
     & > p{
@@ -64,12 +93,8 @@ a.botao{
     }
 }
 
-img{
-    width: 12rem;
-    cursor: pointer;
-    transition: opacity 0.15s ease-in-out;
-
-    &:hover{
-        opacity: 0.75;
-    }
+#arquivo-container .material-symbols-outlined{
+    background-color: black;
+    padding: 1.5rem;  
+    border-radius: 50%;
 }

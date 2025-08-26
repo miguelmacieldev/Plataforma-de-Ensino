@@ -16,20 +16,26 @@ main > div{
 .disciplina-sala{
     width: 65rem;
     height: 20rem;
-    background-color: var(--cor-secundaria);
     font-size: 5.5rem;
     padding: 2rem;
     position: relative;
-
-    & > img{
-        width: 100%;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-    }
-   
+    border-radius: 16px;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    background-color: black;   
 }
 
+@keyframes brilhar {
+      0% {
+        box-shadow:
+          0 0 10px var(--cor-secundaria),
+          0 0 20px var(--cor-terciaria);
+      }
+      100% {
+        box-shadow:
+          0 0 15px var(--cor-secundaria),
+          0 0 30px var(--cor-terciaria);
+      }
+    }
 
 .editor-container-wrapper{
     position: fixed;
@@ -44,27 +50,12 @@ main > div{
     z-index: 1000;
     opacity: 1;
     transition: opacity 0.3s ease;
-}
-
-.fundo-personalizado{
-    background-color: var(--cor-secundaria);
-    height: 25%;
-    width: 100%;
-    position: relative;
-    background-image: url(../../imgs/wave.svg);
-    background-position: 0;
-    background-size: cover;
-    background-repeat: no-repeat;
-    padding: 5rem;
-
-    & > p{
-        color: white;
-        font-size: 2.8rem;
-        font-weight: 600;
-        padding-left: 3.5rem;
-        padding-bottom: 5rem;
+    
+    &.hidden{
+        display: none;
     }
 }
+
 
 .subtitulos{
     color: #666;
@@ -74,8 +65,12 @@ main > div{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     gap: 2.5rem;
-    margin-top: 3.5rem;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    padding: 2rem 4rem;
+    border-radius: 1.6rem;
+    
 
     & .grupo{
         display: flex;
@@ -84,21 +79,52 @@ main > div{
     }
 }
 
-.editor-texto{
-    position: relative;
-    background-color: white;
-    width: 110rem;
-    height: 60rem;
-    display: flex;
-    flex-flow: column;
-    gap: 2rem;
+.editor-texto {
+  position: relative;
+  width: 75rem;
+  display: flex;
+  flex-flow: column;
+  gap: 2rem;
+  overflow: hidden;
+  border-radius: 1.6rem;
+
+  /* Cor preta de base */
+  background-color: black;
+
+  /* Gradiente sobre a cor preta */
+  background-image: radial-gradient(
+    ellipse at right top,
+    rgba(138, 43, 226, 0.7) 0%, /* mais transparente para o preto aparecer */
+    rgba(0, 0, 0, 0.95) 47%,
+    rgba(21, 20, 25, 1) 100%
+  );
+}
+
+.editor-texto::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(
+    circle,
+    rgba(138, 43, 226, 0.1) 0%, /* opacidade reduzida */
+    transparent 40%              /* mais área transparente */
+  );
+  filter: blur(90px); /* mais difuso ainda */
+  z-index: 4;
+}
+
+.editor-texto > * {
+  position: relative;
+  z-index: 1;
 }
 
 #editor-container{
     position: relative;
     height: 15rem;
-    background: white;
-    border: 0.35rem solid #ccc;
+    background-color: #18181b80;
 }
 
 
@@ -110,12 +136,20 @@ main > div{
 }
 
 
+.ql-editor{
+    background-color: #18181b;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+ }
+
+.ql-container.ql-snow{
+    border: none !important;
+}
+
 .ql-editor > p{
-    color: black;
+    color: white;
 }
 
 #editor-wrapper{
-  border: 1px solid #ccc;
   overflow: hidden;
   background-color: white;
   display: flex;
@@ -142,7 +176,7 @@ main > div{
     display: flex;
     flex-flow: column;
     justify-content: space-around;
-    background: white;
+    background: white;  
     padding: 2rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 
@@ -167,39 +201,46 @@ main > div{
     display: none;
 }
 
+.container-atividade,
+.container-comentario{
+    display: flex;
+    gap: 1.5rem;
+    width: 65rem;
+    align-items: center;
+}
+
+.foto{
+    background-color: #8a00ff; 
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
 .atividade {
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
-    background-color: white;
+    background-color: black;
     width: 65rem;
     height: 10rem;
     padding: 7rem 3rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border-left: solid 0.5rem var(--cor-secundaria);
+    padding: 1.5rem;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
 
     & p {
-        color: black;
         z-index: 2; 
     }
 
-     &  p.opcao-excluir{
-        position: absolute;
-        right: 8rem;
-        top: 5rem;
-        cursor: pointer;
-    }
 
-
-    & > div{
-        display: flex;
-        width: 100%;
-        height: 10rem;
-        justify-content: start;
-        align-items: center;
-    }
 
     &::before {
         content: "";
@@ -208,7 +249,7 @@ main > div{
         left: 0;
         height: 100%;
         width: 0%;
-        background-color:  #dcdcdc;
+        background-color: #0e0e0eff;
         z-index: 1;
         transition: width 0.25s ease-in-out;
     }
@@ -216,16 +257,35 @@ main > div{
     &:hover::before {
         width: 100%;
     }
-
-
 }
 
-.atividade-bloqueada{
-    background-color: #dcdcdc;
-    
-    & .aviso-prazo{
-        color: var(--cor-primaria);
-    }
+
+ p.opcao-excluir{
+    position: absolute;
+    right: 1.5rem;
+    top: 0.5rem;
+    cursor: pointer;
+}
+
+.data,
+.aviso-prazo,
+.link-download{
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: rgba(39, 34, 34, 0.5);
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 0 0.5rem;
+}
+
+a.link-download{
+    color: red;
+    font-weight: bold;
+}
+
+.aviso-prazo{
+    color: red;
+    font-weight: bold;
 }
 
 .comentario{
@@ -233,22 +293,15 @@ main > div{
     overflow: hidden;
     display: flex;
     align-items: center;
-    background-color: white;
+    background-color: black;
     width: 65rem;
+    padding: 1rem;
     height: auto;
-    padding: 7rem 3rem;
-    border-left: solid 0.5rem var(--cor-primaria);
-
-    & a{
-        color: var(--cor-primaria);
-
-        &:hover{
-            text-decoration: underline;
-        }
-    }
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
 
     & p{
-        color: black;
+        color: white;
     }
 
     & > div{
@@ -276,38 +329,37 @@ main > div{
     z-index: 2;
 
     & > button{
-        border: 0;
-        background-color: transparent;
+        border: 0.1rem solid rgba(255, 255, 255, 0.2);
+        background-color: black;
+        color: white;
         height: 100%;
         width: 100%;
         transition: background-color 0.15s ease-in-out;
 
-        &:hover{
-            background-color: #ccc;
-        }
     }
 }
 
-img{
-    width: 12rem;
-    cursor: pointer;
-    transition: opacity 0.15s ease-in-out;
 
-    &:hover{
-        opacity: 0.75;
-    }
+#arquivo-container .material-symbols-outlined{
+    background-color: black;
+    padding: 1.5rem;  
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
 }
 
 #arquivo-container{
+    margin-top: 15px;
     padding: 10px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     display: flex;
+    flex-direction: column;
     align-items: center;
     width: 50rem;
-    height: 100%;
-    gap: 10px;
-    position: relative;
-    border: 0.35rem dashed #ccc;
+    height: 25rem;
     justify-content: center;
+    background-color: #18181b80;
+    border-radius: 1.6rem;
+    gap: 10px;
 
 
     & > div{
@@ -318,29 +370,84 @@ img{
 }
 
 #data-entrega-container {
-    width: 50rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
+
+#data-entrega-container.hidden {
+    display: none;
+}
+
+#data-entrega{
+    width: 50rem;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    background-color: #18181b80;
+    border-radius: 1.6rem;
+    padding: 1rem;
+}
+
+
 
 button.botao{
-    box-shadow: 0px 0px 0px 0px transparent;
-    border-radius: 0;
-    width: 25rem;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(
+        800px 500px at 20% 20%, 
+        rgba(173, 94, 255, 0.95) 0%,
+        rgba(120, 65, 220, 0.85) 25%,
+        rgba(60, 30, 160, 0.75) 50%,
+        rgba(45, 9, 177, 0.65) 75%,
+        rgba(50, 8, 219, 0) 100%
+    );
+    background-size: 300% 300%;
+    background-position: center;
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    border: solid 0.1rem rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transition: all .25s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+button.botao:hover {
+    background-position: 80% 20%;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.editor{
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-left: 6.5rem;
+}
 
 input[type="text"] {
     border-radius: 0;
     border: 0.35rem solid #ccc;
-    color: black;
-    
+    color: white;
+
     &:focus{
         border: 0.35rem solid #ccc;
     }
 }
 
 button.botao-cancelar{
-    background-color: transparent;
-    color: var(--cor-secundaria);
+    position: absolute;
+    top: 3rem;
+    left: 3rem;
+    z-index: 10;
+    background: transparent;
+    border: none;
+    color: white;
 }
 
 #nome-arquivo {
@@ -350,14 +457,15 @@ button.botao-cancelar{
 }
 
 
-  .botao-formulario {
+.botao-formulario {
     position: fixed;
     bottom: 50px;
     right: 50px;
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: var(--cor-secundaria);
+    background: black;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
     color: white;
     display: flex;
     align-items: center;
@@ -366,7 +474,11 @@ button.botao-cancelar{
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 900;
-    border: none;
+    transition: transform 0.15s ease-in-out;
+
+    &:hover{
+        transform: scale(1.1);
+    }
   }
 
   .popup-tipo {
@@ -384,9 +496,9 @@ button.botao-cancelar{
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: var(--cor-secundaria);
+    background: black;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
     color: white;
-    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -397,6 +509,7 @@ button.botao-cancelar{
     opacity: 0;
     transition: all 0.3s ease;
   }
+
 
 .popup-tipo button i{
     font-size: 2rem;

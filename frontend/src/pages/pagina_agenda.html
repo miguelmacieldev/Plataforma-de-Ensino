@@ -5,34 +5,55 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../style/padrao.css">
         <link rel="stylesheet" href="../style/agenda.css">
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <title>Agenda</title>
     </head>
     <body>
-        <aside class="menu-lateral">
-            <p class="logo">
-                <i class="bi bi-backpack3-fill"></i>
-                infotec
-            </p>
-            <ul>
-                <li>
-                    <i class="bi bi-house-door-fill"></i>
-                    <a href="" class="item-barra">Início</a>
+          <aside class="barra">
+        <header class="barra-topo">
+            <a href="#" class="header-logo">
+                <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
+            </a>
+            <div class="header-titulo">
+                <p>TechInfo</p>   
+            </div>
+        </header>
+
+        <nav class="barralateral-nav">
+            <!--Primária Nav-->
+            <ul class="primeiralinhabarra">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="nav-label">Início</span>
+                    </a>
                 </li>
-                <li class="graficos">
-                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                    <a href="" class="item-barra">Gráficos</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">star</span>
+                        <span class="nav-label">Pontuação</span>
+                    </a>
                 </li>
-                <li >
-                    <i class="bi bi-book-fill"></i>
-                    <a href="" class="item-barra">Atividades</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="nav-label">Agenda</span>
+                    </a>
                 </li>
-                <li class="sair">                    
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <a href="" class="item-barra">Sair</a>
+                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-aos="fade-up">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span class="nav-label">Sair</span>
+                    </a>
                 </li>
             </ul>
-        </aside>
+            <div class="usuario-info">
+                <p class="foto-barra"></p>
+                <p class="nome"></pc>
+            </div>
+        </nav>
+    </aside>
         <main>
             <div class="calendario">
                 <div class="calendario-header">
@@ -50,7 +71,15 @@
                     <div>Sáb</div>
                 </div>
                 <div class="dias-mes" id="dias-mes"></div>
+                <div class="legenda">
+                    <div>
+                        <p>Atividade : </p>
+                        <div class="cor-atividade"></div>
+                    </div>
+                </div>
             </div>
+
+
             <div class="eventos">
                 <h3 id="evento-data">Selecione um dia</h3>
                 <div id="evento-detalhes">
@@ -58,12 +87,14 @@
                 </div>
             </div>
         </main>
+        <div class="cursor-outer"></div>
+        <div class="cursor-inner"></div>
+        <script src="../script/cursor.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
             // Dados de exemplo para eventos
             const eventos = {};
 
-            const token = localStorage.getItem('token');
             let currentDate = new Date();
             let currentMonth = currentDate.getMonth();
             let currentYear = currentDate.getFullYear();
@@ -75,8 +106,8 @@
             const nextMonthButton = document.getElementById('next-month');
             const eventoDataElement = document.getElementById('evento-data');
             const eventoDetalhesElement = document.getElementById('evento-detalhes');
-
-function getAtividade() {
+            
+            function getAtividade() {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("tipoUsuario");
     const idUsuario = localStorage.getItem("idUsuario"); // pode ser aluno ou professor
@@ -96,6 +127,8 @@ function getAtividade() {
             
             const idTurmaPrimaria = aluno.aluno.idTurmaPrimaria;
 
+            console.log(idTurmaPrimaria)
+
             return fetch(`/disciplinas/turmas/${idTurmaPrimaria}`, {
                 method: "GET",
                 headers: {
@@ -107,7 +140,6 @@ function getAtividade() {
         })
         .then(res => res.json())
         .then(disciplinas => {
-
             const promessas = disciplinas.disciplinas.map(disc =>
                 fetch(`/disciplinas-professores/disciplinas/${disc.idDisciplina}`, {
                     method: "GET",
@@ -367,6 +399,49 @@ function getAtividade() {
 
             getAtividade();
         });
+
+        if (localStorage.getItem("tipoUsuario") === "aluno") {
+           getAluno();
+           console.log("Aluno logado");
+        }else{
+            getProfessor();
+        }
+        
+        
+        async function getProfessor() {
+            const token = localStorage.getItem("token");
+            const professor = await fetch("/professores/" + localStorage.getItem("idUsuario"), {
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                }
+            });
+
+            const dados = await professor.json();
+            const nome = dados.professor[0].nome;
+            const foto = nome[0];
+            
+            document.querySelector(".foto-barra").textContent = foto;
+            document.querySelector(".nome").textContent = nome;
+        }
+        
+        
+        async function getAluno() {
+            const token = localStorage.getItem("token");
+            const aluno = await fetch("/alunos/" + localStorage.getItem("idUsuario"), {
+                headers: {
+                        "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                }
+            });
+
+            const dados = await aluno.json();
+            const nome = dados.aluno.nome;
+            const foto = nome[0];
+            
+            document.querySelector(".foto-barra").textContent = foto;
+            document.querySelector(".nome").textContent = nome;
+        }
         </script>
     </body>
 </html>
