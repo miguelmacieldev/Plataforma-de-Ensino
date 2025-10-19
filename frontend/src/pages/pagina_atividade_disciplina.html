@@ -17,7 +17,7 @@
                 <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
             </a>
             <div class="header-titulo">
-                <p>TechInfo</p>   
+                <p>InfoTec</p>   
             </div>
         </header>
 
@@ -25,25 +25,25 @@
             <!--Primária Nav-->
             <ul class="primeiralinhabarra">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_aluno_principal.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">home</span>
                         <span class="nav-label">Início</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_pontuacao.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">star</span>
                         <span class="nav-label">Pontuação</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_agenda.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">calendar_today</span>
                         <span class="nav-label">Agenda</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_inicial.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">logout</span>
                         <span class="nav-label">Sair</span>
                     </a>
@@ -75,9 +75,7 @@
             </div>
         </div>
     </main>
-    <div class="cursor-outer"></div>
-    <div class="cursor-inner"></div>
-    <script src="../script/cursor.js"></script>
+
     <script>
     const token = localStorage.getItem('token');
     let file = null; // corrigido: agora é let para ser atualizado
@@ -192,6 +190,7 @@
         if (result.status === true) {
             alert('Arquivo enviado com sucesso!');
             desabilitarAtividade();
+            location.reload();
         } else {
             alert('Erro ao enviar arquivo.');
             console.error(result);

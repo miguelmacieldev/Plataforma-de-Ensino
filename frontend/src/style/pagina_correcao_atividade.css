@@ -8,7 +8,14 @@ nav.nav-atividades{
     width: calc(100% - 26rem);
     border-bottom: solid 0.1rem rgba(255, 255, 255, 0.2);
     z-index: 10000;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), #0a0a0a 100%);
+    color: white;
+    backdrop-filter: blur(12px); 
     
+}
+
+ul.primeiralinhabarra{
+    gap: 0;
 }
 
 ul{
@@ -91,18 +98,20 @@ canvas {
 }
 
 .card-entrega.corrigido{
-    border-color: rgb(5, 144, 5);
+    border-left: 0.75rem solid rgb(5, 144, 5);
 }
 
 .card-entrega{
+    border-radius: 0 1.6rem 1.6rem 0;
     position: relative;
     width: 40rem;
-    background-color: white;
+    background-color: black;
     padding: 2.5rem;
-    border-left: 0.5rem solid var(--cor-primaria);
+    border-left: 0.75rem solid var(--cor-primaria);
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
 
     & p{
-        color: black;
+        color: white;
     }
 
     & > .acoes{
@@ -141,6 +150,9 @@ canvas {
     position: absolute;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    background: black;
+    color: white;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
     z-index: 1000;
     display: none; /* Mudamos de hidden para none */
     flex-direction: column;
@@ -164,13 +176,13 @@ canvas {
     cursor: pointer;
     height: 50%;
     display: flex;
+    color: white;
     justify-content: center;
     align-items: center;
     transition: background-color 0.15s ease-in-out;
-}
-
-.popup-option:hover {
-    background-color: #ccc;
+    &:first-child {
+        border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+    }
 }
 
 .popup-corrigir {
@@ -184,40 +196,74 @@ canvas {
     z-index: 1001;
     justify-content: center;
     align-items: center;
-
+    
     & > .conteudo{
+        position: relative;
         height: 15rem;
         width: 40rem;
-        background-color: #1c202b;
+        background-color: black;
+        border: 0.1rem solid rgba(255, 255, 255, 0.2);
+        border-radius: 1.6rem;
         display: flex;
-        flex-flow:column;
+        flex-flow: row;
         gap: 2rem;
         justify-content: center;
         align-items: center;
         padding: 2.5rem;
 
-        & > div{
-            width: 100%;
+        & > input{
+            width: 70%;
         }
     }
+}
+
+button#cancelar{
+    position: absolute;
+    left: 1rem;
+    background: transparent;
+    color: white;
+    border: none;
+    top: 1rem;
 }
 
 .popup-corrigir.hidden{
     display: none;
 }
 
-button.botao{
-    width: 49%;
-    border-radius: 0;
+button#enviar-nota{
+    height: 4.5rem;
+    width: 4.5rem;
+    font-size: 2rem;
+    border-radius: 50%;
     box-shadow: none;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    color: white; 
+    background: radial-gradient(
+        800px 500px at 20% 20%, 
+        rgba(173, 94, 255, 0.95) 0%,
+        rgba(120, 65, 220, 0.85) 25%,
+        rgba(60, 30, 160, 0.75) 50%,
+        rgba(45, 9, 177, 0.65) 75%,
+        rgba(50, 8, 219, 0) 100%
+    );
+    transition: all .25s ease-in-out;
 }
 
+button#enviar-nota:hover {
+    background-position: 80% 20%;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+
+
 input[type="number"]{
+    color: white;
     width: 100%;
     padding: 1rem; 
-    border-width: 0.1rem;
-    border: 0;
-    border: 0.1rem solid white;
+    border-radius: 1.6rem;
+    background-color: #18181b80;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
     
     &:focus{
         border-color: var(--cor-secundaria);

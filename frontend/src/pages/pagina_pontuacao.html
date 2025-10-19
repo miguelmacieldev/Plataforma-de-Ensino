@@ -16,7 +16,7 @@
                 <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
             </a>
             <div class="header-titulo">
-                <p>TechInfo</p>   
+                <p>InfoTec</p>   
             </div>
         </header>
 
@@ -24,7 +24,7 @@
             <!--Primária Nav-->
             <ul class="primeiralinhabarra">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_aluno_principal.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">home</span>
                         <span class="nav-label">Início</span>
                     </a>
@@ -36,13 +36,13 @@
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_agenda.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">calendar_today</span>
                         <span class="nav-label">Agenda</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_inicial.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">logout</span>
                         <span class="nav-label">Sair</span>
                     </a>
@@ -63,18 +63,36 @@
     <script>
         const token = localStorage.getItem('token');
 
-        async function getAluno(){
-            try{
-                const aluno = await fetch('alunos/' + localStorage.getItem('idUsuario'), {
+        async function getAluno() {
+            try {
+                const resposta = await fetch('alunos/' + localStorage.getItem('idUsuario'), {
                     headers: {
                         "Authorization": "Bearer " + token,
                         "Accept": "application/json"
                     }
-                })
-                const dados = await aluno.json();
-                getAlunos(dados.aluno.idTurmaPrimaria)
-            }catch(error){
-                console.error(error); 
+                });
+                const dados = await resposta.json();
+                
+                const nome = dados.aluno.nome;
+                const foto = nome[0];
+                document.querySelector(".foto-barra").textContent = foto;
+                document.querySelector(".nome").textContent = nome;
+
+                // 🔹 Pega alunos das duas turmas e junta em uma única lista
+                const alunosPrimaria = await getAlunos(dados.aluno.idTurmaPrimaria);
+                const alunosSecundaria = await getAlunos(dados.aluno.idTurmaSecundaria);
+
+                // 🔹 Junta as duas listas e remove duplicados (caso existam)
+                const todosAlunos = [...alunosPrimaria, ...alunosSecundaria].filter(
+                    (aluno, index, self) =>
+                        index === self.findIndex(a => a.matricula === aluno.matricula)
+                );
+
+                // 🔹 Renderiza tudo junto
+                renderizarTabelaAlunos(todosAlunos);
+
+            } catch (error) {
+                console.error(error);
             }
         }
 
@@ -96,35 +114,35 @@
                         <th>Pontuação</th>
                     </tr>
                 </thead>
-            
                 <tbody>
                     ${listaDeAlunos.map(aluno => `
                         <tr class="info-aluno">
                             <td class='foto'><span class='letra-aluno'>${aluno.nome[0]}</span></td>
                             <td class="matricula">${aluno.matricula}</td>
-                            <td class="nome">${aluno.nome}</td>
+                            <td class="nome-aluno">${aluno.nome.length > 10 ? aluno.nome.substring(0, 10) + "..." : aluno.nome}</td>
                             <td>${aluno.pontuacao}</td>
                         </tr>
                     `).join('')}
                 </tbody>
             `;
 
-            divTabela.innerHTML = ''; // Limpa o conteúdo anterior
+            divTabela.innerHTML = ''; // Limpa conteúdo anterior
             divTabela.appendChild(tabela);
         }
 
         async function getAlunos(idTurma) {
             try {
-                const alunos = await fetch('alunos/turmas/' + idTurma, {
+                const resposta = await fetch('alunos/turmas/' + idTurma, {
                     headers: {
                         "Authorization": "Bearer " + token,
                         "Accept": "application/json"
                     }
                 });
-                const dados = await alunos.json();
-                renderizarTabelaAlunos(dados.aluno); // ← Aqui chamamos a renderização
+                const dados = await resposta.json();
+                return dados.aluno || []; // ← retorna lista (ou vazia)
             } catch (error) {
-                console.error(error); 
+                console.error(error);
+                return [];
             }
         }
 

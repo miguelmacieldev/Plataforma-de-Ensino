@@ -12,13 +12,14 @@
         <title>Document</title>
     </head>
     <body>
+        
 <aside class="barra">
         <header class="barra-topo">
             <a href="#" class="header-logo">
                 <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
             </a>
             <div class="header-titulo">
-                <p>TechInfo</p>   
+                <p>InfoTec</p>   
             </div>
         </header>
 
@@ -32,13 +33,7 @@
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
-                        <span class="material-symbols-outlined">star</span>
-                        <span class="nav-label">Pontuação</span>
-                    </a>
-                </li>
-                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_agenda.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">calendar_today</span>
                         <span class="nav-label">Agenda</span>
                     </a>
@@ -50,7 +45,7 @@
                     </a>
                 </li>
             </ul>
-            <div class="usuario-info">
+            <div class="usuario-info professor">
                 <p class="foto-barra"></p>
                 <p class="nome"></pc>
             </div>
@@ -59,15 +54,13 @@
         <main>
             <div class="disciplinas" id="disciplinas"></div>
         </main>
-            <div class="cursor-outer"></div>
-    <div class="cursor-inner"></div>
-    <script src="../script/cursor.js"></script>
         <script>
             const divDisciplinas = document.getElementById("disciplinas");
             const token = localStorage.getItem("token");
             const decoded = jwt_decode(token);
 
             buscarDisciplinasPorTurmas(decoded.id)
+
             
 async function totalDeAlunos(idTurma) {
     try {

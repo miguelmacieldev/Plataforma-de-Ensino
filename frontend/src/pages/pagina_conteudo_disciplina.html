@@ -19,7 +19,7 @@
                 <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
             </a>
             <div class="header-titulo">
-                <p>TechInfo</p>   
+                <p>InfoTec</p>   
             </div>
         </header>
 
@@ -27,25 +27,25 @@
             <!--Primária Nav-->
             <ul class="primeiralinhabarra">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="" id="navegacao-inicio" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">home</span>
                         <span class="nav-label">Início</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_pontuacao.html" id="navegacao-pontuacao" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">star</span>
                         <span class="nav-label">Pontuação</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_agenda.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">calendar_today</span>
                         <span class="nav-label">Agenda</span>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_inicial.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">logout</span>
                         <span class="nav-label">Sair</span>
                     </a>
@@ -58,11 +58,26 @@
         </nav>
     </aside>
     <main>
-        <div class="conteiner-disciplina">
+        <nav class="nav-atividades">
+            <ul>
+                <li id="atividades" class="active">
+                    Atividades                 
+                </li>
+                <li id="pontuacao">
+                    Pontuação
+                </li>
+            </ul>
+        </nav>
+        <div class="conteiner-disciplina" id="conteiner-disciplina">
             <div class="disciplina-sala">
             </div>
             <div id="atividades-container">
                 <div id="lista-atividades"></div>
+            </div>
+        </div>
+        <div id="conteiner-pontuacao" class="conteiner-pontuacao hidden">
+            <div class="tabela">
+                
             </div>
         </div>
     </main>
@@ -117,11 +132,14 @@
 
     <!-- mantive tudo igual até o final do <body> -->
 
-                  <div class="cursor-outer"></div>
-  <div class="cursor-inner"></div>
-        <script src="../script/cursor.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script>
+    const navegacao_inicio = document.getElementById('navegacao-inicio');
+
+    const botao_atividades = document.getElementById('atividades');
+    const botao_pontuacao = document.getElementById('pontuacao');
+    const div_container_disciplina = document.getElementById('conteiner-disciplina');
+
     const token = localStorage.getItem('token');
     const idUsuario = localStorage.getItem('idUsuario');
     const tipoUsuario = localStorage.getItem('tipoUsuario');
@@ -141,11 +159,52 @@
     let quill = null;
     let tipoPostagemAtual = null;
     let arquivoSelecionado = null;
+
+    const navegacao_potuacao = document.getElementById('navegacao-pontuacao');
+    const div_usuario_info = document.querySelector('.usuario-info');
+
+    if (tipoUsuario === "professor") {
+        div_usuario_info.classList.add('professor');
+    } else {
+        div_usuario_info.classList.remove('professor');
+    }
     
 
-    // navegacao_inicio.href = tipoUsuario === 'professor'? './pagina_professor_principal.html' : './pagina_aluno_principal.html';
+    function alternarAba(abaSelecionada) {
 
-botaoNovaPostagem.addEventListener('click', function() {
+
+        document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+        abaSelecionada.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        if (abaSelecionada.id === 'atividades') {
+            div_container_disciplina.classList.remove('hidden');
+            document.getElementById('conteiner-pontuacao').classList.add('hidden');
+            botaoNovaPostagem.style.display = "flex";
+            getAtividades();
+        } else {
+            document.getElementById('conteiner-pontuacao').classList.remove('hidden');
+            div_container_disciplina.classList.add('hidden');
+            botaoNovaPostagem.style.display = "none";
+            exbirPontuacao();
+        }
+    }
+
+
+    botao_atividades.addEventListener('click', () => alternarAba(botao_atividades));
+    botao_pontuacao.addEventListener('click', () => alternarAba(botao_pontuacao));
+
+    navegacao_inicio.href = tipoUsuario === "professor"
+    ? "pagina_professor_principal.html"
+    : "pagina_aluno_principal.html";
+
+
+    if(tipoUsuario === "professor"){
+        navegacao_potuacao.style.display = "none";
+    }
+    
+    botaoNovaPostagem.addEventListener('click', function() {
     const estaVisivel = popupTipo.classList.contains('visible');
     
     if (estaVisivel) {
@@ -216,6 +275,21 @@ botaoNovaPostagem.addEventListener('click', function() {
         const ids = await getIdsDisciplinaProfessor(idUsuario);
         if (!ids || ids.length === 0) return alert("Nenhum vínculo encontrado.");
 
+            if (tipoPostagemAtual === 'atividade') {
+                dataEntrega = document.getElementById('data-entrega').value;
+
+                // 🔹 Verifica se a data está no formato AAAA-MM-DD
+                if (!validarFormatoData(dataEntrega)) {
+                    return alert("Data inválida. Use o formato AAAA-MM-DD (ex: 2025-10-15).");
+                }
+
+                // 🔹 Verifica se a data não é anterior a hoje
+                const hoje = new Date().toISOString().split('T')[0];
+                if (dataEntrega < hoje) {
+                    return alert("A data de entrega não pode ser anterior à data atual.");
+                }
+            }
+
         // Se houver mais de um vínculo, use o primeiro
         const idDisciplinaProfessor = ids[0];
         await postAtividade(tipoPostagemAtual, idDisciplinaProfessor, dataEntrega);
@@ -236,6 +310,15 @@ botaoNovaPostagem.addEventListener('click', function() {
         const dataFormatada = amanha.toISOString().split('T')[0];
         document.getElementById('data-entrega').min = dataFormatada;
         document.getElementById('data-entrega').value = dataFormatada;
+    }
+
+    function validarFormatoData(data) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(data)) return false;
+
+        // Verifica se é uma data válida no calendário
+        const d = new Date(data);
+        return d instanceof Date && !isNaN(d);
     }
 
     function podePostar() {
@@ -287,6 +370,67 @@ botaoNovaPostagem.addEventListener('click', function() {
         if (json.status) getAtividades();
     }
 
+
+   async function exbirPontuacao() {   
+    const listaDeAlunos = await getAlunos(localStorage.getItem('idTurmaSelecionada')); 
+        console.log(listaDeAlunos);
+       renderizarTabelaAlunos(listaDeAlunos);
+    }
+    
+    
+    function renderizarTabelaAlunos(listaDeAlunos) {
+
+             const divTabela = document.querySelector('.tabela');
+
+            if (!listaDeAlunos || listaDeAlunos.length === 0) {
+                divTabela.innerHTML = '<p>Nenhum aluno encontrado.</p>';
+                return;
+            }
+
+            const tabela = document.createElement('table');
+            tabela.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Matrícula</th>
+                        <th>Nome</th>
+                        <th>Pontuação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${listaDeAlunos.map(aluno => `
+                        <tr class="info-aluno">
+                            <td class='foto-tabela'><span class='letra-aluno'>${aluno.nome[0]}</span></td>
+                            <td class="matricula">${aluno.matricula}</td>
+                            <td class="nome-aluno">${aluno.nome.length > 10 ? aluno.nome.substring(0, 10) + "..." : aluno.nome}</td>
+                            <td>${aluno.pontuacao}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+
+            divTabela.innerHTML = ''; // Limpa conteúdo anterior
+            divTabela.appendChild(tabela);
+        }
+
+    async function getAlunos(idTurma) {
+            try {
+                const resposta = await fetch('alunos/turmas/' + idTurma, {
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json"
+                    }
+                });
+                const dados = await resposta.json();
+                return dados.aluno || []; // ← retorna lista (ou vazia)
+            } catch (error) {
+                console.error(error);
+                return [];
+            }
+        }
+
+
+
     async function getAtividades() {
         try {
             const res = await fetch("/atividades", {
@@ -313,7 +457,9 @@ const container = document.getElementById("lista-atividades");
 
     for (const atividade of atividades) {
         try {
-            const idDisc = await getDisciplinaProfessor(atividade.idDisciplinaProfessor);
+            const idDisc = atividade.idDisciplinaProfessor
+            ? await getDisciplinaProfessor(atividade.idDisciplinaProfessor)
+            : null;
             const corresponde =
                 (tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisc) ||
                 (tipoUsuario === "professor" && idProfList.includes(Number(atividade.idDisciplinaProfessor)));
@@ -342,6 +488,15 @@ const container = document.getElementById("lista-atividades");
                     });
                 }
 
+                let descricaoPreview = "";
+                let s = atividade.descricao;
+
+                for (let i = 0; i < s.length; i++) {
+                    if (i > 0 && i % 110 === 0) {
+                        descricaoPreview += "<br>"; // quebra de linha a cada 10 caracteres
+                    }
+                    descricaoPreview += s[i];
+                }
 
 
                 item.className = `container-${tipo}`;
@@ -349,7 +504,7 @@ const container = document.getElementById("lista-atividades");
                 item.innerHTML = `
                     <p class="foto">P</p>
                     <div class=${tipo}>
-                        <p>${atividade.descricao}</p> 
+                        <p>${atividade.devolucao === 1?  atividade.descricao.substring(0, 45) + "..." : descricaoPreview}</p> 
                         ${atividade.devolucao === 1 ? `<p class="data">${atividade.dataEntrega}</p>` : `<p class="data">${atividade.dataPostagem}</p>`}
                         ${prazoExpirado ? '<p class="aviso-prazo">Prazo expirado</p>' : ''}
                         ${atividade.caminhoGravacao != null && atividade.devolucao === 0? `<a class='link-download' href=${atividade.caminhoGravacao}>download</a>` : ''}

@@ -10,6 +10,7 @@ main > div{
     display: flex;
     flex-direction: column;
     gap: 3.5rem;
+    margin-top: 10rem;
 }
 
 
@@ -70,6 +71,7 @@ main > div{
     border: 0.1rem solid rgba(255, 255, 255, 0.2);
     padding: 2rem 4rem;
     border-radius: 1.6rem;
+
     
 
     & .grupo{
@@ -209,8 +211,22 @@ main > div{
     align-items: center;
 }
 
+.foto-tabela{
+    & span{
+        background-color: #8800ffff;
+        color: white;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+}
+
 .foto{
-    background-color: #8a00ff; 
+    background-color: #8800ffff;
     color: white;
     width: 3rem;
     height: 3rem;
@@ -414,6 +430,208 @@ button.botao{
     text-decoration: none;
     transition: all .25s ease-in-out;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+nav.nav-atividades {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 2.5rem 2.5rem 0 10rem;
+    display: flex;
+    justify-content: start;
+    width: calc(100% - 26rem);
+    border-bottom: solid 0.1rem rgba(255, 255, 255, 0.2);
+    z-index: 10000;
+
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), #0a0a0a 100%);
+    color: white;
+    backdrop-filter: blur(12px); 
+
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+
+
+    & ul {
+        display: flex;
+        gap: 5rem;
+    }
+}
+
+.tabela{
+    min-height: max-content;
+    padding: 2.5rem;
+    background-color:  rgba(136, 0, 255, 0.3);
+    border-radius: 1.6rem;
+    width: 100rem;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+
+    & > table{
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 1.5rem;
+
+        & > thead,
+        & > tbody{
+            width: 100%;
+
+            & > tr{
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+                background-color:rgba(136, 0, 255, 0.3);
+                padding: 1.6rem;    
+                border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+
+                & > th, 
+                & > td{
+                    font-size: 1.25rem;
+                    width: 10rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                 
+                }
+            }
+        }
+    }
+}
+
+.nome-aluno,
+.matricula{
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.6rem;
+}
+
+thead{
+    padding: 2rem 1.5rem 3rem 1.5rem;
+         background-image: 
+            linear-gradient(135deg, var(--cor-secundaria), var(--cor-terciaria));
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        animation: brilhar 3s infinite alternate;
+        box-shadow:
+            0 0 10px var(--cor-secundaria),
+            0 0 20px var(--cor-terciaria);
+}
+
+tbody{
+    padding: 0rem 1.5rem 1.5rem 1.5rem;
+}
+
+.foto {
+    position: relative;
+}
+
+.letra-aluno{
+    z-index: 1;
+}
+
+.tabela tr.info-aluno:nth-child(1){
+    &:hover{
+        background-color: rgba(255, 217, 0, 0.5);
+    }
+}
+
+.tabela tr.info-aluno:nth-child(2){
+    &:hover{
+        background-color: rgba(192, 192, 192, 0.5);
+    }
+}
+
+.tabela tr.info-aluno:nth-child(3){
+    &:hover{
+        background-color: rgba(205, 128, 50, 0.5);
+    }
+}
+
+.info-aluno{
+    padding: 1.75rem 0 1.75rem 0;
+
+    &:hover{
+        background-color: rgba(233, 51, 220, 0.5);
+    }
+}
+
+.info-aluno:last-of-type{
+    border-bottom: none;
+}
+
+.foto::before {
+    content: '';
+    position: absolute;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    z-index: 0; /* fica atrás */
+    border: 0.1rem solid rgb(255, 255, 255, 0.3)
+}
+
+.tabela tr.info-aluno:nth-child(odd) {
+    background-color: transparent; /* mais escuro */
+}
+
+/* Linhas pares (2, 4, 6...) */
+.tabela tr.info-aluno:nth-child(even) {
+    background-color:  rgba(136, 0, 255, 0.3); /* mais claro */
+}
+
+/* Efeito hover */
+.tabela tr.info-aluno:hover {
+    background-color: rgba(39, 34, 34, 0.5) !important;
+   
+}
+
+
+ul > li#atividades,
+ul > li#pontuacao{
+    width: 100%;
+    position: relative;
+    padding-bottom: 1.5rem;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    
+    &::after {
+        content: '';
+        width: 0;
+        height: 2px; /* Aumentei um pouco a espessura */
+        position: absolute;
+        background: #8800ff;
+        bottom: 0;
+        left: 0;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform-origin: left center;
+        opacity: 0.8;
+        border-radius: 1px; /* Bordas levemente arredondadas */
+        transform: translateY(1.5px);
+    }
+
+    &:hover {
+        color: #8800ff;
+        
+        &::after {
+            width: 100%;
+            opacity: 1;
+            height: 2.5px; /* Aumenta levemente ao passar o mouse */
+        }
+    }
+
+    /* Efeito para itens ativos */
+    &.active {
+        color: #8800ff;
+        font-weight: 500;
+        
+        &::after {
+            width: 100%;
+            background: #8800ff;
+            opacity: 1;
+            height: 3px;
+        }
+    }
 }
 
 button.botao:hover {

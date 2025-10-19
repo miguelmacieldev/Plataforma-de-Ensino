@@ -16,7 +16,7 @@
                 <img src="../../imgs/logositetech.png" alt="TechInfo" data-aos="zoom-in">
             </a>
             <div class="header-titulo">
-                <p>TechInfo</p>   
+                <p>InfoTec</p>   
             </div>
         </header>
 
@@ -24,13 +24,13 @@
             <!--Primária Nav-->
             <ul class="primeiralinhabarra">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="#" class="nav-link link-inicio" data-aos="fade-up">
                         <span class="material-symbols-outlined">home</span>
                         <span class="nav-label">Início</span>
                     </a>
                 </li>
-                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                 <li class="nav-item pontuacao">
+                    <a href="/pagina_pontuacao.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">star</span>
                         <span class="nav-label">Pontuação</span>
                     </a>
@@ -42,7 +42,7 @@
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="#" class="nav-link" data-aos="fade-up">
+                    <a href="/pagina_inicial.html" class="nav-link" data-aos="fade-up">
                         <span class="material-symbols-outlined">logout</span>
                         <span class="nav-label">Sair</span>
                     </a>
@@ -87,9 +87,6 @@
                 </div>
             </div>
         </main>
-        <div class="cursor-outer"></div>
-        <div class="cursor-inner"></div>
-        <script src="../script/cursor.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
             // Dados de exemplo para eventos
@@ -106,11 +103,34 @@
             const nextMonthButton = document.getElementById('next-month');
             const eventoDataElement = document.getElementById('evento-data');
             const eventoDetalhesElement = document.getElementById('evento-detalhes');
-            
+            const navegacao_potuacao = document.querySelector('.pontuacao');
+            const tipoUsuario = localStorage.getItem("tipoUsuario");
+
+
+            const link_inicio = document.querySelector('.link-inicio');
+
+            if(tipoUsuario === "aluno"){
+                link_inicio.href = "/pagina_aluno_principal.html";
+            }  else{
+                link_inicio.href = "/pagina_professor_principal.html";
+            }
+
             function getAtividade() {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("tipoUsuario");
     const idUsuario = localStorage.getItem("idUsuario"); // pode ser aluno ou professor
+
+    const div_usuario_info = document.querySelector('.usuario-info');
+
+    if (tipoUsuario === "professor") {
+        div_usuario_info.classList.add('professor');
+    } else {
+        div_usuario_info.classList.remove('professor');
+    }
+
+                if(localStorage.getItem("tipoUsuario") === "professor"){
+        navegacao_potuacao.style.display = "none";
+    }
 
     if (role === "aluno") {
         // ALUNO: Buscar atividades da turma
@@ -319,6 +339,7 @@
                     diaElement.addEventListener('click', function() {
                         // Remover seleção anterior
                         document.querySelectorAll('.dia.selecionado').forEach(el => {
+                            
                             el.classList.remove('selecionado');
                         });
                         
@@ -335,16 +356,17 @@
             
             // Mostrar eventos de um dia específico
             function showEvents(dateStr) {
-                const date = new Date(dateStr);
-                const day = date.getDate();
-                const month = date.getMonth() + 1;
-                const year = date.getFullYear();
-                
-                eventoDataElement.textContent = `${day} de ${getMonthName(date.getMonth())} de ${year}`;
-                
+                // Extrai manualmente o ano, mês e dia da string
+                const [year, month, day] = dateStr.split('-').map(Number);
+
+                // Agora sim, use os valores diretamente sem risco de fuso
+                eventoDataElement.textContent = `${day} de ${getMonthName(month - 1)} de ${year}`;
+
+                console.log("Data formatada:", `${day}`);
+
                 if (eventos[dateStr]) {
                     eventoDetalhesElement.innerHTML = '';
-                    
+
                     eventos[dateStr].forEach(evento => {
                         const eventoElement = document.createElement('div');
                         eventoElement.classList.add('evento-item');

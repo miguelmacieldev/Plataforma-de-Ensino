@@ -120,6 +120,9 @@
 
     fetch(URI, {
       method: "POST",
+      headers: {
+        "Authorization": "Bearer " + token
+      },
       body: formData,
     })
       .then((response) => response.json())

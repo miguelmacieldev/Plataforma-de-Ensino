@@ -17,24 +17,26 @@ body::before {
   content: "";
   position: fixed;
   top: 0;
-  right: 0;
-  width: 48vw; /* ajuste o tamanho */
-  height: 48vh; /* ajuste o tamanho */
-  pointer-events: none; /* deixa elementos clicáveis normalmente */
-  z-index: -1; /* fica atrás do conteúdo */
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+
+  /* Gradiente roxo reluzente para preto */
   background: radial-gradient(
-    1200px 650px at 10% 10%,
-    /* forma/posicionamento do "borrão" */ rgba(138, 43, 226, 0.95) 10%,
-    rgba(138, 43, 226, 0.65) 20%,
-    rgba(201, 95, 255, 0.45) 45%,
-    rgba(255, 200, 170, 0.3) 75%,
-    rgba(255, 220, 200, 0) 100%
+    circle at 30% 30%,
+    rgba(0, 0, 0, 0.9) 0%,          /* centro preto */
+    rgba(80, 0, 150, 0.4) 40%,       /* transição roxa escura */
+    rgba(138, 43, 226, 0.6) 70%,     /* roxo reluzente */
+    rgba(142, 45, 226, 0.9) 80%     /* bordas mais intensas */
   );
 
-  opacity: 0.8; /* ajuste a opacidade */
-  filter: blur(200px); /* suaviza as bordas do gradiente */
-  transform: translateZ(0); /* melhora a composição em alguns navegadores */
+  filter: blur(150px); /* suaviza o glow */
+  opacity: 0.5;
+  transform: translateZ(0);
 }
+
 
 * {
   margin: 0;
@@ -153,7 +155,6 @@ main {
 .barralateral-nav .primeiralinhabarra {
   list-style: none;
   display: flex;
-  gap: 4px;
   padding: 0 15px;
   flex-direction: column;
   transform: translateY(15px);
@@ -196,7 +197,11 @@ main {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #8800ffff;
+  background: linear-gradient(135deg, #8e2de2, #4a00e0, #ff6a00, #8e2de2);
+  background-size: 200% 200%; /* reduz o tamanho do gradiente para círculos pequenos */
+  animation: gradienteAnim 4s ease infinite; /* animação opcional */
+  
+  backdrop-filter: blur(8px); /* efeito blur correto */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -204,6 +209,14 @@ main {
   font-size: 1.5rem;
 }
 
+/* animação do gradiente */
+@keyframes gradienteAnim {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 25% 50%; }
+  50% { background-position: 50% 50%; }
+  75% { background-position: 25% 50%; }
+  100% { background-position: 0% 50%; }
+}
 .usuario-info {
   display: flex;
   align-items: center;
@@ -211,4 +224,8 @@ main {
   padding: 2.5rem 3rem;
   margin-top: 370px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+  &.professor{
+    margin-top: 421px; 
+  }
 }
