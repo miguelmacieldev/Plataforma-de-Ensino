@@ -1,3 +1,31 @@
+body.white-mode {
+  & .disciplina{
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+
+    & p{
+      color: black;
+    }
+  }
+
+  
+
+  & .nome-professor {
+    background: rgba(255, 255, 255, 0.5);
+    color: black;
+  }
+
+  & .nome-disciplina{
+    color: black; 
+  }
+
+  & .opcoes{
+    color: black;
+  }
+
+}
+
+
 .disciplinas{
     display: grid;
     grid-template-columns: repeat(3, minmax(325px, 1fr)); 
@@ -31,7 +59,7 @@
 
 .disciplina > a {
   padding: 1.5rem;
-  gap: 6rem;
+  gap: 1rem;
   display: flex;
   align-items: center;
   width: 100%;
@@ -39,6 +67,8 @@
   color: white;
   text-decoration: none;
 }
+
+
 
 .disciplina:hover {
   transform: translateY(-4px);
@@ -54,11 +84,12 @@
 
 
 .foto{
+    display: inline-block;
     background-color: #8a00ff;
     border-radius: 50%;
     width: 5rem;
     height: 5rem;
-    padding: 1rem 1.3rem;
+    padding: 1rem 1.85rem;
     margin-right: 1.5rem;
 }
 

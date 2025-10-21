@@ -23,6 +23,19 @@
             <div class="header-titulo">
                 <p>InfoTec</p>   
             </div>
+             <div class="theme-toggle">
+            <input type="checkbox" id="toggle-theme">
+            <label for="toggle-theme" class="toggle-label">
+                <span class="circle">
+                <svg class="sol" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
+                </svg>
+                <svg class="lua" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd"/>
+                </svg>
+                </span>
+            </label>
+            </div>
         </header>
 
         <nav class="barralateral-nav">
@@ -30,25 +43,25 @@
             <ul class="primeiralinhabarra">
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-aos="fade-up">
-                        <span class="material-symbols-outlined">home</span>
+                        <img src="../../imgs/home.png" width="20px" alt="">
                         <span class="nav-label">Início</span>
                     </a>
                 </li>
                  <li class="nav-item">
                     <a href="/pagina_pontuacao.html" class="nav-link" data-aos="fade-up">
-                        <span class="material-symbols-outlined">star</span>
+                        <img src="../../imgs/ranking.png" width="20px" alt="">
                         <span class="nav-label">Pontuação</span>
                     </a>
                 </li>
                  <li class="nav-item">
                     <a href="/pagina_agenda.html" class="nav-link" data-aos="fade-up">
-                        <span class="material-symbols-outlined">calendar_today</span>
+                        <img src="../../imgs/calendar.png" width="20px" alt="">
                         <span class="nav-label">Agenda</span>
                     </a>
                 </li>
                  <li class="nav-item">
                     <a href="/pagina_inicial.html" class="nav-link" data-aos="fade-up">
-                        <span class="material-symbols-outlined">logout</span>
+                        <img src="../../imgs/logout.png" width="20px" alt="">
                         <span class="nav-label">Sair</span>
                     </a>
                 </li>
@@ -65,15 +78,20 @@
 
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init();
-    </script>
+<script src="../script/tema.js"></script>
 
 
         <script>
+
+            AOS.init();
+
             const divDisciplinas = document.getElementById("disciplinas");
             const token = localStorage.getItem("token");
             const decoded = jwt_decode(token);
+
+          
+
+           
 
             getAlunoById();
 
@@ -121,7 +139,7 @@
 
                             const link = document.createElement("a");
                             link.href = "#";
-                            link.innerHTML = `<p><span class="foto">${disciplina.nomeProfessor[0]}</span> ${disciplina.nomeDisciplina}</p>`;
+                            link.innerHTML = `<p><span class="foto">${disciplina.nomeProfessor[0]}</span> <p class="nome-disciplina">${disciplina.nomeDisciplina}</p></p>`;
                             div.addEventListener("click", (e) => {
                                 e.preventDefault();
                                 localStorage.setItem("idDisciplinaSelecionada", disciplina.idDisciplina);

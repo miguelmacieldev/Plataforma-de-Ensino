@@ -1,3 +1,123 @@
+body.white-mode {
+    & .popup-excluir{
+        border: 0.1rem solid rgba(0, 0, 0, 1);
+        color: white;
+        
+        &  button{
+            background-color: rgba(255, 255, 255, 0.5);
+            height: 100%;
+            width: 100%;
+            transition: background-color 0.15s ease-in-out;
+            color: black;
+        }
+    }
+
+    & .conteiner-post{
+            border: 0.1rem solid rgba(0, 0, 0, 1);
+    }
+
+    & .botao-cancelar{
+        color: black;   
+    }    
+
+    & #data-entrega{
+        border: 0.1rem solid rgba(0, 0, 0, 1);
+        background-color: rgba(255, 255, 255, 1);
+        color: black;
+
+    }
+
+    & div.ql-editor{
+        background-color: rgba(255, 255, 255, 1);
+        border: 0.1rem solid rgba(0, 0, 0, 1);
+
+        & p{
+            color: black;
+        }
+    }
+
+    & #arquivo-container{
+        border: 3px dashed rgb(0 0 0 / 100%);
+        background-color: rgba(255, 255, 255, 0.5);
+        color: black;
+    }
+
+    & .editor-texto{
+        background-image: radial-gradient(ellipse at right top, rgb(132 0 255 / 70%) 0%, /* mais transparente para o preto aparecer */ rgb(255 255 255 / 95%) 47%, rgb(255 255 255) 100%)
+    }
+
+    & .tabela{
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);
+    }
+
+    & .botao-formulario{
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        & p{
+            color: black;   
+        }
+    }
+    
+    & nav.nav-atividades{
+        background: rgba(255, 255, 255, 0.1);
+       
+      & li{
+          color: black;
+      }  
+    }
+
+    & .disciplina-sala{
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        color: black;
+    }
+
+    & .comentario{
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.5);
+
+        & p{
+            color: black;
+        }
+    }
+
+    & .atividade{
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        
+        & p{
+            color: black;
+        }   
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: #d3d3d3ff;
+            z-index: 1;
+            transition: width 0.25s ease-in-out;
+        }
+
+        &:hover::before {
+            width: 100%;
+        }
+    }
+
+    & p.data{
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);    
+    }
+
+    & p.aviso-prazo{
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);
+        color: rgba(255, 0, 0, 1);
+    }
+}
+
 main{
     flex-direction: column;
     align-items: center;
@@ -337,7 +457,6 @@ a.link-download{
     flex-flow: column;
     width: 10rem;
     height: 5rem;
-    border: 0;
     padding: 0; 
     position: absolute;
     background-color: white;
@@ -345,6 +464,7 @@ a.link-download{
     z-index: 2;
 
     & > button{
+        border: 0;
         border: 0.1rem solid rgba(255, 255, 255, 0.2);
         background-color: black;
         color: white;
@@ -459,7 +579,7 @@ nav.nav-atividades {
 .tabela{
     min-height: max-content;
     padding: 2.5rem;
-    background-color:  rgba(136, 0, 255, 0.3);
+    background-color:  rgba(136, 0, 255, 0.6);
     border-radius: 1.6rem;
     width: 100rem;
     border: 0.1rem solid rgba(255, 255, 255, 0.2);
@@ -568,7 +688,6 @@ tbody{
     height: 2.5rem;
     border-radius: 50%;
     z-index: 0; /* fica atrás */
-    border: 0.1rem solid rgb(255, 255, 255, 0.3)
 }
 
 .tabela tr.info-aluno:nth-child(odd) {

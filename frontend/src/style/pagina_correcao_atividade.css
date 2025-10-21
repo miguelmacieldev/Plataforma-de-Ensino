@@ -1,3 +1,45 @@
+body.white-mode{
+    & canvas{
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);
+    }
+
+
+    & nav.nav-atividades{
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+
+        & li{
+            color: black;
+        }
+    }
+
+    & .card-entrega{
+        background-color: rgba(255, 255, 255, 0.2);
+        border-top: 0.1rem solid rgba(0, 0, 0, 0.5);
+        border-right: 0.1rem solid rgba(0, 0, 0, 0.5);
+        border-bottom: 0.1rem solid rgba(0, 0, 0, 0.5);
+
+        & p{
+            color: black;
+        }
+    }
+
+    & .popup-options{
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);
+        
+        & button{
+            &::first-child {
+                border-bottom: 0.1rem solid rgba(0, 0, 0, 0.5);
+            }
+
+            color: black;
+        }
+    }
+}
+
 nav.nav-atividades{
     position: fixed;
     top: 0;
@@ -89,6 +131,7 @@ canvas {
     min-width: 60rem;
     padding: 5rem;
     transform: scale(0.85);
+    border-radius: 1.6rem;
 }
 
 #conteudo-tab{

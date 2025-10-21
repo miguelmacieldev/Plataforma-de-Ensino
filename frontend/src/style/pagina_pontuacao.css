@@ -1,7 +1,13 @@
+body.white-mode{
+    & .tabela{
+        border: 0.1rem solid rgba(0, 0, 0, 0.5);
+    }
+}
+
 .tabela{
     min-height: max-content;
     padding: 2.5rem;
-    background-color:  rgba(136, 0, 255, 0.3);
+    background-color:  rgba(136, 0, 255, 0.6);
     border-radius: 1.6rem;
     width: 100rem;
     border: 0.1rem solid rgba(255, 255, 255, 0.2);

@@ -1,18 +1,53 @@
+:root {
+  --cor-fundo: #000000;
+  --cor-texto: #e7e7e7;
+  --cor-borda: rgba(255, 255, 255, 0.2);
+  --cor-gradiente: radial-gradient(#2e2e2e 1px, transparent 1px);
+  --cor-fundo-barra: #000000;
+}
+
+body.white-mode {
+  --cor-fundo: #ffffffff; 
+  --cor-texto: #ffffffff;
+  --cor-borda: rgba(255, 255, 255, 0.2);
+  --cor-gradiente: radial-gradient(#d0d0d0 1px, transparent 1px);
+  --cor-fundo-barra: #000000ff;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.6rem;
+  margin-left: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.3);
+  color: #8e2de2;
+}
+
+
+/* ---------- BASE ---------- */
+
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  color: #e7e7e7;
+  color: var(--cor-texto);
   min-height: 100vh;
   line-height: 1.5;
   overflow-x: hidden;
-  background-color: #000000ff;
-  background-image: radial-gradient(#2e2e2e 1px, transparent 1px);
+  background-color: var(--cor-fundo);
+  background-image: var(--cor-gradiente);
   background-size: 24px 24px;
   position: relative;
-  overflow-x: hidden;
-  font-family: sans-serif;
+  font-weight: 500;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+/* Glow de fundo */
 body::before {
   content: "";
   position: fixed;
@@ -22,21 +57,19 @@ body::before {
   height: 100vh;
   pointer-events: none;
   z-index: -1;
-
-  /* Gradiente roxo reluzente para preto */
   background: radial-gradient(
     circle at 30% 30%,
-    rgba(0, 0, 0, 0.9) 0%,          /* centro preto */
-    rgba(80, 0, 150, 0.4) 40%,       /* transição roxa escura */
-    rgba(138, 43, 226, 0.6) 70%,     /* roxo reluzente */
-    rgba(142, 45, 226, 0.9) 80%     /* bordas mais intensas */
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(80, 0, 150, 0.4) 40%,
+    rgba(138, 43, 226, 0.6) 70%,
+    rgba(142, 45, 226, 1) 80%
   );
-
-  filter: blur(150px); /* suaviza o glow */
+  filter: blur(150px);
   opacity: 0.5;
   transform: translateZ(0);
 }
 
+/* ---------- GERAL ---------- */
 
 * {
   margin: 0;
@@ -45,49 +78,25 @@ body::before {
   outline: none;
 }
 
-:root {
-  --cor-fundo: #2a303e;
-  --cor-primaria: #f13a3c;
-  --cor-secundaria: #454df6;
-}
-
 html {
   font-size: 62.5%;
   scroll-behavior: smooth;
 }
 
-body {
-  overflow-x: hidden;
-  font-weight: 500;
-  color: white;
-  line-height: 1.6;
-}
+h1 { font-size: 4.122rem; line-height: 1; }
+h2 { font-size: 3.488rem; line-height: 1.2; }
+h3 { font-size: 2.228rem; line-height: 1.3; }
 
-h1 {
-  font-size: 4.122rem;
-  line-height: 1;
-}
-
-h2 {
-  font-size: 3.488rem;
-  line-height: 1.2;
-}
-
-h3 {
-  font-size: 2.228rem;
-  line-height: 1.3;
-}
-
-p,
-li,
-a {
+p, li, a {
   font-size: 1.728rem;
   line-height: 1.7;
   list-style: none;
   text-decoration: none;
-  color: white;
+  color: var(--cor-texto);
   position: relative;
 }
+
+/* ---------- ESTRUTURA ---------- */
 
 main {
   display: flex;
@@ -102,11 +111,13 @@ main {
   display: none;
 }
 
+/* ---------- CURSOR ---------- */
+
 .cursor-outer {
   position: fixed;
   width: 50px;
   height: 50px;
-  border: 0.5px solid white;
+  border: 0.5px solid var(--cor-texto);
   border-radius: 50%;
   pointer-events: none;
   z-index: 10000;
@@ -114,12 +125,11 @@ main {
   transform: translate(-50%, -50%);
 }
 
-/* Estilo do ponto interno */
 .cursor-inner {
   position: fixed;
   width: 2.5px;
   height: 2.5px;
-  background-color: white;
+  background-color: var(--cor-texto);
   border-radius: 50%;
   pointer-events: none;
   z-index: 10001;
@@ -127,14 +137,17 @@ main {
   transform: translate(-50%, -50%);
 }
 
+/* ---------- BARRA LATERAL ---------- */
+
 .barra {
   position: fixed;
   top: 0;
   left: 0;
   width: 260px;
   height: 100vh;
-  background: #000000;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--cor-fundo-barra);
+  border-right: 1px solid var(--cor-borda);
+  transition: background 0.3s ease, border 0.3s ease;
 }
 
 .barra .barra-topo {
@@ -162,7 +175,7 @@ main {
 
 .barralateral-nav .nav-item .nav-link {
   position: relative;
-  color: #ffffffff;
+  color: var(--cor-texto);
   display: flex;
   gap: 12px;
   padding: 11px 15px;
@@ -178,7 +191,8 @@ main {
   position: absolute;
   right: 0;
   top: 20%;
-  width: 6px;
+  right: -16px;
+  width: 3.75px;
   height: 60%;
   border-radius: 6px;
   background: transparent;
@@ -188,20 +202,19 @@ main {
 
 .barralateral-nav .nav-item:hover .nav-link::after {
   background: rgb(128, 0, 255);
-  box-shadow: 0px 0px 50px 42px rgba(78, 7, 184, 0.300);
+  box-shadow: 0px 0px 50px 42px rgba(78, 7, 184, 0.3);
 }
 
-/*#6102d4 */    
+/* ---------- PERFIL ---------- */
 
 .foto-barra {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, #8e2de2, #4a00e0, #ff6a00, #8e2de2);
-  background-size: 200% 200%; /* reduz o tamanho do gradiente para círculos pequenos */
-  animation: gradienteAnim 4s ease infinite; /* animação opcional */
-  
-  backdrop-filter: blur(8px); /* efeito blur correto */
+  background-size: 200% 200%;
+  animation: gradienteAnim 4s ease infinite;
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -209,7 +222,6 @@ main {
   font-size: 1.5rem;
 }
 
-/* animação do gradiente */
 @keyframes gradienteAnim {
   0% { background-position: 0% 50%; }
   25% { background-position: 25% 50%; }
@@ -217,15 +229,89 @@ main {
   75% { background-position: 25% 50%; }
   100% { background-position: 0% 50%; }
 }
+
 .usuario-info {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 2.5rem 3rem;
   margin-top: 370px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--cor-borda);
+  transition: border 0.3s ease;
 
   &.professor{
-    margin-top: 421px; 
+    margin-top: 420px;
   }
 }
+
+/* ---------- BOTÃO DE TEMA ---------- */
+
+/* Container toggle */
+ 
+.theme-toggle {
+  position: absolute; /* dentro do header */
+  height: 1px;
+  right: 50px;
+  width: 60px;
+  height: 30px;
+  margin-right: -2rem;
+}
+
+/* Esconde o checkbox */
+.theme-toggle input[type="checkbox"] {
+  display: none;
+}
+
+/* Label como slider */
+.toggle-label {
+  transform: scale(0.8);
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #ffffffff;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Bolinha */
+.toggle-label .circle {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  transform: translate(0, -50%);
+  width: 24px;
+  height: 24px;
+  background: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s, background 0.3s;
+}
+
+/* Ícones */
+.circle svg {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  transition: opacity 0.3s;
+}
+
+svg{
+  width: 24px;
+}
+
+.sol { opacity: 1; color: #ffd900ff; }
+.lua { opacity: 0; color: #ffff00ff; }
+
+/* Estado checked */
+.theme-toggle input:checked + .toggle-label .circle {
+  left: 33px;
+}
+
+.theme-toggle input:checked + .toggle-label .circle .sol { opacity: 0; }
+.theme-toggle input:checked + .toggle-label .circle .lua { opacity: 1; }
+
+.theme-toggle input:checked + .toggle-label { background: #8e2de2; }
