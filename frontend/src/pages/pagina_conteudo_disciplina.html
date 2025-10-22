@@ -214,6 +214,8 @@
             botaoNovaPostagem.style.display = "none";
             exbirPontuacao();
         }
+
+        podePostar();
     }
 
 
@@ -297,7 +299,7 @@
             if (!dataEntrega) return alert("Defina a data de entrega.");
         }
 
-        const ids = await getIdsDisciplinaProfessor(idUsuario);
+        const ids = await getIdsDisciplinaProfessorporDisciplina(localStorage.getItem('idDisciplinaSelecionada'));
         if (!ids || ids.length === 0) return alert("Nenhum vínculo encontrado.");
 
             if (tipoPostagemAtual === 'atividade') {
@@ -353,6 +355,28 @@
     }
 
     // ======================= FUNÇÕES DE BACKEND ========================
+
+
+        async function getIdsDisciplinaProfessorporDisciplina(idDisciplina) {
+        try {
+            const res = await fetch(`/disciplinas-professores/disciplinas/${idDisciplina}`, {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const json = await res.json();
+            if (json.status) {
+                return json.resultados.map(r => r.idDisciplinaProfessor);
+            }else{
+                return false
+            }
+
+            return [];
+        } catch (err) {
+            console.error("Erro ao buscar vínculos:", err);
+            return [];
+        }
+    }
+
+
 
     async function getIdsDisciplinaProfessor(idProf) {
         try {
@@ -472,11 +496,12 @@
     }
 
     async function renderizarAtividades(atividades) {
-const container = document.getElementById("lista-atividades");
+    
+    const container = document.getElementById("lista-atividades");
     container.innerHTML = "";
 
     const idProfList = tipoUsuario === "professor"
-        ? (await getIdsDisciplinaProfessor(idUsuario))
+        ? (await getIdsDisciplinaProfessorporDisciplina(localStorage.getItem('idDisciplinaSelecionada')))
         : [];
 
 
@@ -485,10 +510,12 @@ const container = document.getElementById("lista-atividades");
             const idDisc = atividade.idDisciplinaProfessor
             ? await getDisciplinaProfessor(atividade.idDisciplinaProfessor)
             : null;
+
             const corresponde =
                 (tipoUsuario === "aluno" && Number(localStorage.getItem('idDisciplinaSelecionada')) === idDisc) ||
                 (tipoUsuario === "professor" && idProfList.includes(Number(atividade.idDisciplinaProfessor)));
 
+                
 
                 if (!corresponde) continue;
 
